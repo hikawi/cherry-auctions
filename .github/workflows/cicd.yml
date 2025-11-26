@@ -23,6 +23,7 @@ jobs:
         uses: pnpm/action-setup@v4
         with:
           run_install: false # Tell PNPM not to install before we setup Node
+          version: latest
 
       - name: Setup Node
         uses: actions/setup-node@v5
