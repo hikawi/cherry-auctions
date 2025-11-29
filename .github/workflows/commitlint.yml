@@ -1,0 +1,29 @@
+name: CherryAuctions CI/CD
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    name: Lint Commits
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Don't truncate commits
+
+      - uses: wagoid/commitlint-github-action@v6
+        name: Commitlint
+
+  test:
+    runs-on: ubuntu-latest
+    name: Test
+
+  # To be continued for when the project foundation, backend and frontend is setup.
