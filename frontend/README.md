@@ -1,64 +1,49 @@
-# .
+# CherryAuctions - Frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+## Overview
 
-## Recommended IDE Setup
+This is the frontend service for CherryAuctions, built as a single page application
+using Rolldown Vite and Vue 3, along with commonly used libraries like Pinia, Vue
+Router and Zod.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## Caveats: Unsupported Linux Distributions
 
-## Type Support for `.vue` Imports in TS
+This project uses **Playwright** for end-to-end testing, and Playwright is only
+officially supported for Ubuntu 22, Ubuntu 24 and Debian as Linux distributions.
+The project's owner is currently using an Arch Linux machine, so there have to
+be some weird setups to let Playwright work.
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+Playwright provides this through a contained browser image, hosted on Microsoft.
+At the time of writing this, the latest stable version is 1.57 (you may use Jammy
+instead of Noble).
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-pnpm install
+```bash
+docker pull mcr.microsoft.com/playwright:v1.57.0-noble
 ```
 
-### Compile and Hot-Reload for Development
+Use the script inside `scripts` folder to run Playwright. This browser container
+works by making a websocket server for our Playwright in NPM to connect to, and
+run tests on browsers that way. But due to Docker isolation, you can't actually
+just run it, stream it from NPM and expect it to work.
 
-```sh
-pnpm dev
+```bash
+docker run --rm --init -it --workdir /home/pwuser --user pwuser --network host \
+ mcr.microsoft.com/playwright:v1.57.0-noble \
+ /bin/sh -c "cd /home/pwuser && npx -y playwright@1.57.0 run-server --port 3000 --host 0.0.0.0"
 ```
 
-### Type-Check, Compile and Minify for Production
+Simple explanations: This creates a random container with playwright 1.57, that
+removes itself after use, adds it to your Host network and run the Playwright server.
 
-```sh
-pnpm build
+Beware that this command will add the server into your host, and it would be able
+to read host network, so use at your own risk.
+
+To run Playwright tests,
+
+```bash
+PW_TEST_CONNECT_WS_ENDPOINT=ws://127.0.0.1:3000/ pnpm playwright test
 ```
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-pnpm test:unit
-```
-
-### Run End-to-End Tests with [Playwright](https://playwright.dev)
-
-```sh
-# Install browsers for the first run
-npx playwright install
-
-# When testing on CI, must build the project first
-pnpm build
-
-# Runs the end-to-end tests
-pnpm test:e2e
-# Runs the tests only on Chromium
-pnpm test:e2e --project=chromium
-# Runs the tests of a specific file
-pnpm test:e2e tests/example.spec.ts
-# Runs the tests in debug mode
-pnpm test:e2e --debug
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-pnpm lint
-```
+Provide the environment variable `PW_TEST_CONNECT_WS_ENDPOINT` to the Playwright
+server. It may differ here, if you hosted that Playwright Server on another
+machine, or on another port.
