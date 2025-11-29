@@ -24,5 +24,18 @@ services:
       - -c
       - |
         corepack enable pnpm
-        pnpm i --lockfile-only
+        pnpm i --frozen-lockfile
         pnpm dev
+
+  backend:
+    image: cosmtrek/air
+    container_name: cherry-auctions-backend
+    hostname: backend
+    networks:
+      - default
+    working_dir: /app
+    ports:
+      - 3000:80
+    volumes:
+      - ./backend:/app
+      - /app/tmp
