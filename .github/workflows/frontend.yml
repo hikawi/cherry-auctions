@@ -113,7 +113,7 @@ jobs:
         run: pnpm exec playwright install --with-deps
 
       - name: Build for Testing
-        working-directory: build
+        working-directory: frontend
         run: pnpm build
 
       - name: End to End Tests (Playwright)
