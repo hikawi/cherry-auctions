@@ -1,0 +1,41 @@
+name: cherry-auctions
+
+networks:
+  default:
+    driver: bridge
+    name: cherry-auctions-default-network
+
+services:
+  frontend:
+    image: node:24-alpine
+    container_name: cherry-auctions-frontend
+    hostname: frontend
+    networks:
+      - default
+    working_dir: /app
+    ports:
+      - 5173:5173
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.pnpm-store # To make sure PNPM inside the container doesn't leak out
+    command: # I really wanted to use NPM for compatibility but 46s startup VS 330ms startup? Come on.
+      - /bin/sh
+      - -c
+      - |
+        corepack enable pnpm
+        pnpm i --frozen-lockfile
+        pnpm dev
+
+  backend:
+    image: cosmtrek/air
+    container_name: cherry-auctions-backend
+    hostname: backend
+    networks:
+      - default
+    working_dir: /app
+    ports:
+      - 3000:80
+    volumes:
+      - ./backend:/app
+      - /app/tmp

@@ -17,4 +17,7 @@ full project timeline:
 Refer to the documents below for more specific information on each part of the
 project.
 
-_cricket noises_
+- [Project Requirements](./requirements.md)
+- [Tech Stack Specification](./specs/00-tech-stack.md)
+- [Authentication Flow Specification](./specs/01-authentication-spec.md)
+- [Database Design (WIP)](./specs/02-database-design.md)
