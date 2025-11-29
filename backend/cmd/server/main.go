@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+
 	"github.com/gin-gonic/gin"
 	"luny.dev/cherryauctions/internal/routes"
 )
@@ -13,5 +15,8 @@ func main() {
 	versionedGroup := server.Group(version)
 	versionedGroup.GET("/health", routes.GetHealth)
 
-	server.Run(":80")
+	err := server.Run(":80")
+	if err != nil {
+		log.Fatalln("fatal: failed to run the server. conflicted port?")
+	}
 }
