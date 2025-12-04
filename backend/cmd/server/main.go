@@ -10,7 +10,10 @@ import (
 const version string = "v1"
 
 func main() {
-	server := gin.Default()
+	server := gin.New()
+
+	server.Use(gin.Recovery())
+	server.SetTrustedProxies(nil)
 
 	versionedGroup := server.Group(version)
 	versionedGroup.GET("/health", routes.GetHealth)
