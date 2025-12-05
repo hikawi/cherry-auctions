@@ -1,11 +1,14 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useI18n } from "vue-i18n";
+
+useI18n();
+</script>
 
 <template>
-  <h1>You did it!</h1>
-  <p class="text-cyan-600 font-bold">
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <main
+    class="flex items-stretch justify-stretch w-full min-h-screen h-fit bg-claret-600 p-6 font-fredoka"
+    :class="{ 'font-mplus': $i18n.locale == 'ja' }"
+  >
+    <router-view></router-view>
+  </main>
 </template>
-
-<style scoped></style>
