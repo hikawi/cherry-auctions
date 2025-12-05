@@ -6,14 +6,22 @@ import "./styles.css";
 import router from "./router";
 import { createI18n } from "vue-i18n";
 
+// I18n stuff
+import enUS from "@/i18n/en-US.json";
+import jaJP from "@/i18n/ja-JP.json";
+
 const app = createApp(App);
 
-const i18n = createI18n({
-  locale: "en-US",
+type I18nSchema = typeof enUS;
+const i18n = createI18n<[I18nSchema], "en-US" | "ja-JP">({
+  legacy: false,
   availableLocales: ["en-US", "ja-JP"],
   fallbackLocale: "en-US",
   formatFallbackMessages: true,
-  messages: {},
+  messages: {
+    "en-US": enUS,
+    "ja-JP": jaJP,
+  },
 });
 
 app.use(createPinia());

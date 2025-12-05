@@ -53,3 +53,32 @@ from Google or inputted directly).
 This format can be changed to a PKCE flow as outlined in the [legacy authentication
 authorization document](../legacy/01-authentication-spec.md), but there is currently
 no plan to support other devices, such as native, other REST clients or servers.
+
+### Logging in
+
+Each user can login to the system with their email address with the password, or
+use one of the OAuth providers.
+
+- Endpoint `/v1/auth/login`.
+- Accepts `application/json`.
+- Must return an `access_token` and a `refresh_token`, both inside HTTP-only cookies
+  to protect against XSS or similar attacks.
+
+### Error Codes
+
+Error codes should be returned in an array form, with a similar structure:
+
+```json
+{
+  "status": 400,
+  "errors": [
+    {
+      "id": "invalid-username",
+      "description": "Optional"
+    }
+  ]
+}
+```
+
+This is to have the frontend translate properly on the client-side, instead of
+relying on the backend to translate it.
