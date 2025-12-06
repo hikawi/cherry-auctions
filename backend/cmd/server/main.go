@@ -4,19 +4,16 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"luny.dev/cherryauctions/internal/database"
 	"luny.dev/cherryauctions/internal/routes"
 )
 
-const version string = "v1"
-
 func main() {
+	db := database.SetupDatabase()
+	database.MigrateModels(db)
+
 	server := gin.New()
-
-	server.Use(gin.Recovery())
-	server.SetTrustedProxies(nil)
-
-	versionedGroup := server.Group(version)
-	versionedGroup.GET("/health", routes.GetHealth)
+	routes.SetupRoutes(server, db)
 
 	err := server.Run(":80")
 	if err != nil {

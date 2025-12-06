@@ -2,4 +2,7 @@
 .dockerignore
 Dockerfile
 README.md
+sqlc.yaml
+sql
+tmp
 

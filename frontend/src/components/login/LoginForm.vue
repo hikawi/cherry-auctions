@@ -67,12 +67,12 @@ async function login() {
 
     <hr class="my-2 h-px w-full rounded-full border border-zinc-300" />
 
-    <div class="flex w-full flex-col gap-2 font-semibold sm:flex-row">
+    <div class="flex w-full flex-col gap-2 font-semibold ease-out sm:flex-row">
       <button
         @click="forgotPassword"
         @mouseenter="hoveringForgotPassword = true"
         @mouseleave="hoveringForgotPassword = false"
-        class="peer flex min-w-fit cursor-pointer flex-row items-center justify-center gap-2 overflow-x-hidden rounded-xl border-2 border-zinc-300 p-2 py-3 text-black transition-all duration-200 hover:shadow-md sm:flex-1 sm:grow hover:sm:grow-3"
+        class="peer flex min-w-fit cursor-pointer flex-row items-center justify-center gap-2 overflow-x-hidden rounded-xl border-2 border-zinc-300 p-2 py-3 text-black transition-all duration-200 hover:border-zinc-600 hover:bg-zinc-300 hover:shadow-md sm:flex-1 sm:grow hover:sm:grow-3"
       >
         <RotateCcwKey class="size-6" />
 

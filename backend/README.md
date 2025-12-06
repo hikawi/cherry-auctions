@@ -13,24 +13,7 @@ Technical Requirements:
 
 - Golang Installed (at least v1.25.4)
 - Gin Swagger Installed (use `go install`)
-- SQLC installed (you may use your distro's package manager or `go install`).
 - Atlas, optional, mostly for inspecting, migrating and viewing database relationships.
-
-For sqlc:
-
-```bash
-# MacOS:
-brew install sqlc
-
-# Ubuntu:
-sudo snap install sqlc
-
-# Using Go Install (should work on every platform)
-go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
-
-# Arch Linux:
-sudo pacman -S sqlc
-```
 
 For Atlas:
 
