@@ -1,0 +1,25 @@
+basePath: /v1
+consumes:
+- application/json
+info:
+  contact:
+    email: hello@luny.dev
+    name: Nguyệt Ánh
+  description: Backend API for CherryAuctions.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Cherry Auctions API
+  version: "0.1"
+paths: {}
+produces:
+- application/json
+schemes:
+- https
+securityDefinitions:
+  ApiKeyAuth:
+    description: Classic Bearer token
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
