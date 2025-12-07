@@ -2,13 +2,10 @@ package main
 
 import (
 	"log"
-	"strings"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"luny.dev/cherryauctions/internal/database"
-	"luny.dev/cherryauctions/internal/routes"
-	"luny.dev/cherryauctions/internal/utils"
+	"luny.dev/cherryauctions/database"
+	"luny.dev/cherryauctions/routes"
 )
 
 // @title						Cherry Auctions API
@@ -31,16 +28,8 @@ func main() {
 	database.MigrateModels(db)
 
 	server := gin.New()
-	server.Use(gin.Recovery())
-	server.Use(gin.Logger())
-	server.Use(cors.New(cors.Config{
-		AllowOrigins:     strings.Split(utils.Getenv("CORS_ORIGINS", "http://localhost:5173"), ","),
-		AllowMethods:     strings.Split(utils.Getenv("CORS_METHODS", "GET,HEAD,POST,PUT,DELETE"), ","),
-		AllowCredentials: true,
-		AllowHeaders:     strings.Split(utils.Getenv("CORS_HEADERS", ""), ","),
-		AllowWebSockets:  true,
-	}))
 
+	routes.SetupServer(server, db)
 	routes.SetupRoutes(server, db)
 
 	err := server.Run(":80")

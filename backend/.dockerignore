@@ -1,8 +1,7 @@
-.air.toml
 .dockerignore
 Dockerfile
 README.md
-sqlc.yaml
 sql
 tmp
+test
 
