@@ -18,11 +18,11 @@ import (
 // @basepath					/v1
 // @accept						json
 // @produce					json
-// @schemes					https
+// @schemes					http https
 // @securityDefinitions.apikey	ApiKeyAuth
-// @in header
-// @name Authorization
-// @description Classic Bearer token
+// @in							header
+// @name						Authorization
+// @description				Classic Bearer token
 func main() {
 	db := database.SetupDatabase()
 	database.MigrateModels(db)

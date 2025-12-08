@@ -62,8 +62,66 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized"
                     },
+                    "404": {
+                        "description": "Not Found"
+                    },
                     "421": {
                         "description": "Misdirected Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "description": "Registers a new account with the system using a email-password pair.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "authentication"
+                ],
+                "summary": "Registers a new account",
+                "parameters": [
+                    {
+                        "description": "Register credentials",
+                        "name": "credentials",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/auth.RegisterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "User was successfully registered",
+                        "schema": {
+                            "$ref": "#/definitions/shared.MessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Request body is invalid",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "An account with that email already exists",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "The request could not be completed due to server faults",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
                     }
                 }
             }
@@ -86,6 +144,43 @@ const docTemplate = `{
                     "minLength": 8
                 }
             }
+        },
+        "auth.RegisterRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "name",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "minLength": 8
+                }
+            }
+        },
+        "shared.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "shared.MessageResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
         }
     },
     "securityDefinitions": {
@@ -103,7 +198,7 @@ var SwaggerInfo = &swag.Spec{
 	Version:          "0.1",
 	Host:             "",
 	BasePath:         "/v1",
-	Schemes:          []string{"https"},
+	Schemes:          []string{"http", "https"},
 	Title:            "Cherry Auctions API",
 	Description:      "Backend API for CherryAuctions.",
 	InfoInstanceName: "swagger",

@@ -17,6 +17,7 @@ func Log(data any) {
 	// 05 == ss
 	if err != nil {
 		fmt.Printf("%s | unable to marshal log %s\n", time.Format("15:04:05"), data)
+	} else {
+		fmt.Printf("%s | %s\n", time.Format("15:04:05"), val)
 	}
-	fmt.Printf("%s | %s", time.Format("15:04:05"), val)
 }
