@@ -12,5 +12,5 @@ type AuthHandler struct {
 func (h *AuthHandler) SetupRouter(group *gin.RouterGroup) {
 	router := group.Group("/auth")
 
-	router.POST("/login", h.PostLogin)
+	router.POST("/register", h.PostRegister)
 }
