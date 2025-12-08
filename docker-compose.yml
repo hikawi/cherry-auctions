@@ -61,6 +61,9 @@ services:
     working_dir: /app
     environment:
       DATABASE_URL: ${DATABASE_URL}
+      CORS_ORIGINS: ${CORS_ORIGINS}
+      CORS_METHODS: ${CORS_METHODS}
+      CORS_HEADERS: ${CORS_HEADERS}
     ports:
       - 3000:80
     volumes:
