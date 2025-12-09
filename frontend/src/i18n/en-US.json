@@ -1,0 +1,11 @@
+{
+  "login": {
+    "title": "Login",
+    "email": "Email Address",
+    "password": "Password",
+    "email_placeholder": "john.doe{'@'}example.com",
+    "action": "Login",
+    "forgot_password": "Reset Password",
+    "loading": "Logging in..."
+  }
+}

@@ -1,11 +1,16 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useI18n } from "vue-i18n";
+import LanguageSelect from "./components/shared/LanguageSelect.vue";
+
+const { locale } = useI18n({ useScope: "global" });
+</script>
 
 <template>
-  <h1>You did it!</h1>
-  <p class="text-cyan-600 font-bold">
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <LanguageSelect />
+  <main
+    class="bg-claret-600 font-fredoka flex h-fit min-h-screen w-full items-stretch justify-stretch p-6"
+    :class="{ 'font-mplus': locale == 'ja-JP' }"
+  >
+    <router-view></router-view>
+  </main>
 </template>
-
-<style scoped></style>

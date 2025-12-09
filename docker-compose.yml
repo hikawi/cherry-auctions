@@ -5,7 +5,32 @@ networks:
     driver: bridge
     name: cherry-auctions-default-network
 
+volumes:
+  postgres-data:
+    name: cherry-auctions-postgres-data
+
 services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: cherry-auctions-postgres
+    hostname: postgres
+    networks:
+      - default
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      start_period: 10s
+      timeout: 10s
+      retries: 3
+      interval: 1m
+
   frontend:
     image: node:24-alpine
     container_name: cherry-auctions-frontend
@@ -34,8 +59,21 @@ services:
     networks:
       - default
     working_dir: /app
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      CORS_ORIGINS: ${CORS_ORIGINS}
+      CORS_METHODS: ${CORS_METHODS}
+      CORS_HEADERS: ${CORS_HEADERS}
+      COOKIE_SECURE: ${COOKIE_SECURE}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_AUDIENCE: ${JWT_AUDIENCE}
+      JWT_EXPIRY: ${JWT_EXPIRY}
+      DOMAIN: ${DOMAIN}
     ports:
       - 3000:80
     volumes:
       - ./backend:/app
       - /app/tmp
+    depends_on:
+      postgres:
+        condition: service_healthy

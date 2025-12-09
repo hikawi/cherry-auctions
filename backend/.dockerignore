@@ -1,5 +1,7 @@
-.air.toml
 .dockerignore
 Dockerfile
 README.md
+sql
+tmp
+test
 

@@ -1,5 +1,7 @@
 # Cherry Auctions
 
+![wakatime](https://wakatime.com/badge/user/16f7181f-8df5-44c7-b2b4-4fa68b0c2dfe/project/9c6372ce-b005-493b-95b1-60ee50480cc0.svg)
+
 ## Overview
 
 This is a project assignment for the course of Advanced Web App Development, or
@@ -24,9 +26,16 @@ For deployment specifications, see [`specs/03-architecture-design`](./docs/specs
   event-based design of an auctions system):
   - CherryAuctions Service: The main backend that holds all the resources, and
     is the one that the frontend should talk to the most.
+- Project Documentation (not Swagger) is setup with Jekyll.
 
 All services that need it will have a Docker image built and published for easy
 deployment.
+
+Relevant Links:
+
+- Frontend at [cherry-auctions.luny.dev](https://cherry-auctions.luny.dev)
+- Backend at [api.cherry-auctions.luny.dev](https://api.cherry-auctions.luny.dev)
+- Project Specifications at [docs.cherry-auctions.luny.dev](https://docs.cherry-auctions.luny.dev)
 
 ## Getting Started
 

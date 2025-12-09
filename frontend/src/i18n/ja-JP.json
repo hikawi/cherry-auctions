@@ -1,0 +1,11 @@
+{
+  "login": {
+    "title": "ログイン",
+    "email": "メールアドレス",
+    "password": "パスワード",
+    "email_placeholder": "tanaka@example.jp",
+    "action": "ログイン",
+    "forgot_password": "パスワードをお忘れ場合",
+    "loading": "ログイン中"
+  }
+}
