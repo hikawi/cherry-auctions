@@ -1,7 +1,10 @@
 package auth
 
 import (
+	"encoding/base64"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"luny.dev/cherryauctions/models"
@@ -18,13 +21,13 @@ import (
 //	@tags			authentication
 //	@accept			json
 //	@produce		json
-//	@param			credentials	body	auth.LoginRequest	true	"Login credentials"
+//	@param			credentials	body		auth.LoginRequest	true	"Login credentials"
 //	@success		200
-//	@failure		400
-//	@failure		401
-//	@failure		404
-//	@failure		421
-//	@failure		500
+//	@failure		400			{object}	shared.ErrorResponse
+//	@failure		401			{object}	shared.ErrorResponse
+//	@failure		404			{object}	shared.ErrorResponse
+//	@failure		421			{object}	shared.ErrorResponse
+//	@failure		500			{object}	shared.ErrorResponse
 //	@router			/auth/login [POST]
 func (h *AuthHandler) PostLogin(g *gin.Context) {
 	var body LoginRequest
@@ -66,7 +69,35 @@ func (h *AuthHandler) PostLogin(g *gin.Context) {
 		return
 	}
 
-	g.JSON(200, gin.H{"message": "logged in"})
+	// Generate a JWT key pair.
+	accessToken, err := services.SignJWT(user.ID, user.Email)
+	refreshToken, err := utils.GenerateSecretKey(64)
+	if err != nil {
+		utils.Log(gin.H{"path": g.Request.URL.Path, "error": http.StatusInternalServerError, "err": err.Error(), "body": gin.H{"email": body.Email}})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "server can't generate jwt key pair"})
+		return
+	}
+
+	cookieSecure, err := strconv.ParseBool(utils.Fatalenv("COOKIE_SECURE"))
+	g.SetCookieData(&http.Cookie{
+		Name:     "RefreshToken",
+		Value:    base64.URLEncoding.EncodeToString(refreshToken),
+		Path:     "/",
+		Expires:  time.Now().Add(time.Hour * 24 * 30 * 3),
+		Domain:   utils.Fatalenv("DOMAIN"),
+		Secure:   cookieSecure,
+		SameSite: http.SameSiteNoneMode,
+	})
+	g.SetCookieData(&http.Cookie{
+		Name:     "Authorization",
+		Value:    accessToken,
+		Path:     "/",
+		Expires:  time.Now().Add(time.Hour * 1),
+		Domain:   utils.Fatalenv("DOMAIN"),
+		Secure:   cookieSecure,
+		SameSite: http.SameSiteNoneMode,
+	})
+	g.JSON(200, gin.H{})
 }
 
 // PostRegister POST /auth/register
