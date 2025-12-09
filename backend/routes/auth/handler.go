@@ -3,7 +3,6 @@ package auth
 import (
 	"crypto/sha256"
 	"encoding/base64"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -153,12 +152,88 @@ func (h *AuthHandler) PostRegister(g *gin.Context) {
 	g.JSON(201, gin.H{"message": "user successfully created"})
 }
 
+// PostRefresh POST /auth/refresh
+//
+//	@summary		Refreshs a JWT key pair.
+//	@description	Uses the provided refresh token cookie to refresh on another short-lived access token.
+//	@tags			authentication
+//	@success		204	{object}	shared.MessageResponse	"Any request, regardless of authentication status"
+//	@success		200	{object}	auth.LoginResponse		"Refreshed successfully"
+//	@failure		401	{object}	shared.ErrorResponse	"Did not attach refresh token"
+//	@router			/auth/refresh [POST]
+func (h *AuthHandler) PostRefresh(g *gin.Context) {
+	// Refresh the access token and rotate the refresh token.
+	cookie, err := g.Cookie("RefreshToken")
+	if err != nil {
+		utils.Log(gin.H{"path": g.Request.URL.Path, "error": http.StatusUnauthorized, "err": err.Error()})
+		g.AbortWithStatusJSON(http.StatusUnauthorized, shared.ErrorResponse{Error: "refresh token not found"})
+		return
+	}
+
+	// Check the refresh token.
+	tokenRepo := repositories.RefreshTokenRepository{DB: h.DB}
+	decodedCookie, err := base64.URLEncoding.DecodeString(cookie)
+	if err != nil {
+		utils.Log(gin.H{"path": g.Request.URL.Path, "error": http.StatusUnauthorized, "err": err.Error()})
+		g.AbortWithStatusJSON(http.StatusUnauthorized, shared.ErrorResponse{Error: "invalid refresh token"})
+		return
+	}
+
+	hashedCookie := sha256.Sum256(decodedCookie)
+	savedToken := base64.URLEncoding.EncodeToString(hashedCookie[:])
+	token, err := tokenRepo.GetRefreshToken(savedToken)
+	if err != nil || token.IsRevoked {
+		utils.Log(gin.H{"path": g.Request.URL.Path, "error": http.StatusUnauthorized, "err": "revoked token or non-existent token"})
+		g.AbortWithStatusJSON(http.StatusUnauthorized, shared.ErrorResponse{Error: "invalid refresh token"})
+		return
+	}
+
+	// Make sure the users are checked.
+	if token.User.ID == 0 || token.User.Email == "" {
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "this should not be not preloaded"})
+		return
+	}
+
+	// Invalidate the token.
+	tokenRepo.InvalidateToken(savedToken)
+
+	// Generate a new JWT key pair.
+	accessToken, err := services.SignJWT(token.User.ID, token.User.Email)
+	refreshToken, err := utils.GenerateSecretKey(64)
+	if err != nil {
+		utils.Log(gin.H{"path": g.Request.URL.Path, "error": http.StatusInternalServerError, "err": err.Error()})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "server can't generate jwt key pair"})
+		return
+	}
+
+	// Save the refresh token.
+	hashedToken := sha256.Sum256(refreshToken)
+	_, err = tokenRepo.SaveUserToken(token.User.ID, base64.URLEncoding.EncodeToString(hashedToken[:]))
+	if err != nil {
+		utils.Log(gin.H{"path": g.Request.URL.Path, "error": http.StatusInternalServerError, "err": err.Error()})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "server can't hash refresh token"})
+		return
+	}
+
+	cookieSecure, err := strconv.ParseBool(utils.Fatalenv("COOKIE_SECURE"))
+	g.SetCookieData(&http.Cookie{
+		Name:     "RefreshToken",
+		Value:    base64.URLEncoding.EncodeToString(refreshToken),
+		Path:     "/",
+		Expires:  time.Now().Add(time.Hour * 24 * 30 * 3),
+		Domain:   utils.Fatalenv("DOMAIN"),
+		Secure:   cookieSecure,
+		SameSite: http.SameSiteNoneMode,
+	})
+	g.JSON(200, LoginResponse{AccessToken: accessToken})
+}
+
 // PostLogout POST /auth/logout
 //
 //	@summary		Logouts and invalidates the refresh token if available.
 //	@description	Logouts, and also invalidates the refresh token. This does not revoke access tokens.
 //	@tags			authentication
-//	@success 204 {object} shared.MessageResponse "Any request, regardless of authentication status"
+//	@success		204	{object}	shared.MessageResponse	"Any request, regardless of authentication status"
 //	@router			/auth/logout [POST]
 func (h *AuthHandler) PostLogout(g *gin.Context) {
 	// Fetch the refresh token cookie.

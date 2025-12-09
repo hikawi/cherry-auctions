@@ -89,6 +89,52 @@
                 }
             }
         },
+        "/auth/logout": {
+            "post": {
+                "description": "Logouts, and also invalidates the refresh token. This does not revoke access tokens.",
+                "tags": [
+                    "authentication"
+                ],
+                "summary": "Logouts and invalidates the refresh token if available.",
+                "responses": {
+                    "204": {
+                        "description": "Any request, regardless of authentication status",
+                        "schema": {
+                            "$ref": "#/definitions/shared.MessageResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/refresh": {
+            "post": {
+                "description": "Uses the provided refresh token cookie to refresh on another short-lived access token.",
+                "tags": [
+                    "authentication"
+                ],
+                "summary": "Refreshs a JWT key pair.",
+                "responses": {
+                    "200": {
+                        "description": "Refreshed successfully",
+                        "schema": {
+                            "$ref": "#/definitions/auth.LoginResponse"
+                        }
+                    },
+                    "204": {
+                        "description": "Any request, regardless of authentication status",
+                        "schema": {
+                            "$ref": "#/definitions/shared.MessageResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Did not attach refresh token",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/register": {
             "post": {
                 "description": "Registers a new account with the system using a email-password pair.",
@@ -140,6 +186,44 @@
                     }
                 }
             }
+        },
+        "/users/me": {
+            "get": {
+                "description": "Retrieves information about your own profile if authenticated.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Gets your own profile.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/users.GetMeResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "When unauthenticated",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "422": {
+                        "description": "When your info had an invalid state on the server",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "The request could not be completed due to server faults",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -164,9 +248,6 @@
             "type": "object",
             "properties": {
                 "access_token": {
-                    "type": "string"
-                },
-                "refresh_token": {
                     "type": "string"
                 }
             }
@@ -205,6 +286,29 @@
             "properties": {
                 "message": {
                     "type": "string"
+                }
+            }
+        },
+        "users.GetMeResponse": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "oauth_type": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "verified": {
+                    "type": "boolean"
                 }
             }
         }

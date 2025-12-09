@@ -18,8 +18,6 @@ definitions:
     properties:
       access_token:
         type: string
-      refresh_token:
-        type: string
     type: object
   auth.RegisterRequest:
     properties:
@@ -45,6 +43,21 @@ definitions:
     properties:
       message:
         type: string
+    type: object
+  users.GetMeResponse:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      oauth_type:
+        type: string
+      role:
+        type: string
+      verified:
+        type: boolean
     type: object
 info:
   contact:
@@ -100,6 +113,38 @@ paths:
       summary: Logins to an existing account
       tags:
       - authentication
+  /auth/logout:
+    post:
+      description: Logouts, and also invalidates the refresh token. This does not
+        revoke access tokens.
+      responses:
+        "204":
+          description: Any request, regardless of authentication status
+          schema:
+            $ref: '#/definitions/shared.MessageResponse'
+      summary: Logouts and invalidates the refresh token if available.
+      tags:
+      - authentication
+  /auth/refresh:
+    post:
+      description: Uses the provided refresh token cookie to refresh on another short-lived
+        access token.
+      responses:
+        "200":
+          description: Refreshed successfully
+          schema:
+            $ref: '#/definitions/auth.LoginResponse'
+        "204":
+          description: Any request, regardless of authentication status
+          schema:
+            $ref: '#/definitions/shared.MessageResponse'
+        "401":
+          description: Did not attach refresh token
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      summary: Refreshs a JWT key pair.
+      tags:
+      - authentication
   /auth/register:
     post:
       consumes:
@@ -135,6 +180,31 @@ paths:
       summary: Registers a new account
       tags:
       - authentication
+  /users/me:
+    get:
+      description: Retrieves information about your own profile if authenticated.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/users.GetMeResponse'
+        "401":
+          description: When unauthenticated
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "422":
+          description: When your info had an invalid state on the server
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: The request could not be completed due to server faults
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      summary: Gets your own profile.
+      tags:
+      - users
 produces:
 - application/json
 schemes:

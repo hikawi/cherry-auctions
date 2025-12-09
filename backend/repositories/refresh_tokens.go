@@ -20,16 +20,16 @@ func (repo *RefreshTokenRepository) SaveUserToken(id uint, token string) (models
 	refreshToken := models.RefreshToken{
 		UserID:       id,
 		RefreshToken: token,
-		ExpiredAt:    time.Now().Add(time.Hour * 24 * 30),
+		ExpiredAt:    time.Now().Add(time.Hour * 24 * 30 * 3),
 		IsRevoked:    false,
 	}
 	err := gorm.G[models.RefreshToken](repo.DB).Create(ctx, &refreshToken)
 	return refreshToken, err
 }
 
-func (repo *RefreshTokenRepository) GetUserToken(id uint, token string) (models.RefreshToken, error) {
+func (repo *RefreshTokenRepository) GetRefreshToken(token string) (models.RefreshToken, error) {
 	ctx := context.Background()
-	refreshToken, err := gorm.G[models.RefreshToken](repo.DB).Where("user_id = ? AND refresh_token = ?", id, token).First(ctx)
+	refreshToken, err := gorm.G[models.RefreshToken](repo.DB).Preload("User", nil).Where("refresh_token = ?", token).First(ctx)
 	return refreshToken, err
 }
 

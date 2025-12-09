@@ -16,10 +16,10 @@ import (
 //	@description	Retrieves information about your own profile if authenticated.
 //	@tags			users
 //	@produce		json
-//	@success 200 {object} users.GetMeResponse
-//	@failure 401 {object} shared.ErrorResponse "When unauthenticated"
-//	@failure 422 {object} shared.ErrorResponse "When your info had an invalid state on the server"
-//	@failure		500			{object}	shared.ErrorResponse	"The request could not be completed due to server faults"
+//	@success		200	{object}	users.GetMeResponse
+//	@failure		401	{object}	shared.ErrorResponse	"When unauthenticated"
+//	@failure		422	{object}	shared.ErrorResponse	"When your info had an invalid state on the server"
+//	@failure		500	{object}	shared.ErrorResponse	"The request could not be completed due to server faults"
 //	@router			/users/me [GET]
 func (h *UsersHandler) GetMe(g *gin.Context) {
 	claimsAny, ok := g.Get("claims")
