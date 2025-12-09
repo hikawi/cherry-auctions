@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"log"
 	"net/http"
 	"strings"
 
@@ -18,7 +19,11 @@ import (
 const version string = "v1"
 
 func SetupServer(server *gin.Engine, db *gorm.DB) {
-	server.SetTrustedProxies(nil)
+	err := server.SetTrustedProxies(nil)
+	if err != nil {
+		log.Println("warning: can't set trusted proxies", err.Error())
+	}
+
 	server.Use(gin.Recovery())
 	server.Use(cors.New(cors.Config{
 		AllowOrigins:     strings.Split(utils.Getenv("CORS_ORIGINS", "http://localhost:5173"), ","),

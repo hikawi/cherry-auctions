@@ -34,7 +34,7 @@ func (h *AuthHandler) PostLogin(g *gin.Context) {
 	var body LoginRequest
 	err := g.ShouldBindBodyWithJSON(&body)
 	if err != nil {
-		utils.Log(gin.H{"path": g.Request.URL.Path, "error": http.StatusBadRequest, "err": err.Error()})
+		utils.Log(gin.H{"path": g.Request.URL.Path, "status": http.StatusBadRequest, "error": err.Error()})
 		g.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -44,14 +44,14 @@ func (h *AuthHandler) PostLogin(g *gin.Context) {
 	// Check if it's in the DB yet.
 	user, err := userRepo.GetUserByEmail(body.Email)
 	if err != nil {
-		utils.Log(gin.H{"path": g.Request.URL.Path, "error": http.StatusNotFound, "err": "account doesn't exist"})
+		utils.Log(gin.H{"path": g.Request.URL.Path, "status": http.StatusNotFound, "error": "account doesn't exist"})
 		g.AbortWithStatusJSON(http.StatusNotFound, shared.ErrorResponse{Error: "account doesn't exist"})
 		return
 	}
 
 	// Check against oauth type
 	if user.OauthType != "none" || user.Password == nil {
-		utils.Log(gin.H{"path": g.Request.URL.Path, "error": http.StatusMisdirectedRequest, "err": "account uses oauth to authenticate"})
+		utils.Log(gin.H{"path": g.Request.URL.Path, "status": http.StatusMisdirectedRequest, "error": "account uses oauth to authenticate"})
 		g.AbortWithStatusJSON(http.StatusMisdirectedRequest, shared.ErrorResponse{Error: "account uses oauth to authenticate"})
 		return
 	}
@@ -59,22 +59,28 @@ func (h *AuthHandler) PostLogin(g *gin.Context) {
 	// Check the password hash
 	ok, err := services.VerifyPassword(*user.Password, body.Password)
 	if err != nil {
-		utils.Log(gin.H{"path": g.Request.URL.Path, "error": http.StatusInternalServerError, "err": err.Error(), "body": gin.H{"email": body.Email}})
+		utils.Log(gin.H{"path": g.Request.URL.Path, "status": http.StatusInternalServerError, "error": err.Error(), "body": gin.H{"email": body.Email}})
 		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "server can't verify password"})
 		return
 	}
 
 	if !ok {
-		utils.Log(gin.H{"path": g.Request.URL.Path, "error": http.StatusUnauthorized, "err": "wrong password", "body": gin.H{"email": body.Email}})
+		utils.Log(gin.H{"path": g.Request.URL.Path, "status": http.StatusUnauthorized, "error": "wrong password", "body": gin.H{"email": body.Email}})
 		g.AbortWithStatusJSON(http.StatusUnauthorized, shared.ErrorResponse{Error: "wrong password"})
 		return
 	}
 
 	// Generate a JWT key pair.
 	accessToken, err := services.SignJWT(user.ID, user.Email)
+	if err != nil {
+		utils.Log(gin.H{"path": g.Request.URL.Path, "status": http.StatusInternalServerError, "error": err.Error(), "body": gin.H{"email": body.Email}})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "server can't sign jwt"})
+		return
+	}
+
 	refreshToken, err := utils.GenerateSecretKey(64)
 	if err != nil {
-		utils.Log(gin.H{"path": g.Request.URL.Path, "error": http.StatusInternalServerError, "err": err.Error(), "body": gin.H{"email": body.Email}})
+		utils.Log(gin.H{"path": g.Request.URL.Path, "status": http.StatusInternalServerError, "error": err.Error(), "body": gin.H{"email": body.Email}})
 		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "server can't generate jwt key pair"})
 		return
 	}
@@ -84,12 +90,18 @@ func (h *AuthHandler) PostLogin(g *gin.Context) {
 	hashedToken := sha256.Sum256(refreshToken)
 	_, err = tokenRepo.SaveUserToken(user.ID, base64.URLEncoding.EncodeToString(hashedToken[:]))
 	if err != nil {
-		utils.Log(gin.H{"path": g.Request.URL.Path, "error": http.StatusInternalServerError, "err": err.Error(), "body": gin.H{"email": body.Email}})
+		utils.Log(gin.H{"path": g.Request.URL.Path, "status": http.StatusInternalServerError, "error": err.Error(), "body": gin.H{"email": body.Email}})
 		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "server can't hash refresh token"})
 		return
 	}
 
 	cookieSecure, err := strconv.ParseBool(utils.Fatalenv("COOKIE_SECURE"))
+	if err != nil {
+		utils.Log(gin.H{"path": g.Request.URL.Path, "status": http.StatusInternalServerError, "error": "", "body": gin.H{"email": body.Email}})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "server can't generate jwt key pair"})
+		return
+	}
+
 	g.SetCookieData(&http.Cookie{
 		Name:     "RefreshToken",
 		Value:    base64.URLEncoding.EncodeToString(refreshToken),
@@ -119,7 +131,7 @@ func (h *AuthHandler) PostRegister(g *gin.Context) {
 	var body RegisterRequest
 	err := g.ShouldBindBodyWithJSON(&body)
 	if err != nil {
-		utils.Log(gin.H{"path": g.Request.URL.Path, "error": http.StatusBadRequest, "err": err.Error(), "body": body})
+		utils.Log(gin.H{"path": g.Request.URL.Path, "status": http.StatusBadRequest, "error": err.Error(), "body": body})
 		g.AbortWithStatusJSON(http.StatusBadRequest, shared.ErrorResponse{Error: err.Error()})
 		return
 	}
@@ -129,7 +141,7 @@ func (h *AuthHandler) PostRegister(g *gin.Context) {
 	// Check if it's in the DB yet.
 	_, err = userRepo.GetUserByEmail(body.Email)
 	if err == nil {
-		utils.Log(gin.H{"path": g.Request.URL.Path, "error": http.StatusConflict, "err": "account already exists"})
+		utils.Log(gin.H{"path": g.Request.URL.Path, "status": http.StatusConflict, "error": "account already exists"})
 		g.AbortWithStatusJSON(http.StatusConflict, shared.ErrorResponse{Error: "account already exists"})
 		return
 	}
@@ -137,7 +149,7 @@ func (h *AuthHandler) PostRegister(g *gin.Context) {
 	// Check password hashes.
 	hashedPassword, err := services.HashPassword(body.Password)
 	if err != nil {
-		utils.Log(gin.H{"path": g.Request.URL.Path, "error": http.StatusInternalServerError, "err": err.Error()})
+		utils.Log(gin.H{"path": g.Request.URL.Path, "status": http.StatusInternalServerError, "error": err.Error()})
 		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "server could not hash passowrd"})
 		return
 	}
@@ -148,7 +160,13 @@ func (h *AuthHandler) PostRegister(g *gin.Context) {
 		Password:  &hashedPassword,
 		OauthType: "none",
 	}
-	userRepo.SaveUser(&newUser)
+	err = userRepo.SaveUser(&newUser)
+	if err != nil {
+		utils.Log(gin.H{"path": g.Request.URL.Path, "status": http.StatusInternalServerError, "error": err.Error()})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "server could not save new account"})
+		return
+	}
+
 	g.JSON(201, gin.H{"message": "user successfully created"})
 }
 
@@ -165,7 +183,7 @@ func (h *AuthHandler) PostRefresh(g *gin.Context) {
 	// Refresh the access token and rotate the refresh token.
 	cookie, err := g.Cookie("RefreshToken")
 	if err != nil {
-		utils.Log(gin.H{"path": g.Request.URL.Path, "error": http.StatusUnauthorized, "err": err.Error()})
+		utils.Log(gin.H{"path": g.Request.URL.Path, "status": http.StatusUnauthorized, "error": err.Error()})
 		g.AbortWithStatusJSON(http.StatusUnauthorized, shared.ErrorResponse{Error: "refresh token not found"})
 		return
 	}
@@ -174,7 +192,7 @@ func (h *AuthHandler) PostRefresh(g *gin.Context) {
 	tokenRepo := repositories.RefreshTokenRepository{DB: h.DB}
 	decodedCookie, err := base64.URLEncoding.DecodeString(cookie)
 	if err != nil {
-		utils.Log(gin.H{"path": g.Request.URL.Path, "error": http.StatusUnauthorized, "err": err.Error()})
+		utils.Log(gin.H{"path": g.Request.URL.Path, "status": http.StatusUnauthorized, "error": err.Error()})
 		g.AbortWithStatusJSON(http.StatusUnauthorized, shared.ErrorResponse{Error: "invalid refresh token"})
 		return
 	}
@@ -183,7 +201,7 @@ func (h *AuthHandler) PostRefresh(g *gin.Context) {
 	savedToken := base64.URLEncoding.EncodeToString(hashedCookie[:])
 	token, err := tokenRepo.GetRefreshToken(savedToken)
 	if err != nil || token.IsRevoked {
-		utils.Log(gin.H{"path": g.Request.URL.Path, "error": http.StatusUnauthorized, "err": "revoked token or non-existent token"})
+		utils.Log(gin.H{"path": g.Request.URL.Path, "status": http.StatusUnauthorized, "error": "revoked token or non-existent token"})
 		g.AbortWithStatusJSON(http.StatusUnauthorized, shared.ErrorResponse{Error: "invalid refresh token"})
 		return
 	}
@@ -195,13 +213,24 @@ func (h *AuthHandler) PostRefresh(g *gin.Context) {
 	}
 
 	// Invalidate the token.
-	tokenRepo.InvalidateToken(savedToken)
+	_, err = tokenRepo.InvalidateToken(savedToken)
+	if err != nil {
+		utils.Log(gin.H{"path": g.Request.URL.Path, "status": http.StatusInternalServerError, "error": err.Error()})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "unexpected error while rotating token"})
+		return
+	}
 
 	// Generate a new JWT key pair.
 	accessToken, err := services.SignJWT(token.User.ID, token.User.Email)
+	if err != nil {
+		utils.Log(gin.H{"path": g.Request.URL.Path, "status": http.StatusInternalServerError, "error": err.Error()})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "server can't sign jwt"})
+		return
+	}
+
 	refreshToken, err := utils.GenerateSecretKey(64)
 	if err != nil {
-		utils.Log(gin.H{"path": g.Request.URL.Path, "error": http.StatusInternalServerError, "err": err.Error()})
+		utils.Log(gin.H{"path": g.Request.URL.Path, "status": http.StatusInternalServerError, "error": err.Error()})
 		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "server can't generate jwt key pair"})
 		return
 	}
@@ -210,12 +239,18 @@ func (h *AuthHandler) PostRefresh(g *gin.Context) {
 	hashedToken := sha256.Sum256(refreshToken)
 	_, err = tokenRepo.SaveUserToken(token.User.ID, base64.URLEncoding.EncodeToString(hashedToken[:]))
 	if err != nil {
-		utils.Log(gin.H{"path": g.Request.URL.Path, "error": http.StatusInternalServerError, "err": err.Error()})
+		utils.Log(gin.H{"path": g.Request.URL.Path, "status": http.StatusInternalServerError, "error": err.Error()})
 		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "server can't hash refresh token"})
 		return
 	}
 
 	cookieSecure, err := strconv.ParseBool(utils.Fatalenv("COOKIE_SECURE"))
+	if err != nil {
+		utils.Log(gin.H{"path": g.Request.URL.Path, "status": http.StatusInternalServerError, "error": err.Error()})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "server can't send a cookie"})
+		return
+	}
+
 	g.SetCookieData(&http.Cookie{
 		Name:     "RefreshToken",
 		Value:    base64.URLEncoding.EncodeToString(refreshToken),
@@ -243,7 +278,11 @@ func (h *AuthHandler) PostLogout(g *gin.Context) {
 		decodedCookie, err := base64.URLEncoding.DecodeString(cookie)
 		if err == nil {
 			hashedCookie := sha256.Sum256(decodedCookie)
-			tokenRepo.InvalidateToken(base64.URLEncoding.EncodeToString(hashedCookie[:]))
+			_, err = tokenRepo.InvalidateToken(base64.URLEncoding.EncodeToString(hashedCookie[:]))
+
+			if err != nil {
+				utils.Log(gin.H{"error": "can't invalidate refresh token, ignoring..."})
+			}
 		}
 	}
 
