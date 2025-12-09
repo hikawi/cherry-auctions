@@ -1,7 +1,9 @@
 package auth
 
 import (
+	"crypto/sha256"
 	"encoding/base64"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -22,7 +24,7 @@ import (
 //	@accept			json
 //	@produce		json
 //	@param			credentials	body		auth.LoginRequest	true	"Login credentials"
-//	@success		200
+//	@success		200			{object}	auth.LoginResponse
 //	@failure		400			{object}	shared.ErrorResponse
 //	@failure		401			{object}	shared.ErrorResponse
 //	@failure		404			{object}	shared.ErrorResponse
@@ -78,6 +80,16 @@ func (h *AuthHandler) PostLogin(g *gin.Context) {
 		return
 	}
 
+	// Save the refresh token.
+	tokenRepo := repositories.RefreshTokenRepository{DB: h.DB}
+	hashedToken := sha256.Sum256(refreshToken)
+	_, err = tokenRepo.SaveUserToken(user.ID, base64.URLEncoding.EncodeToString(hashedToken[:]))
+	if err != nil {
+		utils.Log(gin.H{"path": g.Request.URL.Path, "error": http.StatusInternalServerError, "err": err.Error(), "body": gin.H{"email": body.Email}})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "server can't hash refresh token"})
+		return
+	}
+
 	cookieSecure, err := strconv.ParseBool(utils.Fatalenv("COOKIE_SECURE"))
 	g.SetCookieData(&http.Cookie{
 		Name:     "RefreshToken",
@@ -88,16 +100,7 @@ func (h *AuthHandler) PostLogin(g *gin.Context) {
 		Secure:   cookieSecure,
 		SameSite: http.SameSiteNoneMode,
 	})
-	g.SetCookieData(&http.Cookie{
-		Name:     "Authorization",
-		Value:    accessToken,
-		Path:     "/",
-		Expires:  time.Now().Add(time.Hour * 1),
-		Domain:   utils.Fatalenv("DOMAIN"),
-		Secure:   cookieSecure,
-		SameSite: http.SameSiteNoneMode,
-	})
-	g.JSON(200, gin.H{})
+	g.JSON(200, LoginResponse{AccessToken: accessToken})
 }
 
 // PostRegister POST /auth/register
@@ -148,4 +151,28 @@ func (h *AuthHandler) PostRegister(g *gin.Context) {
 	}
 	userRepo.SaveUser(&newUser)
 	g.JSON(201, gin.H{"message": "user successfully created"})
+}
+
+// PostLogout POST /auth/logout
+//
+//	@summary		Logouts and invalidates the refresh token if available.
+//	@description	Logouts, and also invalidates the refresh token. This does not revoke access tokens.
+//	@tags			authentication
+//	@success 204 {object} shared.MessageResponse "Any request, regardless of authentication status"
+//	@router			/auth/logout [POST]
+func (h *AuthHandler) PostLogout(g *gin.Context) {
+	// Fetch the refresh token cookie.
+	cookie, err := g.Cookie("RefreshToken")
+	if err == nil {
+		tokenRepo := repositories.RefreshTokenRepository{DB: h.DB}
+		decodedCookie, err := base64.URLEncoding.DecodeString(cookie)
+		if err == nil {
+			hashedCookie := sha256.Sum256(decodedCookie)
+			tokenRepo.InvalidateToken(base64.URLEncoding.EncodeToString(hashedCookie[:]))
+		}
+	}
+
+	cookieSecure, _ := strconv.ParseBool(utils.Fatalenv("COOKIE_SECURE"))
+	g.SetCookie("RefreshToken", "", -1, "/", utils.Fatalenv("DOMAIN"), cookieSecure, true)
+	g.JSON(204, shared.MessageResponse{Message: "logged out"})
 }

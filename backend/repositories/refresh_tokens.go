@@ -29,11 +29,13 @@ func (repo *RefreshTokenRepository) SaveUserToken(id uint, token string) (models
 
 func (repo *RefreshTokenRepository) GetUserToken(id uint, token string) (models.RefreshToken, error) {
 	ctx := context.Background()
-	refreshToken, err := gorm.G[models.RefreshToken](repo.DB).Where("user_id = ? AND token = ?", id, token).First(ctx)
+	refreshToken, err := gorm.G[models.RefreshToken](repo.DB).Where("user_id = ? AND refresh_token = ?", id, token).First(ctx)
 	return refreshToken, err
 }
 
+// InvalidateToken invalidates a token by marking it as revoked.
+// This function does not hash the token before checking.
 func (repo *RefreshTokenRepository) InvalidateToken(token string) (int, error) {
 	ctx := context.Background()
-	return gorm.G[models.RefreshToken](repo.DB).Where("token = ?", token).Update(ctx, "is_revoked", true)
+	return gorm.G[models.RefreshToken](repo.DB).Where("refresh_token = ?", token).Update(ctx, "is_revoked", true)
 }

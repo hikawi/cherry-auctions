@@ -14,4 +14,5 @@ func (h *AuthHandler) SetupRouter(group *gin.RouterGroup) {
 
 	router.POST("/login", h.PostLogin)
 	router.POST("/register", h.PostRegister)
+	router.POST("/logout", h.PostLogout)
 }
