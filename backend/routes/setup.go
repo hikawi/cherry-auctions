@@ -11,6 +11,7 @@ import (
 	"gorm.io/gorm"
 	_ "luny.dev/cherryauctions/docs"
 	"luny.dev/cherryauctions/routes/auth"
+	"luny.dev/cherryauctions/routes/users"
 	"luny.dev/cherryauctions/utils"
 )
 
@@ -33,6 +34,9 @@ func SetupRoutes(server *gin.Engine, db *gorm.DB) {
 
 	authHandler := auth.AuthHandler{DB: db}
 	authHandler.SetupRouter(versionedGroup)
+
+	usersHandler := users.UsersHandler{DB: db}
+	usersHandler.SetupRouter(versionedGroup)
 
 	versionedGroup.GET("/health", GetHealth)
 

@@ -12,6 +12,12 @@ type UserRepository struct {
 	DB *gorm.DB
 }
 
+// GetUserByID retrieves a single user using an ID.
+func (repo *UserRepository) GetUserByID(id uint) (models.User, error) {
+	ctx := context.Background()
+	return gorm.G[models.User](repo.DB).Where("id = ?", id).First(ctx)
+}
+
 // GetUserByEmail returns a user with the email, if it found.
 // An error is returned if the user can not be found.
 // Email is insensitive.
