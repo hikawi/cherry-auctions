@@ -1,3 +1,8 @@
+---
+title: ES00 - Tech Stack
+parent: Product and Engineering Specifications
+---
+
 # Engineering Spec 00: Project Stack
 
 ## Changelog

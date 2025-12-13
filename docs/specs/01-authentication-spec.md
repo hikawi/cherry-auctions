@@ -1,3 +1,8 @@
+---
+title: ES01 - Authentication and Authorization
+parent: Product and Engineering Specifications
+---
+
 # Engineering Spec 01: Authentication and Authorization Flow
 
 ## Changelog

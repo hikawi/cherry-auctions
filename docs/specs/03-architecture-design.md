@@ -1,3 +1,8 @@
+---
+title: ES03 - Architecture Design
+parent: Product and Engineering Specifications
+---
+
 # Engineering Spec 03: Architecture Design
 
 ## Summary

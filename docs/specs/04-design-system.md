@@ -1,3 +1,8 @@
+---
+title: ES04 - Design System
+parent: Product and Engineering Specifications
+---
+
 # Engineering Specification 04: Design System
 
 ## Summary

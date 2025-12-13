@@ -1,3 +1,8 @@
+---
+title: Sprint Planning
+parent: Other Specifications
+---
+
 # Sprint Planning
 
 ## Summary

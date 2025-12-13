@@ -1,3 +1,8 @@
+---
+title: Database Design
+parent: Product and Engineering Specifications
+---
+
 # Engineering Spec 02: Database Design
 
 ## Summary
