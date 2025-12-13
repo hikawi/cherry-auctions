@@ -1,5 +1,5 @@
 ---
-title: Legacy Engineering Spec 01: Authentication and Authentication Flow
+title: ES01-L - Authentication and Authentication Flow
 parent: Legacy Specifications
 ---
 

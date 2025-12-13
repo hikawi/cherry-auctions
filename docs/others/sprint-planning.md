@@ -18,6 +18,26 @@ endeavour.
 Tasks are split here, but they only contain the brief description of the task, not
 the details. For details, look into the issue that was raised for GitHub projects.
 
+## Iteration 2 (Dec 8, 2025 - Dec 21, 2025)
+
+Main Goals:
+
+- [ ] Finish full login flow (both backend and frontend).
+- [ ] Finish login with Google Oauth flow (both backend and frontend).
+- [ ] Finish forgot password flow with OTP code sent to email address.
+- [ ] Finish full register flow (both backend and frontend, with reCaptcha).
+- [ ] Setup S3 integration for product images.
+- [ ] Setup a seeding script for seeding in products.
+- [ ] Finish CRUD on category (backend).
+- [ ] Finish admin management panel for CRUD on category (frontend).
+
+Out of Scope (optional if every main goal has been achieved):
+
+- [ ] Setup product database with full-text search or fuzzy-text search.
+- [ ] Setup a service that queries the product database with full-text search.
+- [ ] Setup a separate mailing system.
+- [ ] Setup dumb component for viewing a simple product.
+
 ## Iteration 1 (Nov 24, 2025 - Dec 7, 2025)
 
 Main Goals:
