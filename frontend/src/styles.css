@@ -2,7 +2,7 @@
 
 @font-face {
   font-family: "Chiron Go Round TC";
-  src: url("./assets/fonts/ChironGoRoundTCVF.otf") format("opentype");
+  src: url("./assets/fonts/ChironGoRoundTCVF.woff2") format("woff2");
   font-weight: 100 900; /* variable font range */
   font-stretch: 75% 125%; /* only if supported */
   font-style: normal;
