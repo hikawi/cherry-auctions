@@ -6,6 +6,12 @@
     "email_placeholder": "john.doe{'@'}example.com",
     "action": "Login",
     "forgot_password": "Reset Password",
-    "loading": "Logging in..."
+    "loading": "Logging in...",
+    "account_does_not_exist": "That account does not exist. Did you type the email wrong?",
+    "invalid_request": "Email address is invalid, or password is too short.",
+    "wrong_password": "Incorrect password.",
+    "wrong_method": "This account might not have been registered this way. Try other login options.",
+    "internal_error": "This error is not your fault! The server misbehaved.",
+    "internet_error": "Your Internet connection might have gone out"
   }
 }

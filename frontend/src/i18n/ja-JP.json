@@ -3,9 +3,15 @@
     "title": "ログイン",
     "email": "メールアドレス",
     "password": "パスワード",
-    "email_placeholder": "tanaka@example.jp",
+    "email_placeholder": "tanaka{'@'}example.jp",
     "action": "ログイン",
-    "forgot_password": "パスワードをお忘れ場合",
-    "loading": "ログイン中"
+    "forgot_password": "パスワードをお忘れですか？",
+    "loading": "ログインしています…",
+    "account_does_not_exist": "このメールアドレスのアカウントは見つかりませんでした。入力内容をご確認ください。",
+    "invalid_request": "メールアドレスが無効か、パスワードが短すぎる可能性があります。",
+    "wrong_password": "パスワードが正しくありません。",
+    "wrong_method": "別の方法で登録された可能性があります。ほかのログイン方法をお試しください。",
+    "internal_error": "サーバーエラーが発生しました。しばらくしてから再度お試しください。",
+    "internet_error": "インターネット接続に問題がある可能性があります。"
   }
 }

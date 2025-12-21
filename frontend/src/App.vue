@@ -8,7 +8,7 @@ const { locale } = useI18n({ useScope: "global" });
 <template>
   <LanguageSelect />
   <main
-    class="bg-claret-600 font-fredoka flex h-fit min-h-screen w-full items-stretch justify-stretch p-6"
+    class="bg-claret-600 font-chiron flex h-fit min-h-screen w-full items-stretch justify-stretch p-6"
     :class="{ 'font-mplus': locale == 'ja-JP' }"
   >
     <router-view></router-view>

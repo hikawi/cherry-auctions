@@ -2,14 +2,19 @@
 import { onMounted, onUnmounted, ref } from "vue";
 import { RotateCcwKey } from "lucide-vue-next";
 import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
 
 const { t } = useI18n({ useScope: "global" });
 
 const email = ref("");
 const password = ref("");
 const loading = ref(false);
+const error = ref("");
+
 const hoveringForgotPassword = ref(false);
 const smallWindow = ref(false);
+
+const router = useRouter();
 
 function setSmallWindow() {
   smallWindow.value = window.innerWidth < 640;
@@ -25,12 +30,41 @@ async function forgotPassword() {}
 
 async function login() {
   loading.value = true;
+  error.value = "";
 
   try {
-    // TODO:
-    // Logic
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-  } catch {}
+    const res = await fetch(`${import.meta.env.VITE_API}/v1/auth/login`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ email: email.value, password: password.value }),
+    });
+
+    switch (res.status) {
+      case 404:
+        error.value = t("login.account_does_not_exist");
+        break;
+      case 400:
+        error.value = t("login.invalid_request");
+        break;
+      case 401:
+        error.value = t("login.wrong_password");
+        break;
+      case 421:
+        error.value = t("login.wrong_method");
+        break;
+      case 500:
+        error.value = t("login.internal_error");
+        break;
+      case 200:
+        router.push({ path: "/" });
+        break;
+    }
+  } catch {
+    error.value = t("login.internet_error");
+  }
 
   loading.value = false;
 }
@@ -64,6 +98,13 @@ async function login() {
         />
       </label>
     </div>
+
+    <p
+      v-if="error"
+      class="bg-claret-100 border-claret-500 text-claret-700 w-full rounded-xl border-2 px-4 py-2"
+    >
+      {{ error }}
+    </p>
 
     <hr class="my-2 h-px w-full rounded-full border border-zinc-300" />
 
