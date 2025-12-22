@@ -124,6 +124,7 @@ func (h *AuthHandler) PostLogin(g *gin.Context) {
 //	@param			credentials	body		auth.RegisterRequest	true	"Register credentials"
 //	@success		201			{object}	shared.MessageResponse	"User was successfully registered"
 //	@failure		400			{object}	shared.ErrorResponse	"Request body is invalid"
+//	@failure		403			{object}	shared.ErrorResponse	"Captcha failed"
 //	@failure		409			{object}	shared.ErrorResponse	"An account with that email already exists"
 //	@failure		500			{object}	shared.ErrorResponse	"The request could not be completed due to server faults"
 //	@router			/auth/register [POST]
@@ -133,6 +134,10 @@ func (h *AuthHandler) PostRegister(g *gin.Context) {
 	if err != nil {
 		utils.Log(gin.H{"path": g.Request.URL.Path, "status": http.StatusBadRequest, "error": err.Error(), "body": body})
 		g.AbortWithStatusJSON(http.StatusBadRequest, shared.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	if !services.CheckGrecaptcha(body.CaptchaToken, g) {
 		return
 	}
 
@@ -279,7 +284,6 @@ func (h *AuthHandler) PostLogout(g *gin.Context) {
 		if err == nil {
 			hashedCookie := sha256.Sum256(decodedCookie)
 			_, err = tokenRepo.InvalidateToken(base64.URLEncoding.EncodeToString(hashedCookie[:]))
-
 			if err != nil {
 				utils.Log(gin.H{"error": "can't invalidate refresh token, ignoring..."})
 			}

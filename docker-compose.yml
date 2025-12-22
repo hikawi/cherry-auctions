@@ -69,6 +69,7 @@ services:
       JWT_AUDIENCE: ${JWT_AUDIENCE}
       JWT_EXPIRY: ${JWT_EXPIRY}
       DOMAIN: ${DOMAIN}
+      RECAPTCHA_SECRET: ${RECAPTCHA_SECRET}
     ports:
       - 3000:80
     volumes:
