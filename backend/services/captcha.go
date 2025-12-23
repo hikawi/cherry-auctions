@@ -36,7 +36,7 @@ func CheckGrecaptcha(token string, g *gin.Context) bool {
 		g.JSON(http.StatusInternalServerError, gin.H{"error": "couldn't verify captcha"})
 		return false
 	}
-	defer resp.Body.Close()
+	defer utils.CloseResources(resp.Body)
 
 	var result RecaptchaResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {

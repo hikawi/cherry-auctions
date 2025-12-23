@@ -33,7 +33,7 @@ async function register() {
 
   if (password.value != confirmPassword.value) {
     loading.value = false;
-    error.value = t("register.passwords_dont_match");
+    error.value = "register.passwords_dont_match";
     return;
   }
 
@@ -54,20 +54,20 @@ async function register() {
 
     switch (res.status) {
       case 400:
-        error.value = t("register.invalid_request");
+        error.value = "register.invalid_request";
         break;
       case 409:
-        error.value = t("register.conflict");
+        error.value = "register.conflict";
         break;
       case 500:
-        error.value = t("register.internal_error");
+        error.value = "register.internal_error";
         break;
       case 201:
         router.push({ path: "/login" });
         break;
     }
   } catch {
-    error.value = t("register.internet_error");
+    error.value = "register.internet_error";
   }
 
   loading.value = false;
@@ -130,7 +130,7 @@ async function register() {
       v-if="error"
       class="bg-claret-100 border-claret-500 text-claret-700 w-full rounded-xl border-2 px-4 py-2"
     >
-      {{ error }}
+      {{ t(error) }}
     </p>
 
     <hr class="my-2 h-px w-full rounded-full border border-zinc-300" />

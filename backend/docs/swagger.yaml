@@ -21,6 +21,8 @@ definitions:
     type: object
   auth.RegisterRequest:
     properties:
+      captcha_token:
+        type: string
       email:
         type: string
       name:
@@ -30,6 +32,7 @@ definitions:
         minLength: 8
         type: string
     required:
+    - captcha_token
     - email
     - name
     - password
@@ -167,6 +170,10 @@ paths:
             $ref: '#/definitions/shared.MessageResponse'
         "400":
           description: Request body is invalid
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "403":
+          description: Captcha failed
           schema:
             $ref: '#/definitions/shared.ErrorResponse'
         "409":

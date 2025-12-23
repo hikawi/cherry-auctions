@@ -175,6 +175,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/shared.ErrorResponse"
                         }
                     },
+                    "403": {
+                        "description": "Captcha failed",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
                     "409": {
                         "description": "An account with that email already exists",
                         "schema": {
@@ -258,11 +264,15 @@ const docTemplate = `{
         "auth.RegisterRequest": {
             "type": "object",
             "required": [
+                "captcha_token",
                 "email",
                 "name",
                 "password"
             ],
             "properties": {
+                "captcha_token": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },

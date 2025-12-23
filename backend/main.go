@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"luny.dev/cherryauctions/database"
 	"luny.dev/cherryauctions/routes"
+	"luny.dev/cherryauctions/services"
 )
 
 // @title						Cherry Auctions API
@@ -25,12 +26,14 @@ import (
 // @description				Classic Bearer token
 func main() {
 	db := database.SetupDatabase()
+	s3Client := services.NewS3Service()
+
 	database.MigrateModels(db)
 
 	server := gin.New()
 
 	routes.SetupServer(server, db)
-	routes.SetupRoutes(server, db)
+	routes.SetupRoutes(server, db, s3Client)
 
 	err := server.Run(":80")
 	if err != nil {

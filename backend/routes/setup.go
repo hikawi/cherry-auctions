@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -12,6 +13,7 @@ import (
 	"gorm.io/gorm"
 	_ "luny.dev/cherryauctions/docs"
 	"luny.dev/cherryauctions/routes/auth"
+	"luny.dev/cherryauctions/routes/test"
 	"luny.dev/cherryauctions/routes/users"
 	"luny.dev/cherryauctions/utils"
 )
@@ -34,7 +36,7 @@ func SetupServer(server *gin.Engine, db *gorm.DB) {
 	}))
 }
 
-func SetupRoutes(server *gin.Engine, db *gorm.DB) {
+func SetupRoutes(server *gin.Engine, db *gorm.DB, s3Client *s3.Client) {
 	versionedGroup := server.Group(version)
 
 	authHandler := auth.AuthHandler{DB: db}
@@ -42,6 +44,9 @@ func SetupRoutes(server *gin.Engine, db *gorm.DB) {
 
 	usersHandler := users.UsersHandler{DB: db}
 	usersHandler.SetupRouter(versionedGroup)
+
+	testHandler := test.TestHandler{S3Client: s3Client}
+	testHandler.SetupRouter(versionedGroup)
 
 	versionedGroup.GET("/health", GetHealth)
 

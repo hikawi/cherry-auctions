@@ -12,7 +12,7 @@ import (
 
 func TestHealth(t *testing.T) {
 	server := gin.Default()
-	routes.SetupRoutes(server, nil)
+	routes.SetupRoutes(server, nil, nil)
 	w := httptest.NewRecorder()
 
 	req, _ := http.NewRequest("GET", "/v1/health", nil)
