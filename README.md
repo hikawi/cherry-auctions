@@ -37,12 +37,26 @@ Relevant Links:
 - Backend at [api.cherry-auctions.luny.dev](https://api.cherry-auctions.luny.dev)
 - Project Specifications at [docs.cherry-auctions.luny.dev](https://docs.cherry-auctions.luny.dev)
 
+## Cherry Auctions – Services Overview
+
+| Service        | Image                    | Ports                                | Description / Usage                                                                                                            |
+| -------------- | ------------------------ | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Mailpit**    | `axllent/mailpit:latest` | `1025` (SMTP)<br>`8025` (Web UI)     | Local SMTP server for development. Captures outgoing emails so they can be viewed in a browser without sending real emails.    |
+| **RustFS**     | `rustfs/rustfs:latest`   | `9000` (S3 API)<br>`9001` (Admin UI) | S3-compatible object storage used for file uploads such as images and attachments. Acts as a local replacement for AWS S3.     |
+| **PostgreSQL** | `postgres:18-alpine`     | `5432` (Database)                    | Primary relational database storing application data such as users, auctions, bids, and transactions.                          |
+| **Frontend**   | `node:24-alpine`         | `5173` (Dev Server)                  | Frontend development server using PNPM with hot reloading (e.g. Vite). Serves the web UI during development.                   |
+| **Backend**    | `cosmtrek/air`           | `3000` (Host) → `80` (Container)     | Backend API server with live reload. Handles authentication, business logic, database access, file uploads, and email sending. |
+
 ## Getting Started
 
 This monorepo is orchestrated by Docker Compose. Although you can `cd` into each
 directory and spin up the service natively yourself (by using Go compiler or
 NodeJS for example), it's recommended that you setup Docker & Compose as it should
 setup everything for you.
+
+Running Docker Compose, you may see messages like `environment variable not set,
+defaulting to blank string`. This means you should populate an `.env` file for the
+current directory.
 
 ```bash
 docker compose up --build
@@ -59,6 +73,7 @@ Otherwise, you can install the following for this project:
   port 5432.
 - S3-compliant database (I expected to use RustFS, migrating away from MinIO),
   but you can use any other like Ceph or Bunny Storage.
+- SMTP server.
 - Air by Cosmtrek for hot-reloading Go modules.
 
 **Note**: Some stuff won't be installed by Docker, as it's unnecessary to do so.

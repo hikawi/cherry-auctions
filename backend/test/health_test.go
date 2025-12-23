@@ -12,7 +12,11 @@ import (
 
 func TestHealth(t *testing.T) {
 	server := gin.Default()
-	routes.SetupRoutes(server, nil, nil)
+	routes.SetupRoutes(server, routes.ServerDependency{
+		DB:         nil,
+		S3Client:   nil,
+		MailDialer: nil,
+	})
 	w := httptest.NewRecorder()
 
 	req, _ := http.NewRequest("GET", "/v1/health", nil)

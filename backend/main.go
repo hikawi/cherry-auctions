@@ -27,13 +27,19 @@ import (
 func main() {
 	db := database.SetupDatabase()
 	s3Client := services.NewS3Service()
+	mailDialer := services.NewMailerService()
 
 	database.MigrateModels(db)
 
 	server := gin.New()
 
 	routes.SetupServer(server, db)
-	routes.SetupRoutes(server, db, s3Client)
+	routes.SetupRoutes(server, routes.ServerDependency{
+		Version:    "v1",
+		DB:         db,
+		S3Client:   s3Client,
+		MailDialer: mailDialer,
+	})
 
 	err := server.Run(":80")
 	if err != nil {

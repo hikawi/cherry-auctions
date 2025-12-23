@@ -18,6 +18,10 @@ endeavour.
 Tasks are split here, but they only contain the brief description of the task, not
 the details. For details, look into the issue that was raised for GitHub projects.
 
+## Iteration 3 (Dec 22, 2025 - Jan 4, 2026)
+
+Sprint can't start yet due to previous sprint not finishing.
+
 ## Iteration 2 (Dec 8, 2025 - Dec 21, 2025)
 
 Main Goals:
@@ -26,7 +30,8 @@ Main Goals:
 - [ ] Finish login with Google Oauth flow (both backend and frontend).
 - [ ] Finish forgot password flow with OTP code sent to email address.
 - [x] Finish full register flow (both backend and frontend, with reCaptcha).
-- [ ] Setup S3 integration for product images.
+- [x] Setup a mailing service.
+- [x] Setup S3 integration for product images.
 - [ ] Setup a seeding script for seeding in products.
 - [ ] Finish CRUD on category (backend).
 - [ ] Finish admin management panel for CRUD on category (frontend).

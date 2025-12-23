@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"gopkg.in/gomail.v2"
 	"gorm.io/gorm"
 	_ "luny.dev/cherryauctions/docs"
 	"luny.dev/cherryauctions/routes/auth"
@@ -18,7 +19,12 @@ import (
 	"luny.dev/cherryauctions/utils"
 )
 
-const version string = "v1"
+type ServerDependency struct {
+	Version    string
+	DB         *gorm.DB
+	S3Client   *s3.Client
+	MailDialer *gomail.Dialer
+}
 
 func SetupServer(server *gin.Engine, db *gorm.DB) {
 	err := server.SetTrustedProxies(nil)
@@ -36,16 +42,16 @@ func SetupServer(server *gin.Engine, db *gorm.DB) {
 	}))
 }
 
-func SetupRoutes(server *gin.Engine, db *gorm.DB, s3Client *s3.Client) {
-	versionedGroup := server.Group(version)
+func SetupRoutes(server *gin.Engine, deps ServerDependency) {
+	versionedGroup := server.Group(deps.Version)
 
-	authHandler := auth.AuthHandler{DB: db}
+	authHandler := auth.AuthHandler{DB: deps.DB}
 	authHandler.SetupRouter(versionedGroup)
 
-	usersHandler := users.UsersHandler{DB: db}
+	usersHandler := users.UsersHandler{DB: deps.DB}
 	usersHandler.SetupRouter(versionedGroup)
 
-	testHandler := test.TestHandler{S3Client: s3Client}
+	testHandler := test.TestHandler{S3Client: deps.S3Client, MailDialer: deps.MailDialer}
 	testHandler.SetupRouter(versionedGroup)
 
 	versionedGroup.GET("/health", GetHealth)

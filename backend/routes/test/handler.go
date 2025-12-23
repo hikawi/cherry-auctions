@@ -1,26 +1,38 @@
 package test
 
 import (
-	"context"
+	"fmt"
+	"net/http"
 
-	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/gin-gonic/gin"
+	"gopkg.in/gomail.v2"
 	"luny.dev/cherryauctions/utils"
 )
 
-func (h *TestHandler) GetTest(g *gin.Context) {
-	ctx := context.Background()
-	res, err := h.S3Client.ListBuckets(ctx, &s3.ListBucketsInput{})
+func (h *TestHandler) PostTest(g *gin.Context) {
+	var body struct {
+		Email string `json:"email" binding:"required,email"`
+	}
+	err := g.ShouldBindBodyWithJSON(&body)
 	if err != nil {
-		utils.Log(gin.H{"error": err})
-		g.AbortWithStatusJSON(500, gin.H{"error": "internal server error"})
+		g.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid email"})
+		utils.Log(gin.H{"message": err.Error()})
 		return
 	}
 
-	names := make([]string, 0)
-	for _, bucket := range res.Buckets {
-		names = append(names, *bucket.Name)
+	msg := gomail.NewMessage()
+	msg.SetHeaders(map[string][]string{
+		"From": {fmt.Sprintf("CherryAuctions NoReply <%s>", utils.Fatalenv("SMTP_USER"))},
+		"To":   {body.Email},
+	})
+	msg.SetBody("text/html", "<p>Hello there, <strong>mister handsome</strong></p>")
+	err = h.MailDialer.DialAndSend(msg)
+
+	if err != nil {
+		g.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "couldn't send email"})
+		utils.Log(gin.H{"message": err.Error()})
+		return
 	}
 
-	g.JSON(200, names)
+	g.JSON(http.StatusOK, gin.H{"message": "successfully sent email"})
 }
