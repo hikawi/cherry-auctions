@@ -8,8 +8,40 @@ networks:
 volumes:
   postgres-data:
     name: cherry-auctions-postgres-data
+  rustfsdata:
+    name: cherry-auctions-rustfs
 
 services:
+  rustfs:
+    image: rustfs/rustfs:latest
+    container_name: cherry-auctions-rustfs
+    hostname: cherry-auctions-rustfs
+    restart: unless-stopped
+    networks:
+      - default
+    ports:
+      - 127.0.0.1:9000:9000
+      - 127.0.0.1:9001:9001
+    volumes:
+      - rustfsdata:/data
+    environment:
+      RUSTFS_ADDRESS: :9000
+      RUSTFS_ACCESS_KEY: ${AWS_ACCESS_KEY_ID}
+      RUSTFS_SECRET_KEY: ${AWS_SECRET_ACCESS_KEY}
+      RUSTFS_CONSOLE_ENABLE: true
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "sh",
+          "-c",
+          "curl -f http://localhost:9000/health && curl -f http://localhost:9001/rustfs/console/health",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
   postgres:
     image: postgres:18-alpine
     container_name: cherry-auctions-postgres
@@ -51,6 +83,9 @@ services:
         corepack enable pnpm
         pnpm i --frozen-lockfile
         pnpm dev
+    depends_on:
+      rustfs:
+        condition: service_healthy
 
   backend:
     image: cosmtrek/air
@@ -75,6 +110,7 @@ services:
       AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN}
       AWS_S3_BASE: ${AWS_S3_BASE}
       AWS_S3_USE_PATH_STYLE: ${AWS_S3_USE_PATH_STYLE}
+      AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
     ports:
       - 3000:80
     volumes:
@@ -82,4 +118,6 @@ services:
       - /app/tmp
     depends_on:
       postgres:
+        condition: service_healthy
+      rustfs:
         condition: service_healthy
