@@ -22,10 +22,10 @@ the details. For details, look into the issue that was raised for GitHub project
 
 Main Goals:
 
-- [ ] Finish full login flow (both backend and frontend).
+- [x] Finish full login flow (both backend and frontend).
 - [ ] Finish login with Google Oauth flow (both backend and frontend).
 - [ ] Finish forgot password flow with OTP code sent to email address.
-- [ ] Finish full register flow (both backend and frontend, with reCaptcha).
+- [x] Finish full register flow (both backend and frontend, with reCaptcha).
 - [ ] Setup S3 integration for product images.
 - [ ] Setup a seeding script for seeding in products.
 - [ ] Finish CRUD on category (backend).
