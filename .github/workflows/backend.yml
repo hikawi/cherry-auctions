@@ -47,6 +47,17 @@ jobs:
         env:
           MP_SMTP_AUTH_ACCEPT_ANY: "false"
           MP_SMTP_AUTH_USERS: "ciuser:cipass"
+      rustfs:
+        image: rustfs/rustfs:latest
+        ports:
+          - 9000:9000
+        volumes:
+          - rustfsdata:/data
+        env:
+          RUSTFS_ADDRESS: :9000
+          RUSTFS_ACCESS_KEY: ciuser
+          RUSTFS_SECRET_KEY: cipass
+          RUSTFS_CONSOLE_ENABLE: false
     name: Test
     needs: ["lint"]
     steps:
@@ -67,6 +78,12 @@ jobs:
           SMTP_PORT: 1025
           SMTP_USER: ciuser
           SMTP_PASSWORD: cipass
+          AWS_ACCESS_KEY_ID: ciuser
+          AWS_SECRET_ACCESS_KEY: cipass
+          AWS_S3_BASE: http://localhost:9000
+          AWS_S3_USE_PATH_STYLE: true
+          AWS_BUCKET_NAME: cherry-auctions
+          GIN_MODE: release
 
   build:
     runs-on: ubuntu-latest
