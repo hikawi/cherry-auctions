@@ -12,7 +12,7 @@ import (
 
 func TestSwaggerRedirect(t *testing.T) {
 	server := gin.Default()
-	routes.SetupRoutes(server, nil)
+	routes.SetupRoutes(server, nil, nil)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/swagger", nil)
