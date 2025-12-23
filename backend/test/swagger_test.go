@@ -13,6 +13,7 @@ import (
 func TestSwaggerRedirect(t *testing.T) {
 	server := gin.Default()
 	routes.SetupRoutes(server, routes.ServerDependency{
+		Version:    "v1",
 		DB:         nil,
 		S3Client:   nil,
 		MailDialer: nil,
