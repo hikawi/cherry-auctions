@@ -1,7 +1,21 @@
+// Package test provides some endpoints meant for testing only, and will not be available in production.
 package test
 
-import "github.com/aws/aws-sdk-go-v2/service/s3"
+import (
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/gin-gonic/gin"
+)
 
 type TestHandler struct {
-	S3 *s3.Client
+	S3Client *s3.Client
+}
+
+func (h *TestHandler) SetupRouter(g *gin.RouterGroup) {
+	if gin.Mode() == gin.ReleaseMode {
+		return
+	}
+
+	r := g.Group("/test")
+
+	r.GET("", h.GetTest)
 }

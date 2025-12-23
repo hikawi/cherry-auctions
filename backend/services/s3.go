@@ -17,7 +17,7 @@ func NewS3Service() *s3.Client {
 	//
 	// This part will fail if those can't be loaded.
 	ctx := context.Background()
-	cfg, err := config.LoadDefaultConfig(ctx)
+	cfg, err := config.LoadDefaultConfig(ctx, config.WithRegion("us-east-1"))
 	if err != nil {
 		log.Fatal(err)
 	}
