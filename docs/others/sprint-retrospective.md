@@ -13,6 +13,19 @@ sprint.
 
 Retrospective should be on each sprint's second week's Sunday.
 
+## Iteration 2 (Dec 8, 2025 - Dec 21, 2025)
+
+What was finished:
+
+- [x] Finish full login flow (both backend and frontend).
+- [x] Finish full register flow (both backend and frontend, with reCaptcha).
+- [x] Setup a mailing service.
+- [x] Setup S3 integration for product images.
+
+Others:
+
+1. Setup S3 and Mailing testing on CI/CD.
+
 ## Iteration 1 (Nov 24, 2025 - Dec 7, 2025)
 
 What was finished (check list against previous iteration planning):

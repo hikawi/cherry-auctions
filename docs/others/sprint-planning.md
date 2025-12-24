@@ -20,7 +20,24 @@ the details. For details, look into the issue that was raised for GitHub project
 
 ## Iteration 3 (Dec 22, 2025 - Jan 4, 2026)
 
-Sprint can't start yet due to previous sprint not finishing.
+Main Goals:
+
+- [ ] Finish login with Google Oauth flow (both backend and frontend).
+- [ ] Finish forgot password flow with OTP code sent to email address.
+- [ ] Setup a seeding script for seeding in products.
+- [ ] Finish CRUD on category (backend).
+- [ ] Finish admin management panel for CRUD on category (frontend).
+- [ ] Setup product database with full-text search or fuzzy-text search.
+- [ ] Setup a service that queries the product database with full-text search.
+- [ ] Setup dumb component for viewing a simple product.
+- [ ] Setup a page to view authentication status.
+- [ ] Finish a home page to signify authentication status.
+
+Optional Goals:
+
+- [ ] Setup a catalog that displays items and bids.
+- [ ] Profile Editing page & Request for Approval page.
+- [ ] Stripe Integration.
 
 ## Iteration 2 (Dec 8, 2025 - Dec 21, 2025)
 
