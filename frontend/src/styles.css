@@ -1,14 +1,5 @@
 @import "tailwindcss";
 
-@font-face {
-  font-family: "Chiron Go Round TC";
-  src: url("./assets/fonts/ChironGoRoundTCVF.woff2") format("woff2");
-  font-weight: 100 900; /* variable font range */
-  font-stretch: 75% 125%; /* only if supported */
-  font-style: normal;
-  font-display: swap;
-}
-
 @theme {
   --color-claret-50: oklch(0.967 0.015 7.61);
   --color-claret-100: oklch(0.927 0.035 9);
@@ -58,8 +49,5 @@
   --color-seashell-900: oklch(0.226 0.03 76.38);
   --color-seashell-950: oklch(0.179 0.023 76.86);
 
-  --font-chiron: "Chiron Go Round TC", "sans-serif";
-  --font-playwrite: "Playwrite US Trad", "serif";
-  --font-hachi-maru: "Hachi Maru Pop", "sans-serif";
-  --font-mplus: "M PLUS Rounded 1c", "sans-serif";
+  --font-chiron: "Chiron GoRound TC", "sans-serif";
 }
