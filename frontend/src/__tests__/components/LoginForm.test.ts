@@ -5,6 +5,8 @@ import { createI18n } from "vue-i18n";
 
 import enUS from "../../i18n/en-US.json";
 import jaJP from "../../i18n/ja-JP.json";
+import { createPinia } from "pinia";
+import { createRouter, createWebHistory } from "vue-router";
 
 describe("LoginForm", () => {
   type I18nSchema = typeof enUS;
@@ -20,7 +22,18 @@ describe("LoginForm", () => {
   });
 
   test("mounts correctly", async () => {
-    const comp = mount(LoginForm, { global: { plugins: [i18n] } });
+    const comp = mount(LoginForm, {
+      global: {
+        plugins: [
+          i18n,
+          createPinia(),
+          createRouter({
+            history: createWebHistory(),
+            routes: [{ path: "/", component: LoginForm }],
+          }),
+        ],
+      },
+    });
     expect(comp.text()).toContain("Login");
   });
 });
