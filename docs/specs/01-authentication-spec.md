@@ -1,6 +1,7 @@
 ---
 title: ES01 - Authentication and Authorization
 parent: Product and Engineering Specifications
+last_modified_date: 2025-12-24
 ---
 
 # Engineering Spec 01: Authentication and Authorization Flow
@@ -13,6 +14,7 @@ Changes in v2:
 
 - Remapped PKCE authentication into a simpler implementation of JWT key pair to
   keep it simple.
+- Added some details on where the JWT key pair shall be placed.
 
 ## Summary
 
@@ -44,6 +46,15 @@ Overview:
 - Error codes should be returned, with an optional error description, but don't
   prioritize error description as it should integrate with I18n.
 
+### Authentication
+
+Authentication is carried out by checking the `Authorization` header in requests
+for Bearer-type tokens. The `access_token` retrieved from registration and login
+endpoints must be used here, `refresh_token` only serves as a way to rotate and
+gain a new access token.
+
+The `RefreshToken` lives as a HttpOnly cookie, with a month-long expire duration.
+
 ### Registration
 
 Each user is registered with a unique email address, with a name that is optional,
@@ -52,8 +63,7 @@ from Google or inputted directly).
 
 - Endpoint `/v1/auth/register`.
 - Accepts `application/json`.
-- Must return an `access_token` and a `refresh_token`, both inside HTTP-only cookies
-  to protect against XSS or similar attacks.
+- Must return an `access_token` and a `refresh_token`.
 
 This format can be changed to a PKCE flow as outlined in the [legacy authentication
 authorization document](../legacy/01-authentication-spec.md), but there is currently
@@ -66,24 +76,18 @@ use one of the OAuth providers.
 
 - Endpoint `/v1/auth/login`.
 - Accepts `application/json`.
-- Must return an `access_token` and a `refresh_token`, both inside HTTP-only cookies
-  to protect against XSS or similar attacks.
+- Must return an `access_token` and a `refresh_token`.
 
-### Error Codes
+### Refresh
 
-Error codes should be returned in an array form, with a similar structure:
+Refreshing takes the RefreshToken cookie, and checks against the database if the
+refresh token has been revoked or not. It grants a new access token, and optionally
+rotate the refresh token (up to the implementer) with a new Set-Cookie if it is
+a valid token. Otherwise, this clears the cookie and returns `401 unauthorized`.
 
-```json
-{
-  "status": 400,
-  "errors": [
-    {
-      "id": "invalid-username",
-      "description": "Optional"
-    }
-  ]
-}
-```
+### Logout
 
-This is to have the frontend translate properly on the client-side, instead of
-relying on the backend to translate it.
+Logging out instantly invalidates a refresh token.
+
+**Notice**: Frontend must be wary to remove the access token from memory given the
+user's logout request.

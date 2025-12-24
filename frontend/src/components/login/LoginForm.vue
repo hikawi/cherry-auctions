@@ -3,6 +3,7 @@ import { onMounted, onUnmounted, ref } from "vue";
 import { RotateCcwKey } from "lucide-vue-next";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
+import { useTokenStore } from "@/stores/token";
 
 const { t } = useI18n({ useScope: "global" });
 
@@ -15,6 +16,7 @@ const hoveringForgotPassword = ref(false);
 const smallWindow = ref(false);
 
 const router = useRouter();
+const token = useTokenStore();
 
 function setSmallWindow() {
   smallWindow.value = window.innerWidth < 640;
@@ -59,7 +61,9 @@ async function login() {
         error.value = t("login.internal_error");
         break;
       case 200:
-        router.push({ path: "/" });
+        const json = await res.json();
+        token.setToken(json.access_token);
+        router.push("/");
         break;
     }
   } catch {
