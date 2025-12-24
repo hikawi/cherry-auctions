@@ -37,7 +37,7 @@ func SetupServer(server *gin.Engine, db *gorm.DB) {
 		AllowOrigins:     strings.Split(utils.Getenv("CORS_ORIGINS", "http://localhost:5173"), ","),
 		AllowMethods:     strings.Split(utils.Getenv("CORS_METHODS", "GET,HEAD,POST,PUT,DELETE"), ","),
 		AllowCredentials: true,
-		AllowHeaders:     strings.Split(utils.Getenv("CORS_HEADERS", ""), ","),
+		AllowHeaders:     strings.Split(utils.Getenv("CORS_HEADERS", "Authorization"), ","),
 		AllowWebSockets:  true,
 	}))
 }
