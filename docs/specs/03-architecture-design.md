@@ -5,6 +5,17 @@ parent: Product and Engineering Specifications
 
 # Engineering Spec 03: Architecture Design
 
+## Changelog
+
+### v2 (Current)
+
+- Added technologies required by the SRS:
+  - A logging and searching stack, recommended to be Elasticsearch, Kibana and
+    Logstash, but chosen OpenSearch, OSD and FluentBit.
+  - A mailing system.
+  - Google Oauth.
+  - A place to store images, product assets.
+
 ## Summary
 
 This document concerns the logical overview of the application's architecture,
@@ -31,7 +42,7 @@ my architecture design in PlantUML (Google Gemini).
 | `www.googleapis.com`                  | Google IDP            | External     | Third-party OAuth 2.0 Identity Provider.                     |
 | `smtp.purelymail.com`                 | SMTP Server           | External     | Third-party mail relay for outgoing notifications.           |
 
-### **Frontend (Client Layer)**
+### Frontend (Client Layer)
 
 - **Vue.js SPA:** The primary user interface hosted at `cherry-auctions.luny.dev`.
   It handles user interactions and consumes the RESTful business logic from the backend.
@@ -39,14 +50,14 @@ my architecture design in PlantUML (Google Gemini).
   (`opensearch.cherry-auctions.luny.dev`) used for administrative monitoring and
   log analysis.
 
-### **Backend (Application Layer)**
+### Backend (Application Layer)
 
 - **Go Main Backend:** A high-concurrency API built in Go that serves as the
   central orchestrator for business logic and database queries.
 - **Go Mail Server:** An internal service dedicated to processing email queues,
   ensuring that the main API is not blocked by SMTP latency.
 
-### **Data & Storage**
+### Data & Storage
 
 - **PostgreSQL:** The primary relational database for structured business data
   (users, auctions, bids).
