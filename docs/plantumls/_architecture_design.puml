@@ -1,0 +1,55 @@
+@startuml
+
+title CherryAuctions Architecture Design
+
+package "Frontend" {
+  [Vue SPA\n(cherry-auctions.luny.dev)] as FE
+  [OpenSearch Dashboards\n(opensearch.cherry-auctions.luny.dev)] as OSD
+}
+
+cloud "External Infra" {
+  [SMTP Server\n(smtp.purelymail.com)] as SMTP
+  [Content Delivery Network\n(cdn.luny.dev)] as CDN
+  [S3-compliant Service\n(s3.luny.dev)] as S3
+  [Google IDP\n(www.googleapis.com)] as Google
+}
+
+package "Backend" {
+  [Go Main Backend\n(api.cherry-auctions.luny.dev)] as BE
+  [Go Mail Server] as MailServer
+}
+
+node "Logging Pipeline" {
+  [FluentBit Daemon] as Fluentbit
+  [OpenSearch] as OpenSearch
+}
+
+database "Database" {
+  [Relational Postgres] as Postgres
+  [Logging Database] as Logging
+}
+
+FE --> BE: fetchs business logic
+BE -left-> MailServer: queues email to send
+MailServer --> SMTP: sends email
+BE --> Postgres: queries business data
+BE --> Fluentbit: sends log data
+Fluentbit --> OpenSearch: forwards log data
+OpenSearch --> Logging: queries log data
+CDN --> S3: pulls assets
+BE --> S3: writes assets
+FE --> CDN: reads assets
+OSD --> OpenSearch: aggregates and shows data
+FE --> Google: authorizes oauth
+BE --> Google: requests oauth
+
+footer
+  Nodes that do not have a DNS name attached are unpublished nodes and can not be accessed by the Internet.
+endfooter
+
+legend bottom right
+  Yellow nodes are optional, and might not be implemented in the final product.
+endlegend
+
+@enduml
+
