@@ -39,13 +39,14 @@ Relevant Links:
 
 ## Cherry Auctions – Services Overview
 
-| Service        | Image                    | Ports                                | Description / Usage                                                                                                            |
-| -------------- | ------------------------ | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
-| **Mailpit**    | `axllent/mailpit:latest` | `1025` (SMTP)<br>`8025` (Web UI)     | Local SMTP server for development. Captures outgoing emails so they can be viewed in a browser without sending real emails.    |
-| **RustFS**     | `rustfs/rustfs:latest`   | `9000` (S3 API)<br>`9001` (Admin UI) | S3-compatible object storage used for file uploads such as images and attachments. Acts as a local replacement for AWS S3.     |
-| **PostgreSQL** | `postgres:18-alpine`     | `5432` (Database)                    | Primary relational database storing application data such as users, auctions, bids, and transactions.                          |
-| **Frontend**   | `node:24-alpine`         | `5173` (Dev Server)                  | Frontend development server using PNPM with hot reloading (e.g. Vite). Serves the web UI during development.                   |
-| **Backend**    | `cosmtrek/air`           | `3000` (Host) → `80` (Container)     | Backend API server with live reload. Handles authentication, business logic, database access, file uploads, and email sending. |
+| Service        | Image                     | Ports                                | Description / Usage                                                                                                            |
+| -------------- | ------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Mailpit**    | `axllent/mailpit:latest`  | `1025` (SMTP)<br>`8025` (Web UI)     | Local SMTP server for development. Captures outgoing emails so they can be viewed in a browser without sending real emails.    |
+| **Fluentbit**  | `fluent/fluent-bit:4.2.2` | N/A                                  | Log aggregator to read from `/var/server.log`                                                                                  |
+| **RustFS**     | `rustfs/rustfs:latest`    | `9000` (S3 API)<br>`9001` (Admin UI) | S3-compatible object storage used for file uploads such as images and attachments. Acts as a local replacement for AWS S3.     |
+| **PostgreSQL** | `postgres:18-alpine`      | `5432` (Database)                    | Primary relational database storing application data such as users, auctions, bids, and transactions.                          |
+| **Frontend**   | `node:24-alpine`          | `5173` (Dev Server)                  | Frontend development server using PNPM with hot reloading (e.g. Vite). Serves the web UI during development.                   |
+| **Backend**    | `cosmtrek/air`            | `3000` (Host) → `80` (Container)     | Backend API server with live reload. Handles authentication, business logic, database access, file uploads, and email sending. |
 
 ## Getting Started
 

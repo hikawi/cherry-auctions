@@ -9,9 +9,24 @@ volumes:
   postgres-data:
     name: cherry-auctions-postgres-data
   rustfsdata:
-    name: cherry-auctions-rustfs
+    name: cherry-auctions-rustfs-data
 
 services:
+  fluentbit:
+    image: fluent/fluent-bit:4.2.2
+    container_name: cherry-auctions-fluentbit
+    hostname: cherry-auctions-fluentbit
+    restart: unless-stopped
+    networks:
+      - default
+    volumes:
+      - ./fluentbit/fluentbit.yaml:/fluent-bit/etc/fluent-bit.yaml
+      - ./var/server.log:/var/server.log:ro
+    command: -c /fluent-bit/etc/fluent-bit.yaml
+    environment:
+      FLUENTBIT_LOG_LEVEL: debug
+      FLUENTBIT_LOG_FILE: /var/server.log
+
   mailpit:
     image: axllent/mailpit:latest
     container_name: cherry-auctions-mailpit
@@ -133,6 +148,7 @@ services:
       - 3000:80
     volumes:
       - ./backend:/app
+      - ./var/server.log:/app/server.log
       - /app/tmp
     depends_on:
       postgres:
