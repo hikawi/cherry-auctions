@@ -1,0 +1,13 @@
+service:
+  log_level: ${FLUENTBIT_LOG_LEVEL}
+
+pipeline:
+  inputs:
+    - name: tail
+      tag: cherry-auctions
+      path: ${FLUENTBIT_LOG_FILE}
+
+  outputs:
+    - name: stdout
+      match: cherry-auctions
+      json_date_format: java_sql_timestamp
