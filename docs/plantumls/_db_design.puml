@@ -1,0 +1,144 @@
+@startuml
+
+title CherryAuctions Database Design
+'skinparam linetype polyline
+'skinparam linetype ortho
+
+entity Category {
+  *id
+  ---
+  name
+  parent_id <<FK>>
+  created_at
+  updated_at
+  deleted_at
+}
+
+entity Product {
+  *id
+  ---
+  thumbnail_url
+  name
+  starting_bid
+  step_bid_type: PERCENTAGE | VALUE
+  step_bid_value
+  bin_price
+  description
+  seller_id <<FK>>
+  allows_unrated_buyers
+  auto_extends
+  expires_at
+  created_at
+  updated_at
+  deleted_at
+}
+
+entity Bid {
+  *id
+  ---
+  price
+  automated
+  product_id <<FK>>
+  user_id <<FK>>
+  created_at
+  updated_at
+}
+
+entity DeniedBidder {
+  *product_id <<FK>>
+  *user_id <<FK>>
+  ---
+}
+
+entity ProductImage {
+  *id
+  ---
+  url
+  alt_text
+  product_id <<PK>>
+}
+
+entity Question {
+  *id
+  ---
+  content
+  answer
+  product_id <<FK>>
+  user_id <<FK>>
+}
+
+entity User {
+  *id
+  ---
+  name
+  email
+  role
+  password
+  verified
+  otp_code
+  otp_expired_at
+  created_at
+  updated_at
+  deleted_at
+}
+
+entity RefreshToken {
+  *id
+  ---
+  user_id <<FK>>
+  refresh_token
+  is_revoked
+  expired_at
+  created_at
+  updated_at
+}
+
+entity Rating {
+  *id
+  ---
+  reviewee_id <<FK>>
+  reviewer_id <<FK>>
+  rating
+  feedback
+  created_at
+  updated_at
+}
+
+entity SellerSubscription {
+  *id
+  ---
+  user_id <<FK>>
+  created_at
+  expired_at
+}
+
+entity FavoriteProduct {
+  *user_id <<FK>>
+  *product_id <<FK>>
+  ---
+}
+
+entity Notification {
+  *id
+  ---
+  user_id <<FK>>
+  content
+}
+
+Category }|--o| Category
+Product ||--o{ ProductImage
+Category }|--o{ Product
+Product ||--o{ Question
+Question }|--|| User
+User ||--o{ Product
+User ||--o{ SellerSubscription
+User ||--o{ Rating
+User ||--o{ RefreshToken
+Product ||--o{ Bid
+User ||--o{ Bid
+User ||--o{ FavoriteProduct
+FavoriteProduct }o--|| Product
+DeniedBidder }o--|| Product
+User ||--o{ Notification 
+
+@enduml

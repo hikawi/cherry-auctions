@@ -1,9 +1,8 @@
 ---
 title: Database Design
 parent: Product and Engineering Specifications
+last_modified_date: 2025-12-27
 ---
-
-> Outdated.
 
 # Engineering Spec 02: Database Design
 
@@ -21,9 +20,17 @@ Out of Scope:
 
 - Row Level Security
 
+## Database Design
+
+![Database Design](../images/db-design-v4.png)
+
 ## Changelogs
 
-### Version 3 (Current)
+### Version 4 (Current)
+
+- Removed `oauth_clients` due to PKCE being overkill for this project, I was stupid.
+
+### Version 3
 
 - Added an `oauth_clients` table as the requirement "JWT key pair" does not specify
   which implementation, so I chose to go with PKCE as suggested by Auth0, and this

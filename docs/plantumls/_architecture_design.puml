@@ -1,55 +1,56 @@
 @startuml
 
-title CherryAuctions Architecture Design
+title CherryAuctions Architecture Design (Deployment View)
 
-package "Frontend" {
-  [Vue SPA\n(cherry-auctions.luny.dev)] as FE
-  [OpenSearch Dashboards\n(opensearch.cherry-auctions.luny.dev)] as OSD
+skinparam componentStyle uml2
+
+' Set colors for zones
+skinparam node {
+    BackgroundColor<<Public>> #F0FFF0
+    BackgroundColor<<Private>> #FFF0F0
 }
 
-cloud "External Infra" {
-  [SMTP Server\n(smtp.purelymail.com)] as SMTP
-  [Content Delivery Network\n(cdn.luny.dev)] as CDN
-  [S3-compliant Service\n(s3.luny.dev)] as S3
+cloud "External Services" {
   [Google IDP\n(www.googleapis.com)] as Google
+  [S3 Storage\n(s3.luny.dev)] as S3
+  [CDN\n(cdn.luny.dev)] as CDN
+  [PurelyMail\n(smtp.purelymail.com)] as SMTP
 }
 
-package "Backend" {
+node "Public Network" <<Public>> {
+  [Vue SPA\n(cherry-auctions.luny.dev)] as FE
   [Go Main Backend\n(api.cherry-auctions.luny.dev)] as BE
+  [OpenSearch Dashboards\n(opensearch.luny.dev)] as OSD
+}
+
+node "Private Network (No Public DNS)" <<Private>> {
+  database "Relational Postgres" as DB
   [Go Mail Server] as MailServer
+  
+  node "Logging Pipeline" {
+    [FluentBit Daemon] as FB
+    [OpenSearch] as OS
+  }
 }
 
-node "Logging Pipeline" {
-  [FluentBit Daemon] as Fluentbit
-  [OpenSearch] as OpenSearch
-}
+' Connections and Protocols
+FE --> BE : HTTPS / REST
+FE --> Google : OAuth Redirect
+FE --> CDN : Reads Assets
 
-database "Database" {
-  [Relational Postgres] as Postgres
-  [Logging Database] as Logging
-}
+BE --> DB : Internal SQL
+BE --> Google : Verify OAuth
+BE --> S3 : Writes Assets
+BE --> MailServer : Internal Queue
+BE --> FB : Log Data
 
-FE --> BE: fetchs business logic
-BE -left-> MailServer: queues email to send
-MailServer --> SMTP: sends email
-BE --> Postgres: queries business data
-BE --> Fluentbit: sends log data
-Fluentbit --> OpenSearch: forwards log data
-OpenSearch --> Logging: queries log data
-CDN --> S3: pulls assets
-BE --> S3: writes assets
-FE --> CDN: reads assets
-OSD --> OpenSearch: aggregates and shows data
-FE --> Google: authorizes oauth
-BE --> Google: requests oauth
+CDN --> S3 : Pulls Assets
+MailServer --> SMTP : SMTP/TLS
+FB --> OS : Forward Logs
+OSD --> OS : Aggregates Data
 
 footer
-  Nodes that do not have a DNS name attached are unpublished nodes and can not be accessed by the Internet.
+  Nodes in the red "Private Network" zone are unpublished and cannot be accessed by the Internet.
 endfooter
 
-legend bottom right
-  Yellow nodes are optional, and might not be implemented in the final product.
-endlegend
-
 @enduml
-
