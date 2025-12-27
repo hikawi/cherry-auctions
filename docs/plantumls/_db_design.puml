@@ -72,7 +72,6 @@ entity User {
   ---
   name
   email
-  role
   password
   verified
   otp_code
@@ -80,6 +79,22 @@ entity User {
   created_at
   updated_at
   deleted_at
+}
+
+entity Role {
+  *id
+  ---
+  description
+  created_at
+  updated_at
+}
+
+entity Permission {
+  *id
+  ---
+  description
+  created_at
+  updated_at
 }
 
 entity RefreshToken {
@@ -139,6 +154,8 @@ User ||--o{ Bid
 User ||--o{ FavoriteProduct
 FavoriteProduct }o--|| Product
 DeniedBidder }o--|| Product
-User ||--o{ Notification 
+User ||--o{ Notification
+User }o--o{ Role
+Role }o--o{ Permission
 
 @enduml
