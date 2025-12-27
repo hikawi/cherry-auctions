@@ -16,6 +16,7 @@ import (
 //	@description	Retrieves information about your own profile if authenticated.
 //	@tags			users
 //	@produce		json
+//	@security		ApiKeyAuth
 //	@success		200	{object}	users.GetMeResponse
 //	@failure		401	{object}	shared.ErrorResponse	"When unauthenticated"
 //	@failure		422	{object}	shared.ErrorResponse	"When your info had an invalid state on the server"

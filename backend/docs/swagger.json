@@ -193,8 +193,42 @@
                 }
             }
         },
+        "/categories": {
+            "get": {
+                "description": "This endpoint retrieves all categories in a fully recursive nested list, for easily displaying on the frontend.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "Retrieves a recursively nested list of categories.",
+                "responses": {
+                    "200": {
+                        "description": "List was successfully fetched",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/categories.CategoryDTO"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "The request could not be completed due to server faults",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/me": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Retrieves information about your own profile if authenticated.",
                 "produces": [
                     "application/json"
@@ -280,6 +314,39 @@
                     "type": "string",
                     "maxLength": 64,
                     "minLength": 8
+                }
+            }
+        },
+        "categories.CategoryDTO": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parent_id": {
+                    "type": "integer"
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "subcategories": {
+                    "description": "To make Swagger not dig too deep",
+                    "type": "array",
+                    "items": {
+                        "type": "object"
+                    }
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
