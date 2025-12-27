@@ -1,5 +1,4 @@
-// Package database provides simple utilities that interact with the database.
-package database
+package services
 
 import (
 	"log"

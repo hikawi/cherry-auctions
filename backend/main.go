@@ -4,15 +4,14 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"luny.dev/cherryauctions/database"
 	"luny.dev/cherryauctions/routes"
 	"luny.dev/cherryauctions/services"
 	"luny.dev/cherryauctions/utils"
 )
 
 // @title						Cherry Auctions API
-// @version					0.1
-// @description				Backend API for CherryAuctions.
+// @version					1.0
+// @description				Backend API for CherryAuctions at cherry-auctions.luny.dev.
 // @contact.name				Nguyệt Ánh
 // @contact.email				hello@luny.dev
 // @license.name				Apache 2.0
@@ -24,15 +23,16 @@ import (
 // @securityDefinitions.apikey	ApiKeyAuth
 // @in							header
 // @name						Authorization
-// @description				Classic Bearer token
+// @description				Classic Bearer token, authenticated by using the login endpoint, which should grant an access token. To refresh it, use the RefreshToken cookie.
 func main() {
 	utils.InitLogger()
 
-	db := database.SetupDatabase()
+	db := services.SetupDatabase()
 	s3Client := services.NewS3Service()
 	mailDialer := services.NewMailerService()
 
-	database.MigrateModels(db)
+	// Weird to do this even in production.
+	services.MigrateModels(db)
 
 	server := gin.New()
 
