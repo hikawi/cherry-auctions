@@ -37,6 +37,28 @@ definitions:
     - name
     - password
     type: object
+  categories.CategoryDTO:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      parent_id:
+        type: integer
+      slug:
+        type: string
+      subcategories:
+        description: To make Swagger not dig too deep
+        items:
+          type: object
+        type: array
+      updated_at:
+        type: string
+    type: object
   shared.ErrorResponse:
     properties:
       error:
@@ -187,6 +209,26 @@ paths:
       summary: Registers a new account
       tags:
       - authentication
+  /categories:
+    get:
+      description: This endpoint retrieves all categories in a fully recursive nested
+        list, for easily displaying on the frontend.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List was successfully fetched
+          schema:
+            items:
+              $ref: '#/definitions/categories.CategoryDTO'
+            type: array
+        "500":
+          description: The request could not be completed due to server faults
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      summary: Retrieves a recursively nested list of categories.
+      tags:
+      - categories
   /users/me:
     get:
       description: Retrieves information about your own profile if authenticated.
@@ -209,6 +251,8 @@ paths:
           description: The request could not be completed due to server faults
           schema:
             $ref: '#/definitions/shared.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
       summary: Gets your own profile.
       tags:
       - users
