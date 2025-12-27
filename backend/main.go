@@ -7,6 +7,7 @@ import (
 	"luny.dev/cherryauctions/database"
 	"luny.dev/cherryauctions/routes"
 	"luny.dev/cherryauctions/services"
+	"luny.dev/cherryauctions/utils"
 )
 
 // @title						Cherry Auctions API
@@ -25,6 +26,8 @@ import (
 // @name						Authorization
 // @description				Classic Bearer token
 func main() {
+	utils.InitLogger()
+
 	db := database.SetupDatabase()
 	s3Client := services.NewS3Service()
 	mailDialer := services.NewMailerService()

@@ -14,6 +14,7 @@ import (
 	"gorm.io/gorm"
 	_ "luny.dev/cherryauctions/docs"
 	"luny.dev/cherryauctions/routes/auth"
+	"luny.dev/cherryauctions/routes/categories"
 	"luny.dev/cherryauctions/routes/test"
 	"luny.dev/cherryauctions/routes/users"
 	"luny.dev/cherryauctions/utils"
@@ -50,6 +51,9 @@ func SetupRoutes(server *gin.Engine, deps ServerDependency) {
 
 	usersHandler := users.UsersHandler{DB: deps.DB}
 	usersHandler.SetupRouter(versionedGroup)
+
+	categoriesHandler := categories.CategoriesHandler{DB: deps.DB}
+	categoriesHandler.SetupRouter(versionedGroup)
 
 	testHandler := test.TestHandler{S3Client: deps.S3Client, MailDialer: deps.MailDialer}
 	testHandler.SetupRouter(versionedGroup)
