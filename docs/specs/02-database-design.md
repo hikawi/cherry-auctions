@@ -1,7 +1,7 @@
 ---
 title: Database Design
 parent: Product and Engineering Specifications
-last_modified_date: 2025-12-27
+last_modified_date: 2025-12-28
 ---
 
 # Engineering Spec 02: Database Design
@@ -26,7 +26,12 @@ Out of Scope:
 
 ## Changelogs
 
-### Version 4 (Current)
+### Version 5 (Current)
+
+- Removed the `role` field in the `users` table.
+- Add two new tables `roles` and `permissions`.
+
+### Version 4
 
 - Removed `oauth_clients` due to PKCE being overkill for this project, I was stupid.
 
