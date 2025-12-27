@@ -9,13 +9,14 @@ import (
 )
 
 type JWTSubject struct {
-	ID    uint   `json:"id"`
-	Email string `json:"email"`
+	UserID uint   `json:"user_id"`
+	Email  string `json:"email"`
+	Role   string `json:"role"`
 	jwt.RegisteredClaims
 }
 
 // SignJWT signs a JWT based on the environment variables and returns a signed string.
-func SignJWT(id uint, email string) (string, error) {
+func SignJWT(id uint, email string, role string) (string, error) {
 	expiryTime, err := strconv.ParseUint(utils.Fatalenv("JWT_EXPIRY"), 10, 64)
 
 	if err != nil {
@@ -25,6 +26,7 @@ func SignJWT(id uint, email string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, JWTSubject{
 		id,
 		email,
+		role,
 		jwt.RegisteredClaims{
 			Issuer:    utils.Fatalenv("DOMAIN"),
 			Audience:  jwt.ClaimStrings{utils.Fatalenv("JWT_AUDIENCE")},
