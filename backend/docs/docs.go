@@ -54,37 +54,37 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Login successful",
                         "schema": {
                             "$ref": "#/definitions/auth.LoginResponse"
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Bad username or password format",
                         "schema": {
                             "$ref": "#/definitions/shared.ErrorResponse"
                         }
                     },
                     "401": {
-                        "description": "Unauthorized",
+                        "description": "Wrong password",
                         "schema": {
                             "$ref": "#/definitions/shared.ErrorResponse"
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "Account does not exist",
                         "schema": {
                             "$ref": "#/definitions/shared.ErrorResponse"
                         }
                     },
                     "421": {
-                        "description": "Misdirected Request",
+                        "description": "Account uses oauth but tries to login with password",
                         "schema": {
                             "$ref": "#/definitions/shared.ErrorResponse"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Server couldn't complete the request",
                         "schema": {
                             "$ref": "#/definitions/shared.ErrorResponse"
                         }
@@ -220,6 +220,57 @@ const docTemplate = `{
                         "description": "The request could not be completed due to server faults",
                         "schema": {
                             "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "Creates a category",
+                "responses": {
+                    "201": {
+                        "description": "Category was successfully created",
+                        "schema": {
+                            "$ref": "#/definitions/categories.CategoryDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Category body data was invalid",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "The server could not complete the request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "others"
+                ],
+                "summary": "Checks health of the server.",
+                "responses": {
+                    "200": {
+                        "description": "Always",
+                        "schema": {
+                            "$ref": "#/definitions/shared.MessageResponse"
                         }
                     }
                 }
@@ -384,8 +435,11 @@ const docTemplate = `{
                 "oauth_type": {
                     "type": "string"
                 },
-                "role": {
-                    "type": "string"
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "verified": {
                     "type": "boolean"
@@ -395,7 +449,7 @@ const docTemplate = `{
     },
     "securityDefinitions": {
         "ApiKeyAuth": {
-            "description": "Classic Bearer token",
+            "description": "Classic Bearer token, authenticated by using the login endpoint, which should grant an access token. To refresh it, use the RefreshToken cookie.",
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"
@@ -405,12 +459,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "0.1",
+	Version:          "1.0",
 	Host:             "",
 	BasePath:         "/v1",
 	Schemes:          []string{"http", "https"},
 	Title:            "Cherry Auctions API",
-	Description:      "Backend API for CherryAuctions.",
+	Description:      "Backend API for CherryAuctions at cherry-auctions.luny.dev.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

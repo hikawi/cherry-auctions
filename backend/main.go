@@ -4,9 +4,12 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"luny.dev/cherryauctions/routes"
-	"luny.dev/cherryauctions/services"
-	"luny.dev/cherryauctions/utils"
+	"luny.dev/cherryauctions/internal/config"
+	"luny.dev/cherryauctions/internal/infra"
+	"luny.dev/cherryauctions/internal/logging"
+	"luny.dev/cherryauctions/internal/repositories"
+	"luny.dev/cherryauctions/internal/routes"
+	"luny.dev/cherryauctions/internal/services"
 )
 
 // @title						Cherry Auctions API
@@ -25,14 +28,29 @@ import (
 // @name						Authorization
 // @description				Classic Bearer token, authenticated by using the login endpoint, which should grant an access token. To refresh it, use the RefreshToken cookie.
 func main() {
-	utils.InitLogger()
+	cfg := config.Load()
 
-	db := services.SetupDatabase()
-	s3Client := services.NewS3Service()
-	mailDialer := services.NewMailerService()
+	logging.InitLogger()
+
+	db := infra.SetupDatabase(cfg.DatabaseURL)
+	s3Client := infra.SetupS3(cfg.AWS.S3Base, cfg.AWS.S3UsePathStyle)
+	mailDialer := infra.SetupMailer(cfg.SMTP.Host, cfg.SMTP.Port, cfg.SMTP.User, cfg.SMTP.Password)
+
+	// Setup repositories here
+	categoryRepo := &repositories.CategoryRepository{DB: db}
+	roleRepo := &repositories.RoleRepository{DB: db}
+	userRepo := &repositories.UserRepository{DB: db, RoleRepository: roleRepo}
+	refreshTokenRepo := &repositories.RefreshTokenRepository{DB: db}
+
+	// Setup services here
+	jwtService := &services.JWTService{JWTDomain: cfg.Domain, JWTAudience: cfg.JWT.Audience, JWTSecretKey: cfg.JWT.Secret, JWTExpiry: cfg.JWT.Expiry}
+	randomService := &services.RandomService{}
+	passwordService := &services.PasswordService{RandomService: randomService}
+	captchaService := &services.CaptchaService{RecaptchaSecret: cfg.RecaptchaSecret}
+	middlewareService := &services.MiddlewareService{JWTService: jwtService}
 
 	// Weird to do this even in production.
-	services.MigrateModels(db)
+	infra.MigrateModels(db)
 
 	server := gin.New()
 
@@ -42,6 +60,20 @@ func main() {
 		DB:         db,
 		S3Client:   s3Client,
 		MailDialer: mailDialer,
+		Config:     cfg,
+		Services: services.ServiceRegistry{
+			JWTService:        jwtService,
+			RandomService:     randomService,
+			PasswordService:   passwordService,
+			CaptchaService:    captchaService,
+			MiddlewareService: middlewareService,
+		},
+		Repositories: repositories.RepositoryRegistry{
+			CategoryRepository:     categoryRepo,
+			UserRepository:         userRepo,
+			RoleRepository:         roleRepo,
+			RefreshTokenRepository: refreshTokenRepo,
+		},
 	})
 
 	err := server.Run(":80")

@@ -1,3 +1,10 @@
+TRUNCATE TABLE roles RESTART IDENTITY CASCADE;
+
+INSERT INTO roles (id, description, created_at, updated_at) VALUES
+  ('user', 'Default role for all users', now(), now()),
+  ('moderator', 'Moderation role', now(),)
+  ('admin', 'Administrative role', now(), now());
+
 TRUNCATE TABLE categories RESTART IDENTITY CASCADE;
 
 INSERT INTO categories (name, parent_id, created_at, updated_at) VALUES

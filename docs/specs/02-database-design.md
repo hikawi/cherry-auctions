@@ -29,7 +29,7 @@ Out of Scope:
 ### Version 5 (Current)
 
 - Removed the `role` field in the `users` table.
-- Add two new tables `roles` and `permissions`.
+- Add new table `roles`.
 
 ### Version 4
 

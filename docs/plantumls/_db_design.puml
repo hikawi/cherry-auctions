@@ -89,14 +89,6 @@ entity Role {
   updated_at
 }
 
-entity Permission {
-  *id
-  ---
-  description
-  created_at
-  updated_at
-}
-
 entity RefreshToken {
   *id
   ---
@@ -156,6 +148,5 @@ FavoriteProduct }o--|| Product
 DeniedBidder }o--|| Product
 User ||--o{ Notification
 User }o--o{ Role
-Role }o--o{ Permission
 
 @enduml

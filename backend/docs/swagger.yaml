@@ -79,8 +79,10 @@ definitions:
         type: string
       oauth_type:
         type: string
-      role:
-        type: string
+      roles:
+        items:
+          type: string
+        type: array
       verified:
         type: boolean
     type: object
@@ -88,12 +90,12 @@ info:
   contact:
     email: hello@luny.dev
     name: Nguyệt Ánh
-  description: Backend API for CherryAuctions.
+  description: Backend API for CherryAuctions at cherry-auctions.luny.dev.
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: Cherry Auctions API
-  version: "0.1"
+  version: "1.0"
 paths:
   /auth/login:
     post:
@@ -112,27 +114,27 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Login successful
           schema:
             $ref: '#/definitions/auth.LoginResponse'
         "400":
-          description: Bad Request
+          description: Bad username or password format
           schema:
             $ref: '#/definitions/shared.ErrorResponse'
         "401":
-          description: Unauthorized
+          description: Wrong password
           schema:
             $ref: '#/definitions/shared.ErrorResponse'
         "404":
-          description: Not Found
+          description: Account does not exist
           schema:
             $ref: '#/definitions/shared.ErrorResponse'
         "421":
-          description: Misdirected Request
+          description: Account uses oauth but tries to login with password
           schema:
             $ref: '#/definitions/shared.ErrorResponse'
         "500":
-          description: Internal Server Error
+          description: Server couldn't complete the request
           schema:
             $ref: '#/definitions/shared.ErrorResponse'
       summary: Logins to an existing account
@@ -229,6 +231,39 @@ paths:
       summary: Retrieves a recursively nested list of categories.
       tags:
       - categories
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Category was successfully created
+          schema:
+            $ref: '#/definitions/categories.CategoryDTO'
+        "400":
+          description: Category body data was invalid
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: The server could not complete the request
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      summary: Creates a category
+      tags:
+      - categories
+  /health:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Always
+          schema:
+            $ref: '#/definitions/shared.MessageResponse'
+      summary: Checks health of the server.
+      tags:
+      - others
   /users/me:
     get:
       description: Retrieves information about your own profile if authenticated.
@@ -263,7 +298,8 @@ schemes:
 - https
 securityDefinitions:
   ApiKeyAuth:
-    description: Classic Bearer token
+    description: Classic Bearer token, authenticated by using the login endpoint,
+      which should grant an access token. To refresh it, use the RefreshToken cookie.
     in: header
     name: Authorization
     type: apiKey
