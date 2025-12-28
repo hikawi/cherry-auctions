@@ -59,6 +59,28 @@ definitions:
       updated_at:
         type: string
     type: object
+  categories.PostCategoryBody:
+    properties:
+      name:
+        maxLength: 200
+        minLength: 2
+        type: string
+      parent_id:
+        type: integer
+    required:
+    - name
+    type: object
+  categories.PutCategoryBody:
+    properties:
+      name:
+        maxLength: 200
+        minLength: 2
+        type: string
+      parent_id:
+        type: integer
+    required:
+    - name
+    type: object
   shared.ErrorResponse:
     properties:
       error:
@@ -234,6 +256,13 @@ paths:
     post:
       consumes:
       - application/json
+      parameters:
+      - description: New category data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/categories.PostCategoryBody'
       produces:
       - application/json
       responses:
@@ -245,11 +274,110 @@ paths:
           description: Category body data was invalid
           schema:
             $ref: '#/definitions/shared.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "403":
+          description: Not enough permissions
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
         "500":
           description: The server could not complete the request
           schema:
             $ref: '#/definitions/shared.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
       summary: Creates a category
+      tags:
+      - categories
+  /categories/{id}:
+    delete:
+      description: Soft-deletes a category record by setting a flag.
+      parameters:
+      - description: Category ID
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Category was deleted
+        "400":
+          description: Category body data was invalid
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "403":
+          description: Not enough permissions
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "404":
+          description: Category could not be found
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: The server could not complete the request
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Soft-delete a category record
+      tags:
+      - categories
+    put:
+      consumes:
+      - application/json
+      description: Update a category records by updating it partially
+      parameters:
+      - description: Category ID
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: New updated category data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/categories.PutCategoryBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Category was successfully changed, returns old category
+          schema:
+            $ref: '#/definitions/categories.CategoryDTO'
+        "400":
+          description: Category body data was invalid
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "403":
+          description: Not enough permissions
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "404":
+          description: Category could not be found
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: The server could not complete the request
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update a category record
       tags:
       - categories
   /health:

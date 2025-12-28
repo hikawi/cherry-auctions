@@ -43,8 +43,13 @@ type GetCategoriesResponse []CategoryDTO
 // For creating a new category
 type PostCategoryBody struct {
 	Name     string `json:"name" binding:"min=2,max=200,required"`
-	ParentID *uint  `json:"parent_id" binding:"min=1,number,omitempty"`
+	ParentID *uint  `json:"parent_id" binding:"gt=0,omitempty"`
 }
 
 // For returning the category created.
 type PostCategoryResponse CategoryDTO
+
+type PutCategoryBody struct {
+	Name     *string `json:"name" binding:"min=2,max=200,required,omitnil"`
+	ParentID *uint   `json:"parent_id" binding:"omitnil,gt=0"`
+}

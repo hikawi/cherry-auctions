@@ -20,4 +20,6 @@ func (h *CategoriesHandler) SetupRouter(g *gin.RouterGroup) {
 
 	r.GET("", h.GetCategories)
 	r.POST("", h.MiddlewareService.AuthorizedRoute(models.ROLE_ADMIN), h.PostCategories)
+	r.PUT("/:id", h.MiddlewareService.AuthorizedRoute(models.ROLE_ADMIN), h.PutCategories)
+	r.DELETE("/:id", h.MiddlewareService.AuthorizedRoute(models.ROLE_ADMIN), h.DeleteCategories)
 }
