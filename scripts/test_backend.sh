@@ -9,5 +9,6 @@ SMTP_HOST=localhost \
   AWS_S3_BASE=http://localhost:9000 \
   AWS_S3_USE_PATH_STYLE=true \
   AWS_BUCKET_NAME=cherry-auctions \
-  GIN_MODE=release \
+  GIN_MODE=test \
+  DATABASE_URL=postgresql://postgres:postgres@localhost:5432/cherry_auctions_test \
   go test ./... -cover

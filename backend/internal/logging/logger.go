@@ -24,7 +24,7 @@ const (
 var logger io.Writer
 
 func InitLogger() {
-	if logger != nil {
+	if logger != nil || gin.Mode() == gin.TestMode {
 		return
 	}
 
@@ -38,6 +38,11 @@ func InitLogger() {
 
 // LogMessage logs a message with a certain log level.
 func LogMessage(c *gin.Context, level LogLevel, message map[string]any) {
+	// NOOP if is testing
+	if gin.Mode() == gin.TestMode {
+		return
+	}
+
 	// Remove password-related headers.
 	headers := c.Request.Header.Clone()
 	headers.Del("Authorization")

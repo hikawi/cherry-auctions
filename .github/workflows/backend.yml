@@ -58,6 +58,16 @@ jobs:
           RUSTFS_ACCESS_KEY: ciuser
           RUSTFS_SECRET_KEY: cipass
           RUSTFS_CONSOLE_ENABLE: false
+      postgres:
+        image: postgres:18-alpine
+        ports:
+          - 5432:5432
+        volumes:
+          - pgdata:/var/lib/postgresql
+        env:
+          POSTGRES_USER: ciuser
+          POSTGRES_PASSWORD: cipass
+          POSTGRES_DB: cherryauctions
     name: Test
     needs: ["lint"]
     steps:
@@ -83,7 +93,8 @@ jobs:
           AWS_S3_BASE: http://localhost:9000
           AWS_S3_USE_PATH_STYLE: true
           AWS_BUCKET_NAME: cherry-auctions
-          GIN_MODE: release
+          GIN_MODE: test
+          DATABASE_URL: postgresql://ciuser:cipass@localhost:5432/cherryauctions
 
   build:
     runs-on: ubuntu-latest
