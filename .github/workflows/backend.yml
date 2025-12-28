@@ -71,7 +71,7 @@ jobs:
           cache-dependency-path: "backend/go.sum"
 
       - name: Test
-        run: go test -v ./test
+        run: go test ./... -cover
         working-directory: backend
         env:
           SMTP_HOST: localhost

@@ -5,13 +5,12 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"luny.dev/cherryauctions/internal/config"
 	"luny.dev/cherryauctions/internal/infra"
+	"luny.dev/cherryauctions/pkg/env"
 )
 
 func TestS3Buckets(t *testing.T) {
-	cfg := config.Load()
-	s3Client := infra.SetupS3(cfg.AWS.S3Base, cfg.AWS.S3UsePathStyle)
+	s3Client := infra.SetupS3(env.Fatalenv("AWS_S3_BASE"), env.FatalenvBool("AWS_S3_USE_PATH_STYLE"))
 
 	ctx := t.Context()
 	_, err := s3Client.CreateBucket(ctx, &s3.CreateBucketInput{

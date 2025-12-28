@@ -24,7 +24,7 @@ func TestSignJWT(t *testing.T) {
 		claims, err := jwtService.VerifyJWT(str)
 		assert.Nil(t, err)
 		assert.NotNil(t, claims)
-		assert.Equal(t, claims.ID, uint(2))
+		assert.Equal(t, claims.UserID, uint(2))
 		assert.Equal(t, claims.Email, "test@example.com")
 		assert.Equal(t, claims.Roles, "lol hi")
 	})

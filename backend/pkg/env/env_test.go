@@ -21,11 +21,11 @@ func TestGetenv(t *testing.T) {
 func TestGetenvInt(t *testing.T) {
 	t.Setenv("GO_TEST_ENV", "1234")
 	val := env.FatalenvInt("GO_TEST_ENV")
-	assert.Equal(t, val, 1234)
+	assert.EqualValues(t, val, 1234)
 }
 
 func TestGetenvBool(t *testing.T) {
 	t.Setenv("GO_TEST_ENV", "false")
-	val := env.FatalenvInt("GO_TEST_ENV")
-	assert.Equal(t, val, false)
+	val := env.FatalenvBool("GO_TEST_ENV")
+	assert.EqualValues(t, val, false)
 }

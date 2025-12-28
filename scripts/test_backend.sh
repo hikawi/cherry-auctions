@@ -10,4 +10,4 @@ SMTP_HOST=localhost \
   AWS_S3_USE_PATH_STYLE=true \
   AWS_BUCKET_NAME=cherry-auctions \
   GIN_MODE=release \
-  go test -v ./test
+  go test ./... -cover

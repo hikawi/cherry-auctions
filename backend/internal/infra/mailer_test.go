@@ -4,13 +4,12 @@ import (
 	"testing"
 
 	"gopkg.in/gomail.v2"
-	"luny.dev/cherryauctions/internal/config"
 	"luny.dev/cherryauctions/internal/infra"
+	"luny.dev/cherryauctions/pkg/env"
 )
 
 func TestMailerService(t *testing.T) {
-	cfg := config.Load()
-	dialer := infra.SetupMailer(cfg.SMTP.Host, cfg.SMTP.Port, cfg.SMTP.User, cfg.SMTP.Password)
+	dialer := infra.SetupMailer(env.Fatalenv("SMTP_HOST"), int(env.FatalenvInt("SMTP_PORT")), env.Fatalenv("SMTP_USER"), env.Fatalenv("SMTP_PASSWORD"))
 
 	msg := gomail.NewMessage()
 	msg.SetHeader("From", "Noreply <test@example.com>")
