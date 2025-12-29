@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { Mail } from "lucide-vue-next";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n({ useScope: "global" });
@@ -91,8 +92,10 @@ async function submit() {
     <button
       @click="submit"
       :disabled="loading"
-      class="bg-claret-600 disabled:bg-claret-700 border-claret-600 enabled:hover:text-claret-600 disabled:border-claret-700 w-full cursor-pointer rounded-xl border-2 p-2 py-3 text-white transition-all duration-200 hover:shadow-md enabled:hover:bg-transparent disabled:cursor-progress disabled:opacity-50"
+      class="bg-claret-600 disabled:bg-claret-700 border-claret-600 enabled:hover:text-claret-600 disabled:border-claret-700 w-full cursor-pointer rounded-xl border-2 p-2 py-3 text-white transition-all duration-200 hover:shadow-md enabled:hover:bg-transparent disabled:cursor-progress disabled:opacity-50 flex items-center justify-center gap-2"
     >
+      <Mail class="size-6" :class="{ 'animate-spin': loading }" />
+
       {{ loading ? t("forgot.loading") : t("forgot.action") }}
     </button>
   </div>
