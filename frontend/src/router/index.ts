@@ -59,7 +59,6 @@ router.beforeEach(async (to) => {
   const profile = useProfileStore();
 
   if (!profile.hasFetched) {
-    console.log("fetch");
     await profile.fetchProfile();
   }
 

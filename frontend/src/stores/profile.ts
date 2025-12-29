@@ -1,26 +1,34 @@
 import { endpoints } from "@/consts";
-import { useFetch } from "@/hooks/use-fetch";
+import { useAuthFetch } from "@/hooks/use-auth-fetch";
 import type { Profile } from "@/types";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
 export const useProfileStore = defineStore("profile", () => {
   const profile = ref<Profile>();
-  const { data, error, loading, doFetch } = useFetch<Profile>();
+  const loading = ref(false);
+  const error = ref();
+  const { authFetch } = useAuthFetch();
 
   const isAdmin = computed(() => profile.value && profile.value.roles.includes("admin"));
   const isFetching = computed(() => loading.value);
   const hasProfile = computed(() => profile.value != undefined);
-  const hasFetched = computed(() => error.value != undefined || data.value != undefined);
+  const hasFetched = computed(() => error.value != undefined || profile.value != undefined);
 
   function setProfile(prof: Profile | undefined) {
     profile.value = prof;
   }
 
   const fetchProfile = async () => {
-    await doFetch(endpoints.self);
-    if (!error.value && data.value) {
-      setProfile(data.value);
+    loading.value = true;
+
+    try {
+      const res = await authFetch(endpoints.self);
+      if (res.ok) {
+        setProfile(await res.json());
+      }
+    } finally {
+      loading.value = false;
     }
   };
 

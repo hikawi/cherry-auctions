@@ -8,6 +8,8 @@ export const endpoints = {
   categories: {
     get: `${api}/v1/categories`,
     post: `${api}/v1/categories`,
+    edit: (id: unknown) => `${api}/v1/categories/${id}`,
+    delete: (id: unknown) => `${api}/v1/categories/${id}`,
   },
   self: `${api}/v1/users/me`,
 };

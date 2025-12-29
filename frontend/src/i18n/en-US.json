@@ -45,6 +45,9 @@
     "categories": {
       "title": "Manage Categories",
       "create_category": "Create Category",
+      "edit_category": "Edit Category",
+      "delete_category": "Delete Category",
+      "delete_description": "Are you sure you want to delete the following category \"{name}\" (ID {id})?",
       "category_name": "Category Name",
       "category_name_placeholder": "My Category",
       "parent_category": "Parent Category",
