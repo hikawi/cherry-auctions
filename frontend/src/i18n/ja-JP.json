@@ -45,6 +45,7 @@
     "categories": {
       "title": "カテゴリー管理",
       "create_category": "カテゴリー追加",
+      "edit_category": "カテゴリー編集",
       "category_name": "カテゴリー名前",
       "category_name_placeholder": "Electronics",
       "delete_category": "カテゴリー削除",
