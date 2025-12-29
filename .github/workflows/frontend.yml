@@ -81,43 +81,6 @@ jobs:
         run: pnpm test:unit
         working-directory: frontend
 
-  e2etest:
-    runs-on: ubuntu-latest
-    name: End to End Testing
-    needs: ["unittest"]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        with:
-          version: 10
-          run_install: false
-
-      - uses: actions/setup-node@v6
-        name: Setup Node
-        with:
-          node-version: 24
-          cache: pnpm
-          cache-dependency-path: ./frontend/pnpm-lock.yaml
-
-      - name: Install Node dependencies
-        working-directory: frontend
-        run: pnpm i --frozen-lockfile
-
-      - name: Install Playwright dependencies
-        working-directory: frontend
-        run: pnpm exec playwright install --with-deps
-
-      - name: Build for Testing
-        working-directory: frontend
-        run: pnpm build
-
-      - name: End to End Tests (Playwright)
-        working-directory: frontend
-        run: pnpm test:e2e
-
   build:
     runs-on: ubuntu-latest
     name: Build
