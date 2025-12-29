@@ -29,5 +29,16 @@
     "conflict": "That email address is already registered.",
     "internal_error": "This error is not your fault! The server misbehaved.",
     "internet_error": "Your Internet connection might have gone out."
+  },
+  "forgot": {
+    "title": "Reset password",
+    "email": "Email Address",
+    "email_placeholder": "john.doe{'@'}example.com",
+    "action": "Send reset link",
+    "loading": "Sending...",
+    "sent": "If an account exists, we've sent an email with reset instructions.",
+    "invalid_request": "Please enter a valid email address.",
+    "internal_error": "This error is not your fault! The server misbehaved.",
+    "internet_error": "Your Internet connection might have gone out."
   }
 }
