@@ -5,5 +5,9 @@ export const endpoints = {
     refresh: `${api}/v1/auth/refresh`,
     logout: `${api}/v1/auth/logout`,
   },
+  categories: {
+    get: `${api}/v1/categories`,
+    post: `${api}/v1/categories`,
+  },
   self: `${api}/v1/users/me`,
 };

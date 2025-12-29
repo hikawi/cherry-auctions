@@ -7,11 +7,11 @@
     "action": "ログイン",
     "forgot_password": "パスワードをお忘れですか？",
     "loading": "ログインしています…",
-    "account_does_not_exist": "このメールアドレスのアカウントは見つかりませんでした。入力内容をご確認ください。",
+    "account_does_not_exist": "このメールアドレスのアカウントは見つかりませんでした入力内容をご確認ください。",
     "invalid_request": "メールアドレスが無効か、パスワードが短すぎる可能性があります。",
     "wrong_password": "パスワードが正しくありません。",
-    "wrong_method": "別の方法で登録された可能性があります。ほかのログイン方法をお試しください。",
-    "internal_error": "サーバーエラーが発生しました。しばらくしてから再度お試しください。",
+    "wrong_method": "別の方法で登録された可能性がありますほかのログイン方法をお試しください。",
+    "internal_error": "サーバーエラーが発生しましたしばらくしてから再度お試しください。",
     "internet_error": "インターネット接続に問題がある可能性があります。"
   },
   "register": {
@@ -27,7 +27,7 @@
     "passwords_dont_match": "パスワードが一致していません。",
     "invalid_request": "メールアドレスが無効か、パスワードが短すぎる可能性があります。",
     "conflict": "このメールアドレスがすでに登録されていました。",
-    "internal_error": "サーバーエラーが発生しました。しばらくしてから再びお試しください。",
+    "internal_error": "サーバーエラーが発生しましたしばらくしてから再びお試しください。",
     "internet_error": "インターネット接続に問題がある可能性があります。"
   },
   "forgot": {
@@ -40,5 +40,37 @@
     "invalid_request": "有効なメールアドレスを入力してください。",
     "internal_error": "サーバーエラーが発生しました。しばらくしてから再度お試しください。",
     "internet_error": "インターネット接続に問題がある可能性があります。"
+  },
+  "admin": {
+    "categories": {
+      "title": "カテゴリー管理",
+      "create_category": "カテゴリー追加",
+      "category_name": "カテゴリー名前",
+      "category_name_placeholder": "Electronics",
+      "parent_category": "親カテゴリー",
+      "no_subcategories": "サブカテゴリーがありません",
+      "cant_load": "カテゴリーを読み込むことができません",
+      "error_invalid_name": "カテゴリー名前が短すぎますか、長過ぎます。"
+    }
+  },
+  "general": {
+    "categories": "カテゴリー",
+    "products": "プロダクト",
+    "users": "ユーザー",
+    "create": "追加",
+    "confirm": "確認",
+    "cancel": "キャンセル",
+    "try_again": "もう一度試す",
+    "back_home": "ホームに戻る"
+  },
+  "others": {
+    "403": {
+      "title": "403 不許可",
+      "description": "ログイン済みですが、このリソースをアクセスできません"
+    },
+    "404": {
+      "title": "404 見つかりません",
+      "description": "お探しのページは存在しないか、移動した可能性があります"
+    }
   }
 }

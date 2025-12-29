@@ -40,5 +40,37 @@
     "invalid_request": "Please enter a valid email address.",
     "internal_error": "This error is not your fault! The server misbehaved.",
     "internet_error": "Your Internet connection might have gone out."
+  },
+  "admin": {
+    "categories": {
+      "title": "Manage Categories",
+      "create_category": "Create Category",
+      "category_name": "Category Name",
+      "category_name_placeholder": "My Category",
+      "parent_category": "Parent Category",
+      "no_subcategories": "No sub-categories",
+      "cant_load": "Unable to load categories",
+      "error_invalid_name": "Category name is too long or too short."
+    }
+  },
+  "general": {
+    "categories": "Categories",
+    "products": "Products",
+    "users": "Users",
+    "create": "Create",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "try_again": "Try Again",
+    "back_home": "Back to Home Page"
+  },
+  "others": {
+    "403": {
+      "title": "403 Forbidden",
+      "description": "You are logged in, but you are not authorized to view this page."
+    },
+    "404": {
+      "title": "404 Not Found",
+      "description": "The page you requested does not exist."
+    }
   }
 }

@@ -5,6 +5,7 @@ import App from "./App.vue";
 import "./styles.css";
 import router from "./router";
 import { createI18n } from "vue-i18n";
+import piniaPluginPersistedState from "pinia-plugin-persistedstate";
 
 // I18n stuff
 import enUS from "@/i18n/en-US.json";
@@ -24,7 +25,10 @@ const i18n = createI18n<[I18nSchema], "en-US" | "ja-JP">({
   },
 });
 
-app.use(createPinia());
+const pinia = createPinia();
+pinia.use(piniaPluginPersistedState);
+
+app.use(pinia);
 app.use(i18n);
 app.use(router);
 

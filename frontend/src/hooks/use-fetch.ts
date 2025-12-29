@@ -6,6 +6,7 @@ export function useFetch<T>() {
   const data = ref<T | undefined>();
   const error = ref<unknown>();
   const loading = ref(false);
+  const status = ref(0);
   const token = useTokenStore();
 
   const doFetch = async (url: string, options: RequestInit = {}) => {
@@ -33,11 +34,14 @@ export function useFetch<T>() {
             Authorization: `Bearer ${token.token}`,
           };
           response = await fetch(url, options);
+          status.value = response.status;
         } else {
+          status.value = response.status;
           throw new Error("Session expired. Please login again.");
         }
       }
 
+      status.value = response.status;
       if (!response.ok) {
         throw new Error("Request failed");
       }
@@ -71,5 +75,5 @@ export function useFetch<T>() {
     }
   };
 
-  return { data, error, loading, doFetch };
+  return { data, error, loading, doFetch, status };
 }
