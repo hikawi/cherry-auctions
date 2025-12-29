@@ -84,7 +84,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     name: Build
-    needs: ["e2etest"]
+    needs: ["unittest"]
     steps:
       - name: Checkout
         uses: actions/checkout@v5
