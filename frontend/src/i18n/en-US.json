@@ -56,6 +56,12 @@
       "error_invalid_name": "Category name is too long or too short."
     }
   },
+  "acknowledgements": {
+    "title": "Acknowledgements",
+    "fonts": "Fonts Usage",
+    "fonts_paragraph": "Fonts used here are based on Chiron GoRound TC, which is a SIL Open Font-licensed font, distributed by Google Fonts. The fonts are property of their respective owners, and we do not claim any ownership over them.",
+    "contributors": "Contributors"
+  },
   "search": {
     "no_products": "No products match your criteria",
     "products_count": "{count} product(s) matched",

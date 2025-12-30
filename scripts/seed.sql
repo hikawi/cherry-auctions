@@ -10,7 +10,6 @@ truncate table products_categories restart identity cascade;
 truncate table users restart identity cascade;
 
 CREATE INDEX IF NOT EXISTS idx_products_name_trgm ON products USING gin (name gin_trgm_ops);
-CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE ON products FOR EACH ROW EXECUTE FUNCTION tsvector_update_trigger(search_vector, 'pg_catalog.english', name, description);
 
 -- Main User
 
@@ -1073,6 +1072,10 @@ insert into products (starting_bid, step_bid_type, step_bid_value, bin_price, al
 insert into products (starting_bid, step_bid_type, step_bid_value, bin_price, allows_unrated_buyers, auto_extends_time, expired_at, seller_id, thumbnail_url, name, description) values (18.37, 'fixed', 0.28, 55.11, false, true, '1/26/2025', 1, 'http://dummyimage.com/204x197.png/ff4444/ffffff', 'Honey Mustard Pretzel Bites', 'Delicious pretzel bites with a sweet honey mustard flavor, perfect for dipping.');
 insert into products (starting_bid, step_bid_type, step_bid_value, bin_price, allows_unrated_buyers, auto_extends_time, expired_at, seller_id, thumbnail_url, name, description) values (1583.66, 'fixed', 0.32, 4750.98, true, true, '12/9/2026', 1, 'http://dummyimage.com/173x193.png/ff4444/ffffff', 'Balsamic Salad Dressing', 'Tangy and sweet balsamic dressing, perfect for salads.');
 insert into products (starting_bid, step_bid_type, step_bid_value, bin_price, allows_unrated_buyers, auto_extends_time, expired_at, seller_id, thumbnail_url, name, description) values (162.95, 'fixed', 0.47, 488.85, true, true, '2/17/2027', 1, 'http://dummyimage.com/191x161.png/cc0000/ffffff', 'Pumpkin Spice Creamer', 'A seasonal creamer that adds pumpkin spice flavor to coffee or tea.');
+insert into products (starting_bid, step_bid_type, step_bid_value, bin_price, allows_unrated_buyers, auto_extends_time, expired_at, seller_id, thumbnail_url, name, description) values (69.0, 'percentage', 0.47, 420.0, true, true, '2/17/2027', 1, 'https://cdn.luny.dev/online-news/676e8efdf6aa2cb546216767-large.webp', 'さくらちゃん', '桜ちゃんかわいいですね。主無きものよ、夢の杖のもと、われの力になれ。');
+
+-- Update TS Vector.
+update products set search_vector = to_tsvector('simple', name || ' ' || description);
 
 -- Seeding for products/categories
 

@@ -56,6 +56,12 @@
       "error_invalid_name": "カテゴリー名前が短すぎますか、長過ぎます。"
     }
   },
+  "acknowledgements": {
+    "title": "謝辞",
+    "fonts": "使用フォントについて",
+    "fonts_paragraph": "本サイトで使用されているフォントは、Google Fontsを通じて配布されているSILオープンフォントライセンスの「Chiron GoRound TC」に基づいています。フォントの著作権はそれぞれの所有者に帰属し、当サイトがそれらの所有権を主張することはありません。",
+    "contributors": "協力者・コントリビューター"
+  },
   "search": {
     "no_products": "商品一つも見つかりませんでした",
     "products_count": "{count}件の商品見つけました",

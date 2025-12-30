@@ -48,7 +48,7 @@ async function fetchProducts() {
 
   // First, we build the URL
   const url = new URL(endpoints.products.get);
-  url.searchParams.append("page", page.value.toString());
+  url.searchParams.append("page", Math.max(page.value, 1).toString());
   url.searchParams.append("per_page", "18"); // just an arbitrary number because it fits well.
 
   if (search.value) {

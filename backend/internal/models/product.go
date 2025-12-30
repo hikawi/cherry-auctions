@@ -10,7 +10,7 @@ type Product struct {
 	gorm.Model
 	Name                string    `gorm:"size:255;not null"`
 	StartingBid         float64   `gorm:"type:decimal(10,2);not null"`
-	StepBidType         string    `gorm:"check:step_bid_type in ('percentage','value')"`
+	StepBidType         string    `gorm:"check:step_bid_type in ('percentage','fixed')"`
 	StepBidValue        float64   `gorm:"type:decimal(10,2);not null"`
 	BINPrice            float64   `gorm:"type:decimal(10,2);not null"`
 	Description         string    `gorm:"not null"`

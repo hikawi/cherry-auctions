@@ -31,6 +31,11 @@ const router = createRouter({
       component: () => import("../pages/ForgotPasswordPage.vue"),
     },
     {
+      name: "acknowledgements",
+      path: "/acknowledgements",
+      component: () => import("../pages/AcknowledgementPage.vue"),
+    },
+    {
       name: "admin",
       path: "/admin",
       meta: {
