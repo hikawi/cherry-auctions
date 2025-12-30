@@ -29,6 +29,22 @@ func (r *ProductRepository) SearchProducts(ctx context.Context, query string, li
 	return statement.Limit(limit).Offset(offset).Find(ctx)
 }
 
+func (r *ProductRepository) CountProductsWithQuery(ctx context.Context, query string) (int64, error) {
+	statement := gorm.G[models.Product](r.DB).Preload("Seller", nil)
+
+	// Conditionally apply full-text and fuzzy.
+	if query != "" {
+		return statement.Where("(search_vector @@ plainto_tsquery('simple', ?)) OR name % ?", query, query).
+			Order(gorm.Expr(
+				"(ts_rank(search_vector, plainto_tsquery('simple', ?)) * 2.0) + similarity(name, ?) DESC", // Just weigh the full-text better
+				query, query,
+			)).
+			Count(ctx, "id")
+	}
+
+	return statement.Count(ctx, "id")
+}
+
 func (r *ProductRepository) CountProducts(ctx context.Context) (int64, error) {
 	return gorm.G[models.Product](r.DB).Count(ctx, "id")
 }

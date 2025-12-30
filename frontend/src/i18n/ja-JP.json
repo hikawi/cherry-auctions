@@ -56,6 +56,15 @@
       "error_invalid_name": "カテゴリー名前が短すぎますか、長過ぎます。"
     }
   },
+  "search": {
+    "no_products": "商品一つも見つかりませんでした",
+    "products_count": "{count}件の商品見つけました",
+    "all_products": "すべての商品"
+  },
+  "products": {
+    "bin_price": "即決価格",
+    "current_bid": "現在の入札額"
+  },
   "general": {
     "categories": "カテゴリー",
     "products": "プロダクト",
@@ -64,7 +73,10 @@
     "confirm": "確認",
     "cancel": "キャンセル",
     "try_again": "もう一度試す",
-    "back_home": "ホームに戻る"
+    "back_home": "ホームに戻る",
+    "login": "ログイン",
+    "search": "探検",
+    "clear": "消す"
   },
   "others": {
     "403": {
