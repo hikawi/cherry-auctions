@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import GithubProfile from "@/components/acknowledgements/GithubProfile.vue";
+import NavigationBar from "@/components/shared/NavigationBar.vue";
 import WhiteContainer from "@/components/shared/WhiteContainer.vue";
 
 const contributors = [
@@ -16,6 +17,8 @@ const contributors = [
 
 <template>
   <WhiteContainer class="justify-start gap-8">
+    <NavigationBar />
+
     <h1 class="text-center text-3xl font-bold">{{ $t("acknowledgements.title") }}</h1>
 
     <section class="flex w-full max-w-3xl flex-col gap-4">
@@ -25,7 +28,9 @@ const contributors = [
 
     <section class="flex w-full max-w-3xl flex-col gap-4">
       <h2 class="text-xl font-semibold">{{ $t("acknowledgements.contributors") }}</h2>
-      <div class="flex w-full flex-row flex-wrap gap-4">
+      <div
+        class="flex w-full flex-row flex-wrap items-center justify-center gap-4 md:justify-start"
+      >
         <GithubProfile
           v-for="contributor in contributors"
           :key="contributor.username"

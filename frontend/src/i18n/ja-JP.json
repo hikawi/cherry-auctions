@@ -56,6 +56,12 @@
       "error_invalid_name": "カテゴリー名前が短すぎますか、長過ぎます。"
     }
   },
+  "navigation": {
+    "home": "ホーム",
+    "all_products": "商品",
+    "acknowledgements": "謝辞",
+    "bar_title": "ナビゲーション"
+  },
   "acknowledgements": {
     "title": "謝辞",
     "fonts": "使用フォントについて",

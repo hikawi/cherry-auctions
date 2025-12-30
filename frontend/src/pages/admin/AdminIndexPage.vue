@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import NavigationBar from "@/components/shared/NavigationBar.vue";
 import WhiteContainer from "@/components/shared/WhiteContainer.vue";
 import { useI18n } from "vue-i18n";
 
@@ -25,6 +26,8 @@ const links = [
 
 <template>
   <WhiteContainer class="justify-start gap-4">
+    <NavigationBar />
+
     <div class="max-w-2xl rounded-2xl border-2 border-pink-600 bg-pink-200 p-2 px-4 text-pink-600">
       <span class="font-semibold">Caution!</span> You are currently working on the administrative
       panel of this application. Any changes here may be destructive.

@@ -12,6 +12,7 @@ import { useAuthFetch } from "@/hooks/use-auth-fetch";
 import { endpoints } from "@/consts";
 import type { ProductListing } from "@/types";
 import ProductCard from "@/components/index/ProductCard.vue";
+import NavigationBar from "@/components/shared/NavigationBar.vue";
 
 const profile = useProfileStore();
 const { authFetch } = useAuthFetch();
@@ -77,13 +78,13 @@ onMounted(async () => {
 </script>
 
 <template>
-  <WhiteContainer class="justify-start">
+  <WhiteContainer class="justify-start gap-4">
+    <NavigationBar />
+
     <!-- Classic 12-column layout -->
     <div class="grid h-fit w-full grid-cols-1 gap-4 sm:flex-row sm:gap-8 md:grid-cols-4 lg:px-6">
-      <a href="/" class="hover:text-claret-600 text-center text-3xl font-bold"> CherryAuctions </a>
-
       <!-- NavigationBar -->
-      <div class="flex flex-row items-center gap-4 md:col-span-3">
+      <div class="flex flex-row items-center gap-4 md:col-span-4">
         <label
           class="hover:ring-claret-200 focus-within:ring-claret-600 group flex w-full flex-row items-center gap-4 rounded-lg border border-zinc-300 px-4 py-2 duration-200 outline-none placeholder:text-black/50 focus-within:ring-2 hover:ring-2"
         >
@@ -139,7 +140,7 @@ onMounted(async () => {
           {{ $t("search.products_count", { count: total }) }}
         </p>
         <div
-          class="grid size-full grid-cols-1 gap-4 overflow-visible rounded-2xl md:grid-cols-2 lg:grid-cols-3"
+          class="grid size-full grid-cols-1 gap-4 overflow-visible rounded-2xl md:grid-cols-2 xl:grid-cols-3"
         >
           <p
             class="flex size-full items-center justify-center text-lg md:col-span-2 lg:col-span-3"

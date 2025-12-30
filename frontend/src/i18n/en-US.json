@@ -56,6 +56,12 @@
       "error_invalid_name": "Category name is too long or too short."
     }
   },
+  "navigation": {
+    "home": "Home",
+    "all_products": "All Products",
+    "acknowledgements": "Acknowledgements",
+    "bar_title": "Navigation"
+  },
   "acknowledgements": {
     "title": "Acknowledgements",
     "fonts": "Fonts Usage",
