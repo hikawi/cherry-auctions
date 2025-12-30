@@ -41,6 +41,7 @@ func main() {
 	roleRepo := &repositories.RoleRepository{DB: db}
 	userRepo := &repositories.UserRepository{DB: db, RoleRepository: roleRepo}
 	refreshTokenRepo := &repositories.RefreshTokenRepository{DB: db}
+	productRepo := &repositories.ProductRepository{DB: db}
 
 	// Setup services here
 	jwtService := &services.JWTService{JWTDomain: cfg.Domain, JWTAudience: cfg.JWT.Audience, JWTSecretKey: cfg.JWT.Secret, JWTExpiry: cfg.JWT.Expiry}
@@ -73,6 +74,7 @@ func main() {
 			UserRepository:         userRepo,
 			RoleRepository:         roleRepo,
 			RefreshTokenRepository: refreshTokenRepo,
+			ProductRepository:      productRepo,
 		},
 	})
 

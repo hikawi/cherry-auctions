@@ -17,6 +17,7 @@ import (
 	"luny.dev/cherryauctions/internal/repositories"
 	"luny.dev/cherryauctions/internal/routes/auth"
 	"luny.dev/cherryauctions/internal/routes/categories"
+	"luny.dev/cherryauctions/internal/routes/products"
 	"luny.dev/cherryauctions/internal/routes/users"
 	"luny.dev/cherryauctions/internal/services"
 	"luny.dev/cherryauctions/pkg/env"
@@ -77,6 +78,11 @@ func SetupRoutes(server *gin.Engine, deps ServerDependency) {
 		CategoryRepo:      deps.Repositories.CategoryRepository,
 	}
 	categoriesHandler.SetupRouter(versionedGroup)
+
+	productsHandler := products.ProductsHandler{
+		ProductRepo: deps.Repositories.ProductRepository,
+	}
+	productsHandler.SetupRouter(versionedGroup)
 
 	versionedGroup.GET("/health", GetHealth)
 

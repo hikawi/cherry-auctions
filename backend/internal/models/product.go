@@ -27,3 +27,13 @@ type Product struct {
 
 	SearchVector string `gorm:"type:tsvector;index:,type:gin"`
 }
+
+// Courtesy of AI.
+func (p *Product) BeforeSave(tx *gorm.DB) (err error) {
+	// This generates the vector from Name and Description during the insert/update
+	// 'simple' dictionary is used for multi-language safety
+	tx.Statement.SetColumn("SearchVector",
+		gorm.Expr("to_tsvector('simple', ? || ' ' || ?)", p.Name, p.Description),
+	)
+	return
+}

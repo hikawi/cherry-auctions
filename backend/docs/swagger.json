@@ -438,6 +438,52 @@
                 }
             }
         },
+        "/products": {
+            "get": {
+                "description": "Queries from a list of products using a set of keywords, using Full-text Queries or Fuzzy and Similarity queries.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Queries products using fuzzy matchers and full-text matchers.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Search Query",
+                        "name": "query",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page Number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Items per Page",
+                        "name": "per_page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/products.GetProductsResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "The server could not make the request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/me": {
             "get": {
                 "security": [
@@ -595,6 +641,84 @@
                 },
                 "parent_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "products.GetProductsResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/products.ProductDTO"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "per_page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "total_pages": {
+                    "type": "integer"
+                }
+            }
+        },
+        "products.ProductDTO": {
+            "type": "object",
+            "properties": {
+                "allows_unrated_buyers": {
+                    "type": "boolean"
+                },
+                "auto_extends_time": {
+                    "type": "boolean"
+                },
+                "bin_price": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "expired_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "seller": {
+                    "$ref": "#/definitions/products.ProfileDTO"
+                },
+                "starting_bid": {
+                    "type": "number"
+                },
+                "step_bid_type": {
+                    "type": "string"
+                },
+                "step_bid_value": {
+                    "type": "number"
+                },
+                "thumbnail_url": {
+                    "type": "string"
+                }
+            }
+        },
+        "products.ProfileDTO": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },
