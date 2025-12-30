@@ -21,7 +21,7 @@ services:
       - default
     volumes:
       - ./fluentbit/fluentbit.yaml:/fluent-bit/etc/fluent-bit.yaml
-      - ./var/server.log:/var/server.log:ro
+      - ./backend/server.log:/var/server.log:ro
     command: -c /fluent-bit/etc/fluent-bit.yaml
     environment:
       FLUENTBIT_LOG_LEVEL: debug
@@ -148,7 +148,6 @@ services:
       - 3000:80
     volumes:
       - ./backend:/app
-      - ./var/server.log:/app/server.log
       - /app/tmp
     depends_on:
       postgres:
