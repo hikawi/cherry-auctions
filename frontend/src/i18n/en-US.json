@@ -59,6 +59,15 @@
       "error_invalid_name": "Category name is too long or too short."
     }
   },
+  "search": {
+    "no_products": "No products match your criteria",
+    "products_count": "{count} product(s) matched",
+    "all_products": "All Products"
+  },
+  "products": {
+    "bin_price": "Buy it now",
+    "current_bid": "Current bid"
+  },
   "general": {
     "categories": "Categories",
     "products": "Products",
@@ -67,7 +76,10 @@
     "confirm": "Confirm",
     "cancel": "Cancel",
     "try_again": "Try Again",
-    "back_home": "Back to Home Page"
+    "back_home": "Back to Home Page",
+    "login": "Login",
+    "search": "Search",
+    "clear": "Clear"
   },
   "others": {
     "403": {

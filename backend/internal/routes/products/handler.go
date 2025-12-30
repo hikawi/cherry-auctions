@@ -41,7 +41,7 @@ func (h *ProductsHandler) GetProducts(g *gin.Context) {
 		return
 	}
 
-	count, err := h.ProductRepo.CountProducts(ctx)
+	count, err := h.ProductRepo.CountProductsWithQuery(ctx, query.Query)
 	if err != nil {
 		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": err.Error(), "query": query})
 		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "unable to count products"})

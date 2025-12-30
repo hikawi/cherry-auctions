@@ -5,6 +5,9 @@ export const endpoints = {
     refresh: `${api}/v1/auth/refresh`,
     logout: `${api}/v1/auth/logout`,
   },
+  products: {
+    get: `${api}/v1/products`,
+  },
   categories: {
     get: `${api}/v1/categories`,
     post: `${api}/v1/categories`,
