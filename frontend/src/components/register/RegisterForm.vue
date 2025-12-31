@@ -157,5 +157,11 @@ async function register() {
     >
       {{ loading ? t("register.loading") : t("register.action") }}
     </button>
+        <div class="w-full flex justify-center text-sm text-zinc-600">
+      <span>{{ t("register.already_user") }}</span>
+      <router-link to="/login" class="ml-2 underline text-claret-600">
+        {{ t("register.login") }}
+      </router-link>
+    </div>
   </div>
 </template>
