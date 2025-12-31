@@ -76,7 +76,8 @@
   "home": {
     "top_ending_soons": "トップ５まもなく終了",
     "top_bids": "トップ５入札件数",
-    "top_highest_bids": "トップ５最高入札額"
+    "top_highest_bids": "トップ５最高入札額",
+    "no_products": "商品がありません"
   },
   "products": {
     "bin_price": "即決価格",
@@ -85,7 +86,18 @@
     "bids_count_plural": "{count}件の入札",
     "bids_count_singular": "{count}件の入札",
     "expires_in": "残り{in}",
-    "expires_at": "{at}まで"
+    "expires_at": "{at}まで",
+    "created_at": "出品日時　{at}",
+    "new": "NEW",
+    "bid": "入札",
+    "bin": "即決購入",
+    "asked_by": "{name}さんからの質問",
+    "replied_by_seller": "出品者の回答",
+    "no_questions": "質問はまだありません",
+    "no_bids": "入札はまだありません。一番乗りで入札しませんか？",
+    "questions": "商品への質問一覧",
+    "bids": "すべての入札",
+    "bid_list": "{name}さんが{price}で入札しました"
   },
   "general": {
     "categories": "カテゴリー",
@@ -95,6 +107,7 @@
     "confirm": "確認",
     "cancel": "キャンセル",
     "try_again": "もう一度試す",
+    "back": "戻る",
     "back_home": "ホームに戻る",
     "login": "ログイン",
     "search": "探検",

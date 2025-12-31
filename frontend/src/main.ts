@@ -35,6 +35,16 @@ const i18n = createI18n<[I18nSchema], "en-US" | "ja-JP">({
     "en-US": enUS,
     "ja-JP": jaJP,
   },
+  numberFormats: {
+    "en-US": {
+      currency: { style: "currency", currency: "USD" },
+      decimal: { style: "decimal", minimumFractionDigits: 2 },
+    },
+    "ja-JP": {
+      currency: { style: "currency", currency: "USD" },
+      compact: { notation: "compact" }, // Turns 10,000 into 1万
+    },
+  },
 });
 
 const pinia = createPinia();

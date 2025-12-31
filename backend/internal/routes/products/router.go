@@ -15,4 +15,5 @@ func (h *ProductsHandler) SetupRouter(g *gin.RouterGroup) {
 
 	r.GET("", h.GetProducts)
 	r.GET("/top", h.GetProductsTop)
+	r.GET("/:id", h.GetProductID)
 }

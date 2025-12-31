@@ -89,3 +89,16 @@ func (r *ProductRepository) GetHighestBiddedProducts(ctx context.Context) ([]mod
 
 	return products, err
 }
+
+func (r *ProductRepository) GetProductByID(ctx context.Context, id int) (models.Product, error) {
+	return gorm.G[models.Product](r.DB).
+		Preload("Seller", nil).
+		Preload("Categories", nil).
+		Preload("CurrentHighestBid.User", nil).
+		Preload("Bids.User", nil).
+		Preload("Questions.User", nil).
+		Preload("Categories", nil).
+		Preload("ProductImages", nil).
+		Where("id = ?", id).
+		First(ctx)
+}

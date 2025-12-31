@@ -19,19 +19,34 @@ const expiresDisplay = computed(() => {
 const expiresAtDisplay = computed(() => {
   return dayjs(props.product.expired_at).locale(locale.value).format("ll");
 });
+const createdAtDisplay = computed(() => {
+  return dayjs(props.product.created_at).locale(locale.value).format("lll");
+});
 const shouldBeRelative = computed(() => {
   const expiration = dayjs(props.product.expired_at);
   const diffMs = expiration.diff(now.value);
   const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
   return diffMs > 0 && diffMs <= THREE_DAYS_MS;
 });
+const isNew = computed(() => {
+  const diffMs = dayjs(props.product.created_at).diff(now.value);
+  const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+  return Math.abs(diffMs) <= THREE_DAYS_MS;
+});
 </script>
 
 <template>
   <a
     :href="productLink"
-    class="flex flex-col gap-4 rounded-lg border border-zinc-300 bg-white p-4 duration-200 hover:border-zinc-500"
+    class="relative flex flex-col gap-4 rounded-lg border border-zinc-300 bg-white p-4 pt-8 duration-200 hover:border-zinc-500"
   >
+    <div
+      class="from-watermelon-500 absolute -top-2 -right-2 rounded-xl bg-linear-to-r to-pink-600 px-4 py-2 font-semibold text-white uppercase shadow-md"
+      v-if="isNew"
+    >
+      {{ $t("products.new") }}
+    </div>
+
     <span class="text-lg font-semibold">{{ product.name }}</span>
     <img
       :src="product.thumbnail_url"
@@ -43,6 +58,8 @@ const shouldBeRelative = computed(() => {
       <PlaceholderAvatar :name="product.seller.name" />
       <span>{{ product.seller.name }}</span>
     </div>
+
+    <span class="text-sm">{{ $t("products.created_at", { at: createdAtDisplay }) }}</span>
 
     <div class="flex w-full flex-col gap-0">
       <div class="flex flex-row items-center justify-between" v-if="product.current_highest_bid">

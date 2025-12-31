@@ -43,11 +43,44 @@ type ProductDTO struct {
 	BidsCount           int        `json:"bids_count"`
 }
 
+type QuestionDTO struct {
+	ID        uint       `json:"id"`
+	Content   string     `json:"content"`
+	Answer    *string    `json:"answer"`
+	User      ProfileDTO `json:"user"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+}
+
 func ToProfileDTO(m models.User) ProfileDTO {
 	return ProfileDTO{
 		Name:  m.Name,
 		Email: m.Email,
 	}
+}
+
+func ToQuestionDTO(m models.Question) QuestionDTO {
+	var answer *string = nil
+	if m.Answer.Valid {
+		answer = &m.Answer.String
+	}
+
+	return QuestionDTO{
+		ID:        m.ID,
+		Content:   m.Content,
+		Answer:    answer,
+		User:      ToProfileDTO(m.User),
+		CreatedAt: m.CreatedAt,
+		UpdatedAt: m.UpdatedAt,
+	}
+}
+
+func ToQuestionDTOs(questions []models.Question) []QuestionDTO {
+	var dtos []QuestionDTO
+	for _, question := range questions {
+		dtos = append(dtos, ToQuestionDTO(question))
+	}
+	return dtos
 }
 
 func ToBidDTO(m models.Bid) BidDTO {
@@ -61,11 +94,27 @@ func ToBidDTO(m models.Bid) BidDTO {
 	}
 }
 
+func ToBidDTOs(bids []models.Bid) []BidDTO {
+	var dtos []BidDTO
+	for _, bid := range bids {
+		dtos = append(dtos, ToBidDTO(bid))
+	}
+	return dtos
+}
+
 func ToProductImageDTO(m models.ProductImage) ProductImageDTO {
 	return ProductImageDTO{
 		URL:     m.URL,
 		AltText: m.AltText,
 	}
+}
+
+func ToProductImageDTOs(images []models.ProductImage) []ProductImageDTO {
+	var dtos []ProductImageDTO
+	for _, img := range images {
+		dtos = append(dtos, ToProductImageDTO(img))
+	}
+	return dtos
 }
 
 func ToProductDTO(m *models.Product) ProductDTO {
@@ -114,4 +163,17 @@ type GetProductsResponse struct {
 	TotalPages int          `json:"total_pages"`
 	Page       int          `json:"page"`
 	PerPage    int          `json:"per_page"`
+}
+
+type GetTopProductsResponse struct {
+	TopBidded   []ProductDTO `json:"top_bids"`
+	EndingSoon  []ProductDTO `json:"ending_soon"`
+	HighestBids []ProductDTO `json:"highest_bids"`
+}
+
+type GetProductDetailsResponse struct {
+	ProductDTO
+	ProductImages []ProductImageDTO `json:"product_images"`
+	Questions     []QuestionDTO     `json:"questions"`
+	Bids          []BidDTO          `json:"bids"`
 }

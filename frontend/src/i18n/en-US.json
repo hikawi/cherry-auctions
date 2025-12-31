@@ -76,7 +76,8 @@
   "home": {
     "top_ending_soons": "Top 5 Ending Soons",
     "top_bids": "Top 5 Bidded",
-    "top_highest_bids": "Top 5 Highest Bids"
+    "top_highest_bids": "Top 5 Highest Bids",
+    "no_products": "No products here"
   },
   "products": {
     "bin_price": "Buy it now",
@@ -85,7 +86,18 @@
     "bids_count_plural": "{count} bids",
     "bids_count_singular": "{count} bid",
     "expires_in": "in {in}",
-    "expires_at": "at {at}"
+    "expires_at": "at {at}",
+    "created_at": "Posted at {at}",
+    "new": "NEW",
+    "bid": "Bid",
+    "bin": "Buy it now",
+    "asked_by": "Asked by {name}",
+    "replied_by_seller": "Replied by seller",
+    "no_questions": "No questions asked",
+    "no_bids": "No bids yet. Be the first!",
+    "questions": "Questions",
+    "bids": "Bids",
+    "bid_list": "{name} bidded {price}"
   },
   "general": {
     "categories": "Categories",
@@ -95,6 +107,7 @@
     "confirm": "Confirm",
     "cancel": "Cancel",
     "try_again": "Try Again",
+    "back": "Back",
     "back_home": "Back to Home Page",
     "login": "Login",
     "search": "Search",
