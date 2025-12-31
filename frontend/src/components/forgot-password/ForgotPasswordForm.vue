@@ -82,7 +82,7 @@ async function submit() {
 
     <p
       v-if="success"
-      class="bg-emerald-100 border-emerald-500 text-emerald-700 w-full rounded-xl border-2 px-4 py-2"
+      class="w-full rounded-xl border-2 border-emerald-500 bg-emerald-100 px-4 py-2 text-emerald-700"
     >
       {{ t(success) }}
     </p>
@@ -92,7 +92,7 @@ async function submit() {
     <button
       @click="submit"
       :disabled="loading"
-      class="bg-claret-600 disabled:bg-claret-700 border-claret-600 enabled:hover:text-claret-600 disabled:border-claret-700 w-full cursor-pointer rounded-xl border-2 p-2 py-3 text-white transition-all duration-200 hover:shadow-md enabled:hover:bg-transparent disabled:cursor-progress disabled:opacity-50 flex items-center justify-center gap-2"
+      class="bg-claret-600 disabled:bg-claret-700 border-claret-600 enabled:hover:text-claret-600 disabled:border-claret-700 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border-2 p-2 py-3 font-semibold text-white transition-all duration-200 hover:shadow-md enabled:hover:bg-transparent disabled:cursor-progress disabled:opacity-50"
     >
       <Mail class="size-6" :class="{ 'animate-spin': loading }" />
 

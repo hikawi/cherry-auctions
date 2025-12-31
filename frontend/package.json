@@ -19,6 +19,8 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.17",
+    "@vueuse/core": "^14.1.0",
+    "dayjs": "^1.11.19",
     "lucide-vue-next": "^0.556.0",
     "pinia": "^3.0.3",
     "pinia-plugin-persistedstate": "^4.7.1",

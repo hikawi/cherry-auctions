@@ -32,7 +32,17 @@ func SetupDatabase(databaseURL string) *gorm.DB {
 
 // MigrateModels uses GORM to migrate the models.
 func MigrateModels(db *gorm.DB) {
-	err := db.AutoMigrate(&models.User{}, &models.RefreshToken{}, &models.Category{}, &models.Role{})
+	err := db.AutoMigrate(
+		&models.User{},
+		&models.RefreshToken{},
+		&models.Category{},
+		&models.Role{},
+		&models.Product{},
+		&models.Question{},
+		&models.ProductImage{},
+		&models.SellerSubscription{},
+		&models.Bid{},
+	)
 	if err != nil {
 		log.Fatalln("fatal: failed to auto migrate models. check them yourself")
 	}

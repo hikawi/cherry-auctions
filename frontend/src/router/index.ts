@@ -11,6 +11,23 @@ const router = createRouter({
       component: HomePage,
     },
     {
+      name: "products-home",
+      path: "/products",
+      redirect: {
+        name: "search",
+      },
+    },
+    {
+      name: "product-details",
+      path: "/products/:id",
+      component: () => import("../pages/ProductDetailsPage.vue"),
+    },
+    {
+      name: "search",
+      path: "/search",
+      component: () => import("../pages/SearchPage.vue"),
+    },
+    {
       name: "login",
       path: "/login",
       component: () => import("../pages/LoginPage.vue"),
@@ -24,6 +41,11 @@ const router = createRouter({
       name: "forgot",
       path: "/forgot",
       component: () => import("../pages/ForgotPasswordPage.vue"),
+    },
+    {
+      name: "acknowledgements",
+      path: "/acknowledgements",
+      component: () => import("../pages/AcknowledgementPage.vue"),
     },
     {
       name: "admin",

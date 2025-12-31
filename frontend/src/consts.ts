@@ -5,6 +5,11 @@ export const endpoints = {
     refresh: `${api}/v1/auth/refresh`,
     logout: `${api}/v1/auth/logout`,
   },
+  products: {
+    get: `${api}/v1/products`,
+    details: (id: unknown) => `${api}/v1/products/${id}`,
+    top: `${api}/v1/products/top`,
+  },
   categories: {
     get: `${api}/v1/categories`,
     post: `${api}/v1/categories`,

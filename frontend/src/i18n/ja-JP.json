@@ -63,6 +63,49 @@
       "error_invalid_name": "カテゴリー名前が短すぎますか、長過ぎます。"
     }
   },
+  "navigation": {
+    "home": "ホーム",
+    "all_products": "商品",
+    "acknowledgements": "謝辞",
+    "bar_title": "ナビゲーション"
+  },
+  "acknowledgements": {
+    "title": "謝辞",
+    "fonts": "使用フォントについて",
+    "fonts_paragraph": "本サイトで使用されているフォントは、Google Fontsを通じて配布されているSILオープンフォントライセンスの「Chiron GoRound TC」に基づいています。フォントの著作権はそれぞれの所有者に帰属し、当サイトがそれらの所有権を主張することはありません。",
+    "contributors": "協力者・コントリビューター"
+  },
+  "search": {
+    "no_products": "商品一つも見つかりませんでした",
+    "products_count": "{count}件の商品見つけました",
+    "all_products": "すべての商品"
+  },
+  "home": {
+    "top_ending_soons": "トップ５まもなく終了",
+    "top_bids": "トップ５入札件数",
+    "top_highest_bids": "トップ５最高入札額",
+    "no_products": "商品がありません"
+  },
+  "products": {
+    "bin_price": "即決価格",
+    "current_bid": "現在の入札額",
+    "starting_bid": "最初の入札",
+    "bids_count_plural": "{count}件の入札",
+    "bids_count_singular": "{count}件の入札",
+    "expires_in": "残り{in}",
+    "expires_at": "{at}まで",
+    "created_at": "出品日時　{at}",
+    "new": "NEW",
+    "bid": "入札",
+    "bin": "即決購入",
+    "asked_by": "{name}さんからの質問",
+    "replied_by_seller": "出品者の回答",
+    "no_questions": "質問はまだありません",
+    "no_bids": "入札はまだありません。一番乗りで入札しませんか？",
+    "questions": "商品への質問一覧",
+    "bids": "すべての入札",
+    "bid_list": "{name}さんが{price}で入札しました"
+  },
   "general": {
     "categories": "カテゴリー",
     "products": "プロダクト",
@@ -71,7 +114,13 @@
     "confirm": "確認",
     "cancel": "キャンセル",
     "try_again": "もう一度試す",
-    "back_home": "ホームに戻る"
+    "back": "戻る",
+    "back_home": "ホームに戻る",
+    "login": "ログイン",
+    "search": "探検",
+    "clear": "消す",
+    "refresh": "リロード",
+    "refreshing": "リロード中"
   },
   "others": {
     "403": {

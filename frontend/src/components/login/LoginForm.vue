@@ -29,7 +29,7 @@ onMounted(() => {
 onUnmounted(() => window.removeEventListener("resize", setSmallWindow));
 
 async function forgotPassword() {
-    router.push("/forgot-password");
+  router.push("/forgot");
 }
 
 async function login() {

@@ -81,6 +81,158 @@ definitions:
     required:
     - name
     type: object
+  products.BidDTO:
+    properties:
+      automated:
+        type: boolean
+      bidder:
+        $ref: '#/definitions/products.ProfileDTO'
+      created_at:
+        type: string
+      id:
+        type: integer
+      price:
+        type: number
+      updated_at:
+        type: string
+    type: object
+  products.GetProductDetailsResponse:
+    properties:
+      allows_unrated_buyers:
+        type: boolean
+      auto_extends_time:
+        type: boolean
+      bids:
+        items:
+          $ref: '#/definitions/products.BidDTO'
+        type: array
+      bids_count:
+        type: integer
+      bin_price:
+        type: number
+      created_at:
+        type: string
+      current_highest_bid:
+        $ref: '#/definitions/products.BidDTO'
+      description:
+        type: string
+      expired_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      product_images:
+        items:
+          $ref: '#/definitions/products.ProductImageDTO'
+        type: array
+      questions:
+        items:
+          $ref: '#/definitions/products.QuestionDTO'
+        type: array
+      seller:
+        $ref: '#/definitions/products.ProfileDTO'
+      starting_bid:
+        type: number
+      step_bid_type:
+        type: string
+      step_bid_value:
+        type: number
+      thumbnail_url:
+        type: string
+    type: object
+  products.GetProductsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/products.ProductDTO'
+        type: array
+      page:
+        type: integer
+      per_page:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  products.GetTopProductsResponse:
+    properties:
+      ending_soon:
+        items:
+          $ref: '#/definitions/products.ProductDTO'
+        type: array
+      highest_bids:
+        items:
+          $ref: '#/definitions/products.ProductDTO'
+        type: array
+      top_bids:
+        items:
+          $ref: '#/definitions/products.ProductDTO'
+        type: array
+    type: object
+  products.ProductDTO:
+    properties:
+      allows_unrated_buyers:
+        type: boolean
+      auto_extends_time:
+        type: boolean
+      bids_count:
+        type: integer
+      bin_price:
+        type: number
+      created_at:
+        type: string
+      current_highest_bid:
+        $ref: '#/definitions/products.BidDTO'
+      description:
+        type: string
+      expired_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      seller:
+        $ref: '#/definitions/products.ProfileDTO'
+      starting_bid:
+        type: number
+      step_bid_type:
+        type: string
+      step_bid_value:
+        type: number
+      thumbnail_url:
+        type: string
+    type: object
+  products.ProductImageDTO:
+    properties:
+      alt:
+        type: string
+      url:
+        type: string
+    type: object
+  products.ProfileDTO:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+    type: object
+  products.QuestionDTO:
+    properties:
+      answer:
+        type: string
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/products.ProfileDTO'
+    type: object
   shared.ErrorResponse:
     properties:
       error:
@@ -392,6 +544,82 @@ paths:
       summary: Checks health of the server.
       tags:
       - others
+  /products:
+    get:
+      description: Queries from a list of products using a set of keywords, using
+        Full-text Queries or Fuzzy and Similarity queries.
+      parameters:
+      - description: Search Query
+        in: query
+        name: query
+        type: string
+      - description: Page Number
+        in: query
+        name: page
+        type: integer
+      - description: Items per Page
+        in: query
+        name: per_page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/products.GetProductsResponse'
+        "500":
+          description: The server could not make the request
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      summary: Queries products using fuzzy matchers and full-text matchers.
+      tags:
+      - products
+  /products/{id}:
+    get:
+      description: Queries everything about a single product, with full joins.
+      parameters:
+      - description: Product ID to view
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/products.GetProductDetailsResponse'
+        "404":
+          description: The server couldn't find the requested product
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: The server could not make the request
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      summary: Retrieves details on a single product.
+      tags:
+      - products
+  /products/top:
+    get:
+      description: Queriee top-products via some metrics, instead of a pure query
+        like /products.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/products.GetTopProductsResponse'
+        "500":
+          description: The server could not make the request
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      summary: Retrieves a list of products of top-categories.
+      tags:
+      - products
   /users/me:
     get:
       description: Retrieves information about your own profile if authenticated.
