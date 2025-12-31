@@ -1,7 +1,11 @@
 // Package models provide a set of GORM-based modelling for the database.
 package models
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 // User is the main struct that binds everything together.
 type User struct {
@@ -16,6 +20,21 @@ type User struct {
 	CreatedAt    time.Time  `gorm:"column:created_at;autoCreateTime;not null"`
 	UpdatedAt    time.Time  `gorm:"column:updated_at;autoUpdateTime;not null"`
 
-	RefreshTokens []RefreshToken `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	Roles         []Role         `gorm:"many2many:user_roles"`
+	AverageRating   float64 `gorm:"not null;default:0"`
+	WaitingApproval bool    `gorm:"not null;default:false"`
+
+	RefreshTokens    []RefreshToken       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Roles            []Role               `gorm:"many2many:user_roles"`
+	Subscriptions    []SellerSubscription `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	FavoriteProducts []Product            `gorm:"many2many:favorite_products"`
+}
+
+func (u *User) AfterCreate(tx *gorm.DB) error {
+	var role Role
+
+	if err := tx.Where("name = ?", "user").First(&role).Error; err != nil {
+		return err
+	}
+
+	return tx.Model(u).Association("Roles").Append(&role)
 }

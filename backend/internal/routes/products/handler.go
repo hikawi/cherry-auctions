@@ -99,9 +99,9 @@ func (h *ProductsHandler) GetProductsTop(g *gin.Context) {
 	}
 
 	response := GetTopProductsResponse{
-		TopBidded:   ToProductDTOs(highestBids),
+		TopBidded:   ToProductDTOs(topBids),
 		EndingSoon:  ToProductDTOs(endingSoon),
-		HighestBids: ToProductDTOs(topBids),
+		HighestBids: ToProductDTOs(highestBids),
 	}
 	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusOK, "response": response})
 	g.JSON(http.StatusOK, response)

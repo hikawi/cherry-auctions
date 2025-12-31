@@ -19,24 +19,29 @@ type Product struct {
 	AutoExtendsTime     bool      `gorm:"not null;default:true"`
 	ExpiredAt           time.Time `gorm:"not null"`
 
-	ProductImages     []ProductImage
-	Categories        []Category `gorm:"many2many:products_categories"`
-	Questions         []Question
-	Bids              []Bid
-	SellerID          uint `gorm:"not null"`
-	Seller            User
-	CurrentHighestBid *Bid `gorm:"default:null"`
-	BidsCount         int  `gorm:"default:0;not null"`
+	ProductImages       []ProductImage
+	Categories          []Category `gorm:"many2many:products_categories"`
+	Questions           []Question
+	Bids                []Bid
+	SellerID            uint `gorm:"not null"`
+	Seller              User
+	CurrentHighestBid   *Bid
+	CurrentHighestBidID *uint `gorm:"default:null"`
+	BidsCount           int   `gorm:"default:0;not null"`
 
 	SearchVector string `gorm:"type:tsvector;index:,type:gin"`
 }
 
 // Courtesy of AI.
 func (p *Product) BeforeSave(tx *gorm.DB) (err error) {
-	// This generates the vector from Name and Description during the insert/update
-	// 'simple' dictionary is used for multi-language safety
+	// We concatenate Name and Description into the SearchVector.
+	// to_tsvector transforms the text into searchable tokens.
+	// 'simple' dictionary is used to avoid aggressive stemming in multi-language setups.
+	content := p.Name + " " + p.Description
+
 	tx.Statement.SetColumn("SearchVector",
-		gorm.Expr("to_tsvector('simple', ? || ' ' || ?)", p.Name, p.Description),
+		gorm.Expr("to_tsvector('simple', ?)", content),
 	)
-	return
+
+	return nil
 }
