@@ -14,4 +14,5 @@ func (h *ProductsHandler) SetupRouter(g *gin.RouterGroup) {
 	r := g.Group("/products")
 
 	r.GET("", h.GetProducts)
+	r.GET("/top", h.GetProductsTop)
 }

@@ -11,6 +11,18 @@ import piniaPluginPersistedState from "pinia-plugin-persistedstate";
 import enUS from "@/i18n/en-US.json";
 import jaJP from "@/i18n/ja-JP.json";
 
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import localizedFormat from "dayjs/plugin/localizedFormat";
+
+// Import core locales your app starts with
+import "dayjs/locale/en";
+import "dayjs/locale/ja";
+
+// Extend Day.js once for the entire app life-cycle
+dayjs.extend(relativeTime);
+dayjs.extend(localizedFormat);
+
 const app = createApp(App);
 
 type I18nSchema = typeof enUS;

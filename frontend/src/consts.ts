@@ -7,6 +7,7 @@ export const endpoints = {
   },
   products: {
     get: `${api}/v1/products`,
+    top: `${api}/v1/products/top`,
   },
   categories: {
     get: `${api}/v1/categories`,

@@ -19,11 +19,14 @@ type Product struct {
 	AutoExtendsTime     bool      `gorm:"not null;default:true"`
 	ExpiredAt           time.Time `gorm:"not null"`
 
-	ProductImages []ProductImage
-	Categories    []Category `gorm:"many2many:products_categories"`
-	Questions     []Question
-	SellerID      uint `gorm:"not null"`
-	Seller        User
+	ProductImages     []ProductImage
+	Categories        []Category `gorm:"many2many:products_categories"`
+	Questions         []Question
+	Bids              []Bid
+	SellerID          uint `gorm:"not null"`
+	Seller            User
+	CurrentHighestBid *Bid `gorm:"default:null"`
+	BidsCount         int  `gorm:"default:0;not null"`
 
 	SearchVector string `gorm:"type:tsvector;index:,type:gin"`
 }

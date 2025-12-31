@@ -73,9 +73,19 @@
     "products_count": "{count} product(s) matched",
     "all_products": "All Products"
   },
+  "home": {
+    "top_ending_soons": "Top 5 Ending Soons",
+    "top_bids": "Top 5 Bidded",
+    "top_highest_bids": "Top 5 Highest Bids"
+  },
   "products": {
     "bin_price": "Buy it now",
-    "current_bid": "Current bid"
+    "current_bid": "Current bid",
+    "starting_bid": "Starting bid",
+    "bids_count_plural": "{count} bids",
+    "bids_count_singular": "{count} bid",
+    "expires_in": "in {in}",
+    "expires_at": "at {at}"
   },
   "general": {
     "categories": "Categories",
@@ -88,7 +98,9 @@
     "back_home": "Back to Home Page",
     "login": "Login",
     "search": "Search",
-    "clear": "Clear"
+    "clear": "Clear",
+    "refresh": "Refresh",
+    "refreshing": "Refreshing"
   },
   "others": {
     "403": {

@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"time"
 
 	"gorm.io/gorm"
 	"luny.dev/cherryauctions/internal/models"
@@ -47,4 +48,44 @@ func (r *ProductRepository) CountProductsWithQuery(ctx context.Context, query st
 
 func (r *ProductRepository) CountProducts(ctx context.Context) (int64, error) {
 	return gorm.G[models.Product](r.DB).Count(ctx, "id")
+}
+
+// GetTopEndingSoons returns 5 products that are currently about to expire.
+func (r *ProductRepository) GetTopEndingSoons(ctx context.Context) ([]models.Product, error) {
+	return gorm.G[models.Product](r.DB).
+		Preload("Seller", nil).
+		Preload("Categories", nil).
+		Preload("CurrentHighestBid", nil).
+		Where("expired_at > ?", time.Now()).
+		Order("expired_at ASC").
+		Limit(5).
+		Find(ctx)
+}
+
+func (r *ProductRepository) GetMostActiveProducts(ctx context.Context) ([]models.Product, error) {
+	return gorm.G[models.Product](r.DB).
+		Preload("Seller", nil).
+		Preload("Categories", nil).
+		Preload("CurrentHighestBid", nil).
+		Where("expired_at > ?", time.Now()).
+		Order("bids_count DESC, expired_at ASC").
+		Limit(5).
+		Find(ctx)
+}
+
+func (r *ProductRepository) GetHighestBiddedProducts(ctx context.Context) ([]models.Product, error) {
+	var products []models.Product
+
+	err := r.DB.WithContext(ctx).
+		Joins("LEFT JOIN bids ON products.current_highest_bid_id = bids.id").
+		Preload("Seller").
+		Preload("Categories").
+		Preload("CurrentHighestBid").
+		Where("expired_at > ?", time.Now()).
+		Order("bids.price DESC, expired_at ASC").
+		Limit(5).
+		Find(&products).
+		Error
+
+	return products, err
 }

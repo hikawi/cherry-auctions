@@ -73,9 +73,19 @@
     "products_count": "{count}件の商品見つけました",
     "all_products": "すべての商品"
   },
+  "home": {
+    "top_ending_soons": "トップ５まもなく終了",
+    "top_bids": "トップ５入札件数",
+    "top_highest_bids": "トップ５最高入札額"
+  },
   "products": {
     "bin_price": "即決価格",
-    "current_bid": "現在の入札額"
+    "current_bid": "現在の入札額",
+    "starting_bid": "最初の入札",
+    "bids_count_plural": "{count}件の入札",
+    "bids_count_singular": "{count}件の入札",
+    "expires_in": "残り{in}",
+    "expires_at": "{at}まで"
   },
   "general": {
     "categories": "カテゴリー",
@@ -88,7 +98,9 @@
     "back_home": "ホームに戻る",
     "login": "ログイン",
     "search": "探検",
-    "clear": "消す"
+    "clear": "消す",
+    "refresh": "リロード",
+    "refreshing": "リロード中"
   },
   "others": {
     "403": {

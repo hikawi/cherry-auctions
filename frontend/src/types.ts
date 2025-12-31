@@ -20,21 +20,34 @@ export type Category = {
 
 export interface Seller {
   name: string;
-  email: string;
+  email?: string;
 }
 
-export interface ProductListing {
+export interface Bid {
+  id: number;
+  price: number;
+  automated: boolean;
+  bidder: Seller;
+  created_at: string;
+  updated_at: string;
+}
+
+export type StepBidType = "percentage" | "fixed";
+
+export interface Product {
   id: number;
   name: string;
   description: string;
   thumbnail_url: string;
-  bin_price: number;
   starting_bid: number;
+  bin_price: number;
+  step_bid_type: StepBidType;
+  step_bid_value: number;
+  bids_count: number;
+  current_highest_bid?: Bid;
   allows_unrated_buyers: boolean;
   auto_extends_time: boolean;
-  step_bid_type: "percentage" | "fixed"; // Using a union type for better DX
-  step_bid_value: number;
+  created_at: string;
+  expired_at: string;
   seller: Seller;
-  created_at: string; // ISO Date String
-  expired_at: string; // ISO Date String
 }

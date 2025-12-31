@@ -34,7 +34,7 @@ const links = [
     class="border-claret-100 flex w-full flex-row items-center justify-between border-b pb-4 lg:px-6"
   >
     <a
-      class="via-watermelon-600 to-claret-600 flex flex-row items-center gap-2 bg-linear-to-r from-pink-600 bg-clip-text text-2xl font-black duration-200 hover:text-transparent"
+      class="via-watermelon-600 to-claret-600 flex flex-row items-center gap-2 bg-linear-to-r from-pink-600 bg-clip-text text-xl font-black duration-200 hover:text-transparent md:text-2xl"
       href="/"
     >
       <img src="/icon.png" alt="CherryAuctions" class="size-8" width="32" height="32" />

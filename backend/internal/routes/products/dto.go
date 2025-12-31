@@ -16,6 +16,15 @@ type ProfileDTO struct {
 	Email *string `json:"email"`
 }
 
+type BidDTO struct {
+	ID        uint       `json:"id"`
+	Price     float64    `json:"price"`
+	Automated bool       `json:"automated"`
+	Bidder    ProfileDTO `json:"bidder"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+}
+
 type ProductDTO struct {
 	ID                  uint       `json:"id"`
 	Name                string     `json:"name"`
@@ -30,12 +39,25 @@ type ProductDTO struct {
 	CreatedAt           time.Time  `json:"created_at"`
 	ExpiredAt           time.Time  `json:"expired_at"`
 	Seller              ProfileDTO `json:"seller"`
+	CurrentHighestBid   *BidDTO    `json:"current_highest_bid"`
+	BidsCount           int        `json:"bids_count"`
 }
 
 func ToProfileDTO(m models.User) ProfileDTO {
 	return ProfileDTO{
 		Name:  m.Name,
 		Email: m.Email,
+	}
+}
+
+func ToBidDTO(m models.Bid) BidDTO {
+	return BidDTO{
+		ID:        m.ID,
+		Price:     m.Price,
+		Automated: m.Automated,
+		Bidder:    ToProfileDTO(m.User),
+		CreatedAt: m.CreatedAt,
+		UpdatedAt: m.UpdatedAt,
 	}
 }
 
@@ -47,6 +69,12 @@ func ToProductImageDTO(m models.ProductImage) ProductImageDTO {
 }
 
 func ToProductDTO(m *models.Product) ProductDTO {
+	var highestBid *BidDTO = nil
+	if m.CurrentHighestBid != nil {
+		dto := ToBidDTO(*m.CurrentHighestBid)
+		highestBid = &dto
+	}
+
 	return ProductDTO{
 		ID:                  m.ID,
 		Name:                m.Name,
@@ -61,7 +89,17 @@ func ToProductDTO(m *models.Product) ProductDTO {
 		CreatedAt:           m.CreatedAt,
 		ExpiredAt:           m.ExpiredAt,
 		Seller:              ToProfileDTO(m.Seller),
+		CurrentHighestBid:   highestBid,
+		BidsCount:           m.BidsCount,
 	}
+}
+
+func ToProductDTOs(products []models.Product) []ProductDTO {
+	var dtos []ProductDTO
+	for _, product := range products {
+		dtos = append(dtos, ToProductDTO(&product))
+	}
+	return dtos
 }
 
 type GetProductsQuery struct {
