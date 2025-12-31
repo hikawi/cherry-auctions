@@ -11,6 +11,18 @@ const router = createRouter({
       component: HomePage,
     },
     {
+      name: "products-home",
+      path: "/products",
+      redirect: {
+        name: "search",
+      },
+    },
+    {
+      name: "product-details",
+      path: "/products/:id",
+      component: () => import("../pages/ProductDetailsPage.vue"),
+    },
+    {
       name: "search",
       path: "/search",
       component: () => import("../pages/SearchPage.vue"),

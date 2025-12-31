@@ -7,6 +7,11 @@ export type Profile = {
   verified: boolean;
 };
 
+export type ProductImage = {
+  url: string;
+  alt: string;
+};
+
 export type Category = {
   id: number;
   name: string;
@@ -18,16 +23,25 @@ export type Category = {
   deleted_at?: string;
 };
 
-export interface Seller {
+export interface SmallUser {
   name: string;
   email?: string;
 }
+
+export type Question = {
+  id: number;
+  content: string;
+  answer?: string;
+  user: SmallUser;
+  created_at: string;
+  updated_at: string;
+};
 
 export interface Bid {
   id: number;
   price: number;
   automated: boolean;
-  bidder: Seller;
+  bidder: SmallUser;
   created_at: string;
   updated_at: string;
 }
@@ -40,7 +54,7 @@ export interface Product {
   description: string;
   thumbnail_url: string;
   starting_bid: number;
-  bin_price: number;
+  bin_price?: number;
   step_bid_type: StepBidType;
   step_bid_value: number;
   bids_count: number;
@@ -49,5 +63,8 @@ export interface Product {
   auto_extends_time: boolean;
   created_at: string;
   expired_at: string;
-  seller: Seller;
+  seller: SmallUser;
+  questions: Question[];
+  bids: Bid[];
+  product_images: ProductImage[];
 }

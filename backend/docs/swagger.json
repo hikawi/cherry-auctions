@@ -484,6 +484,73 @@
                 }
             }
         },
+        "/products/top": {
+            "get": {
+                "description": "Queriee top-products via some metrics, instead of a pure query like /products.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Retrieves a list of products of top-categories.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/products.GetTopProductsResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "The server could not make the request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/products/{id}": {
+            "get": {
+                "description": "Queries everything about a single product, with full joins.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Retrieves details on a single product.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Product ID to view",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/products.GetProductDetailsResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "The server couldn't find the requested product",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "The server could not make the request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/me": {
             "get": {
                 "security": [
@@ -644,6 +711,97 @@
                 }
             }
         },
+        "products.BidDTO": {
+            "type": "object",
+            "properties": {
+                "automated": {
+                    "type": "boolean"
+                },
+                "bidder": {
+                    "$ref": "#/definitions/products.ProfileDTO"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "products.GetProductDetailsResponse": {
+            "type": "object",
+            "properties": {
+                "allows_unrated_buyers": {
+                    "type": "boolean"
+                },
+                "auto_extends_time": {
+                    "type": "boolean"
+                },
+                "bids": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/products.BidDTO"
+                    }
+                },
+                "bids_count": {
+                    "type": "integer"
+                },
+                "bin_price": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "current_highest_bid": {
+                    "$ref": "#/definitions/products.BidDTO"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "expired_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "product_images": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/products.ProductImageDTO"
+                    }
+                },
+                "questions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/products.QuestionDTO"
+                    }
+                },
+                "seller": {
+                    "$ref": "#/definitions/products.ProfileDTO"
+                },
+                "starting_bid": {
+                    "type": "number"
+                },
+                "step_bid_type": {
+                    "type": "string"
+                },
+                "step_bid_value": {
+                    "type": "number"
+                },
+                "thumbnail_url": {
+                    "type": "string"
+                }
+            }
+        },
         "products.GetProductsResponse": {
             "type": "object",
             "properties": {
@@ -667,6 +825,29 @@
                 }
             }
         },
+        "products.GetTopProductsResponse": {
+            "type": "object",
+            "properties": {
+                "ending_soon": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/products.ProductDTO"
+                    }
+                },
+                "highest_bids": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/products.ProductDTO"
+                    }
+                },
+                "top_bids": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/products.ProductDTO"
+                    }
+                }
+            }
+        },
         "products.ProductDTO": {
             "type": "object",
             "properties": {
@@ -676,11 +857,17 @@
                 "auto_extends_time": {
                     "type": "boolean"
                 },
+                "bids_count": {
+                    "type": "integer"
+                },
                 "bin_price": {
                     "type": "number"
                 },
                 "created_at": {
                     "type": "string"
+                },
+                "current_highest_bid": {
+                    "$ref": "#/definitions/products.BidDTO"
                 },
                 "description": {
                     "type": "string"
@@ -711,6 +898,17 @@
                 }
             }
         },
+        "products.ProductImageDTO": {
+            "type": "object",
+            "properties": {
+                "alt": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
         "products.ProfileDTO": {
             "type": "object",
             "properties": {
@@ -719,6 +917,29 @@
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "products.QuestionDTO": {
+            "type": "object",
+            "properties": {
+                "answer": {
+                    "type": "string"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/products.ProfileDTO"
                 }
             }
         },
