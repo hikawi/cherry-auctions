@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ProductCard from "@/components/index/ProductCard.vue";
 import LoadingSpinner from "@/components/shared/LoadingSpinner.vue";
 import NavigationBar from "@/components/shared/NavigationBar.vue";
 import PlaceholderAvatar from "@/components/shared/PlaceholderAvatar.vue";
@@ -17,7 +18,9 @@ const { locale } = useI18n();
 const { authFetch } = useAuthFetch();
 
 const loading = ref(false);
-const data = ref<Product>();
+const data = ref<
+  Product & { similar_products?: Product[]; categories: { id: number; name: string }[] }
+>();
 const expiresAtDisplay = computed(() => {
   return data.value != null
     ? dayjs(data.value.expired_at).locale(locale.value).format("lll")
@@ -33,8 +36,12 @@ const sortedBids = computed(() => {
     return undefined;
   }
 
-  return [...data.value.bids].sort((a, b) => a.price - b.price);
+  return [...data.value.bids].sort((a, b) => b.price - a.price);
 });
+
+function createAbsoluteTime(time: string): string {
+  return dayjs(time).locale(locale.value).format("lll");
+}
 
 async function fetchProduct() {
   loading.value = true;
@@ -122,6 +129,19 @@ onMounted(() => {
               <p>{{ data.description }}</p>
             </div>
 
+            <div
+              v-if="data.categories && data.categories.length > 0"
+              class="flex w-full flex-row flex-wrap items-center gap-2 text-sm"
+            >
+              <div
+                v-for="category in data.categories"
+                :key="category.id"
+                class="bg-claret-100 rounded-lg px-2 py-1"
+              >
+                {{ category.name }}
+              </div>
+            </div>
+
             <div class="flex w-full flex-row items-center gap-2">
               <PlaceholderAvatar :name="data.seller.name" class="size-8" />
               <span class="text-lg"
@@ -178,6 +198,7 @@ onMounted(() => {
                   $t("products.bid_list", {
                     name: truncate(bid.bidder.name),
                     price: $n(bid.price, "currency"),
+                    at: createAbsoluteTime(bid.created_at),
                   })
                 }}
               </span>
@@ -220,6 +241,15 @@ onMounted(() => {
         <p v-else class="w-full px-4 py-6 text-center">
           {{ $t("products.no_questions") }}
         </p>
+      </section>
+
+      <!-- Similar products Section -->
+      <section class="flex w-full flex-col gap-4" v-if="data.similar_products">
+        <h2 class="text-xl font-bold">{{ $t("products.similar_products") }}</h2>
+
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <ProductCard v-for="product in data.similar_products" :key="product.id" :product />
+        </div>
       </section>
     </div>
   </WhiteContainer>

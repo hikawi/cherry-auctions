@@ -102,3 +102,24 @@ func (r *ProductRepository) GetProductByID(ctx context.Context, id int) (models.
 		Where("id = ?", id).
 		First(ctx)
 }
+
+func (r *ProductRepository) GetSimilarProductsTo(ctx context.Context, product *models.Product) ([]models.Product, error) {
+	var categoryIDs []uint
+	for _, cat := range product.Categories {
+		categoryIDs = append(categoryIDs, cat.ID)
+	}
+
+	var products []models.Product
+	err := r.DB.Model(&models.Product{}).WithContext(ctx).
+		Joins("JOIN products_categories ON products_categories.product_id = products.id").
+		Where("products.id <> ?", product.ID).                      // Exclude current product
+		Where("products_categories.category_id IN ?", categoryIDs). // Match any shared category
+		Preload("Seller").
+		Preload("Categories").
+		Preload("CurrentHighestBid").
+		Distinct("products.*").
+		Limit(5).
+		Find(&products).
+		Error
+	return products, err
+}

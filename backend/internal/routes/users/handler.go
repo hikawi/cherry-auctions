@@ -16,7 +16,7 @@ import (
 //	@tags			users
 //	@produce		json
 //	@security		ApiKeyAuth
-//	@success		200	{object}	users.GetMeResponse
+//	@success		200	{object}	users.UserDTO
 //	@failure		401	{object}	shared.ErrorResponse	"When unauthenticated"
 //	@failure		422	{object}	shared.ErrorResponse	"When your info had an invalid state on the server"
 //	@failure		500	{object}	shared.ErrorResponse	"The request could not be completed due to server faults"
@@ -33,19 +33,7 @@ func (h *UsersHandler) GetMe(g *gin.Context) {
 		return
 	}
 
-	roles := make([]string, 0)
-	for _, role := range user.Roles {
-		roles = append(roles, role.ID)
-	}
-
-	res := GetMeResponse{
-		ID:        user.ID,
-		Name:      user.Name,
-		Email:     *user.Email,
-		Roles:     roles,
-		OauthType: user.OauthType,
-		Verified:  user.Verified,
-	}
-	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusOK, "response": res})
-	g.JSON(http.StatusOK, res)
+	response := ToUserDTO(&user)
+	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusOK, "response": response})
+	g.JSON(http.StatusOK, response)
 }

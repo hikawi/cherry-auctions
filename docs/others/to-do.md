@@ -40,12 +40,12 @@ parent: Other Specifications
   - [x] Fuzzy search with full-text search.
   - [ ] Paginated search results with sorting (Price Asc/Desc, Ending Time).
   - [x] Eye-catching display for recently posted products.
-- [ ] **Product Views**
+- [x] **Product Views**
   - [x] Catalog Attributes: Thumbnails, names, current bid, highest bidder, BIN price, posted date, remaining time, bids count.
   - [x] Product Details: Hero/extra photos, seller/bidder info & reviews, timestamps, description.
   - [x] Relative time display (if ending in ≤ 3 days).
   - [x] Questions & Answers section.
-  - [ ] 5 Similar products in the same category.
+  - [x] 5 Similar products in the same category.
 - [x] **Registration**
   - [x] Fields: Full name, address, email.
 
@@ -60,7 +60,7 @@ parent: Other Specifications
   - [ ] Minimum bid "step up" logic (Current + Step).
   - [ ] Confirmation dialog for bids.
 - [ ] **History & Profile**
-  - [ ] Masked bid history (Timestamp, Name, Price) in card or tabular view.
+  - [x] Masked bid history (Timestamp, Name, Price) in card or tabular view.
   - [ ] Profile management: Change email, name, address, password.
   - [ ] View personal rating details/comments from others.
   - [ ] Lists: "My current bids" and "My won bids" (with seller review/comment).

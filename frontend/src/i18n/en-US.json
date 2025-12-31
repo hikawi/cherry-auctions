@@ -14,7 +14,8 @@
     "wrong_password": "Incorrect password.",
     "wrong_method": "This account might not have been registered this way. Try other login options.",
     "internal_error": "This error is not your fault! The server misbehaved.",
-    "internet_error": "Your Internet connection might have gone out."
+    "internet_error": "Your Internet connection might have gone out.",
+    "already_logged_in": "You're already logged in as {name} ({email})"
   },
   "register": {
     "title": "Register",
@@ -67,7 +68,9 @@
     "home": "Home",
     "all_products": "All Products",
     "acknowledgements": "Acknowledgements",
-    "bar_title": "Navigation"
+    "bar_title": "Navigation",
+    "profile": "Profile",
+    "logout": "Logout"
   },
   "acknowledgements": {
     "title": "Acknowledgements",
@@ -104,7 +107,8 @@
     "no_bids": "No bids yet. Be the first!",
     "questions": "Questions",
     "bids": "Bids",
-    "bid_list": "{name} bidded {price}"
+    "similar_products": "You may also like",
+    "bid_list": "{name} bidded {price} at {at}"
   },
   "general": {
     "categories": "Categories",

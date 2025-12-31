@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"luny.dev/cherryauctions/internal/models"
+	"luny.dev/cherryauctions/pkg/ranges"
 )
 
 type ProductImageDTO struct {
@@ -16,6 +17,12 @@ type ProfileDTO struct {
 	Email *string `json:"email"`
 }
 
+type CategoryDTO struct {
+	ID       uint   `json:"id"`
+	Name     string `json:"name"`
+	ParentID *uint  `json:"parent_id"`
+}
+
 type BidDTO struct {
 	ID        uint       `json:"id"`
 	Price     float64    `json:"price"`
@@ -26,21 +33,22 @@ type BidDTO struct {
 }
 
 type ProductDTO struct {
-	ID                  uint       `json:"id"`
-	Name                string     `json:"name"`
-	StartingBid         float64    `json:"starting_bid"`
-	StepBidType         string     `json:"step_bid_type"`
-	StepBidValue        float64    `json:"step_bid_value"`
-	BINPrice            float64    `json:"bin_price"`
-	Description         string     `json:"description"`
-	ThumbnailURL        string     `json:"thumbnail_url"`
-	AllowsUnratedBuyers bool       `json:"allows_unrated_buyers"`
-	AutoExtendsTime     bool       `json:"auto_extends_time"`
-	CreatedAt           time.Time  `json:"created_at"`
-	ExpiredAt           time.Time  `json:"expired_at"`
-	Seller              ProfileDTO `json:"seller"`
-	CurrentHighestBid   *BidDTO    `json:"current_highest_bid"`
-	BidsCount           int        `json:"bids_count"`
+	ID                  uint          `json:"id"`
+	Name                string        `json:"name"`
+	StartingBid         float64       `json:"starting_bid"`
+	StepBidType         string        `json:"step_bid_type"`
+	StepBidValue        float64       `json:"step_bid_value"`
+	BINPrice            float64       `json:"bin_price"`
+	Description         string        `json:"description"`
+	ThumbnailURL        string        `json:"thumbnail_url"`
+	AllowsUnratedBuyers bool          `json:"allows_unrated_buyers"`
+	AutoExtendsTime     bool          `json:"auto_extends_time"`
+	CreatedAt           time.Time     `json:"created_at"`
+	ExpiredAt           time.Time     `json:"expired_at"`
+	Seller              ProfileDTO    `json:"seller"`
+	CurrentHighestBid   *BidDTO       `json:"current_highest_bid"`
+	Categories          []CategoryDTO `json:"categories"`
+	BidsCount           int           `json:"bids_count"`
 }
 
 type QuestionDTO struct {
@@ -56,6 +64,14 @@ func ToProfileDTO(m models.User) ProfileDTO {
 	return ProfileDTO{
 		Name:  m.Name,
 		Email: m.Email,
+	}
+}
+
+func ToCategoryDTO(m models.Category) CategoryDTO {
+	return CategoryDTO{
+		ID:       m.ID,
+		Name:     m.Name,
+		ParentID: m.ParentID,
 	}
 }
 
@@ -140,6 +156,7 @@ func ToProductDTO(m *models.Product) ProductDTO {
 		Seller:              ToProfileDTO(m.Seller),
 		CurrentHighestBid:   highestBid,
 		BidsCount:           m.BidsCount,
+		Categories:          ranges.Each(m.Categories, ToCategoryDTO),
 	}
 }
 
@@ -173,7 +190,8 @@ type GetTopProductsResponse struct {
 
 type GetProductDetailsResponse struct {
 	ProductDTO
-	ProductImages []ProductImageDTO `json:"product_images"`
-	Questions     []QuestionDTO     `json:"questions"`
-	Bids          []BidDTO          `json:"bids"`
+	ProductImages   []ProductImageDTO `json:"product_images"`
+	Questions       []QuestionDTO     `json:"questions"`
+	Bids            []BidDTO          `json:"bids"`
+	SimilarProducts []ProductDTO      `json:"similar_products"`
 }

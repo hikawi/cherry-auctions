@@ -14,7 +14,8 @@
     "wrong_password": "パスワードが正しくありません。",
     "wrong_method": "別の方法で登録された可能性がありますほかのログイン方法をお試しください。",
     "internal_error": "サーバーエラーが発生しましたしばらくしてから再度お試しください。",
-    "internet_error": "インターネット接続に問題がある可能性があります。"
+    "internet_error": "インターネット接続に問題がある可能性があります。",
+    "already_logged_in": "{name}さん ({email})としてすでにログイン済みです。"
   },
   "register": {
     "title": "登録",
@@ -67,7 +68,9 @@
     "home": "ホーム",
     "all_products": "商品",
     "acknowledgements": "謝辞",
-    "bar_title": "ナビゲーション"
+    "bar_title": "ナビゲーション",
+    "profile": "プロフィール",
+    "logout": "ログアウト"
   },
   "acknowledgements": {
     "title": "謝辞",
@@ -104,7 +107,7 @@
     "no_bids": "入札はまだありません。一番乗りで入札しませんか？",
     "questions": "商品への質問一覧",
     "bids": "すべての入札",
-    "bid_list": "{name}さんが{price}で入札しました"
+    "bid_list": "{name}さんが{price}で{at}に入札しました"
   },
   "general": {
     "categories": "カテゴリー",

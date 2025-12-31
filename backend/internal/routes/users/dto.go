@@ -1,10 +1,48 @@
 package users
 
-type GetMeResponse struct {
-	ID        uint     `json:"id"`
-	Name      string   `json:"name"`
-	Email     string   `json:"email"`
-	Roles     []string `json:"roles"`
-	OauthType string   `json:"oauth_type"`
-	Verified  bool     `json:"verified"`
+import (
+	"time"
+
+	"luny.dev/cherryauctions/internal/models"
+	"luny.dev/cherryauctions/pkg/ranges"
+)
+
+type SubscriptionDTO struct {
+	ExpiredAt time.Time `json:"expired_at"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+type UserDTO struct {
+	ID              uint              `json:"id"`
+	Name            string            `json:"name"`
+	Email           *string           `json:"email"`
+	Verified        bool              `json:"verified"`
+	CreatedAt       time.Time         `json:"created_at"`
+	AverageRating   float64           `json:"average_rating"`
+	WaitingApproval bool              `json:"waiting_approval"`
+	Roles           []string          `json:"roles"`
+	Subscriptions   []SubscriptionDTO `json:"subscriptions"`
+}
+
+func ToSubscriptionDTO(m models.SellerSubscription) SubscriptionDTO {
+	return SubscriptionDTO{
+		ExpiredAt: m.ExpiredAt,
+		CreatedAt: m.CreatedAt,
+	}
+}
+
+func ToUserDTO(m *models.User) UserDTO {
+	return UserDTO{
+		ID:              m.ID,
+		Name:            m.Name,
+		Email:           m.Email,
+		Verified:        m.Verified,
+		CreatedAt:       m.CreatedAt,
+		AverageRating:   m.AverageRating,
+		WaitingApproval: m.WaitingApproval,
+		Roles: ranges.Each(m.Roles, func(r models.Role) string {
+			return r.ID
+		}),
+		Subscriptions: ranges.Each(m.Subscriptions, ToSubscriptionDTO),
+	}
 }

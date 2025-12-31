@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import { useProfileStore } from "@/stores/profile";
-import { LucideMenu, LucideX } from "lucide-vue-next";
+import {
+  LucideAtSign,
+  LucideHouse,
+  LucideLayoutDashboard,
+  LucideLogOut,
+  LucidePackageSearch,
+  LucideUser,
+} from "lucide-vue-next";
 import { computed, ref } from "vue";
-import { useRoute } from "vue-router";
-import OverlayScreen from "./OverlayScreen.vue";
 
-const route = useRoute();
 const profile = useProfileStore();
 const menuOpen = ref(false);
 
@@ -17,14 +21,37 @@ const links = [
   {
     name: "navigation.home",
     href: "/",
+    icon: LucideHouse,
   },
   {
     name: "navigation.all_products",
     href: "/search",
+    icon: LucidePackageSearch,
   },
   {
     name: "navigation.acknowledgements",
     href: "/acknowledgements",
+    icon: LucideAtSign,
+  },
+  {
+    name: "separator",
+    href: "separator",
+  },
+  {
+    name: "/admin",
+    href: "Admin Dashboard",
+    icon: LucideLayoutDashboard,
+    admin: true,
+  },
+  {
+    name: "navigation.profile",
+    href: "/profile",
+    icon: LucideUser,
+  },
+  {
+    name: "navigation.logout",
+    href: "/logout",
+    icon: LucideLogOut,
   },
 ];
 </script>
@@ -41,85 +68,37 @@ const links = [
       CherryAuctions
     </a>
 
-    <button
-      class="flex cursor-pointer items-center justify-center duration-200 hover:rotate-90 md:hidden"
-      @click="menuOpen = true"
-    >
-      <LucideMenu class="size-6 text-black" />
-    </button>
+    <div @click="menuOpen = !menuOpen" v-if="profile.hasProfile" class="relative">
+      <img
+        :src="urlEncodedName"
+        class="hover:ring-claret-600 aspect-square h-10 w-auto cursor-pointer rounded-full hover:ring-2"
+      />
 
-    <!-- The sheet to move up for a mobile nav bar -->
-    <OverlayScreen :shown="menuOpen" class="flex-col items-center justify-end p-0">
       <div
-        class="flex h-4/5 w-full flex-col gap-4 rounded-t-2xl bg-white px-6 py-4 duration-200"
-        :class="{
-          '-translate-y-full': !menuOpen,
-          'translate-y-0': menuOpen,
-        }"
+        v-if="menuOpen"
+        class="absolute right-0 -bottom-1 z-10 flex w-fit translate-y-full flex-col rounded-xl border border-zinc-500 bg-white shadow-md"
       >
-        <div class="relative flex items-center justify-end">
-          <h2 class="absolute inset-y-0 left-1/2 -translate-x-1/2 py-2 text-xl font-bold">
-            {{ $t("navigation.bar_title") }}
-          </h2>
-
-          <button class="rounded-full p-2 duration-200 hover:bg-black/20" @click="menuOpen = false">
-            <LucideX class="size-6 text-black" />
-          </button>
-        </div>
-
-        <div class="flex w-full flex-col gap-2">
-          <template v-for="link in links" :key="link.href">
-            <a
-              v-if="route.path == link.href"
-              :href="link.href"
-              class="w-full cursor-pointer rounded-xl bg-black/10 p-2 px-4"
-            >
-              {{ $t(link.name) }}
-            </a>
-            <a
-              v-else
-              :href="link.href"
-              class="w-full cursor-pointer rounded-xl p-2 px-4 hover:bg-black/10"
-            >
-              {{ $t(link.name) }}
-            </a>
-          </template>
-        </div>
-      </div>
-    </OverlayScreen>
-
-    <!-- Classic nav bar on desktop -->
-    <div class="hidden flex-row items-center gap-4 md:flex">
-      <nav class="flex flex-row items-center gap-4">
         <template v-for="link in links" :key="link.href">
+          <div
+            v-if="link.href == 'separator'"
+            class="h-2 w-full border-b border-zinc-300 bg-zinc-100"
+          ></div>
           <a
-            v-if="route.path == link.href"
+            v-else-if="!link.admin || profile.isAdmin"
             :href="link.href"
-            class="cursor-pointer underline underline-offset-8"
+            class="flex min-w-fit flex-row items-center gap-2 border-b border-zinc-300 bg-white px-4 py-2 duration-200 first-of-type:rounded-t-xl last-of-type:rounded-b-xl last-of-type:border-0 hover:bg-zinc-200"
           >
-            {{ $t(link.name) }}
-          </a>
-          <a
-            v-else
-            :href="link.href"
-            class="cursor-pointer text-black/50 duration-200 hover:text-black/75 hover:underline hover:underline-offset-8"
-          >
-            {{ $t(link.name) }}
+            <component :is="link.icon" class="size-4 translate-y-0.5" />
+            {{ $t(link.name!) }}
           </a>
         </template>
-      </nav>
-
-      <img
-        v-if="profile.hasProfile"
-        :src="urlEncodedName"
-        class="aspect-square h-10 w-auto rounded-full"
-      />
-      <a
-        href="/login"
-        class="bg-claret-600 hover:bg-claret-700 flex h-full w-fit min-w-fit items-center justify-center rounded-lg px-4 py-2 font-semibold text-white duration-200"
-        v-else
-        >{{ $t("general.login") }}</a
-      >
+      </div>
     </div>
+    <a
+      href="/login"
+      class="bg-claret-600 hover:bg-claret-700 flex h-full w-fit min-w-fit items-center justify-center rounded-lg px-4 py-2 font-semibold text-white duration-200"
+      v-else
+      >{{ $t("general.login") }}</a
+    >
   </div>
 </template>

@@ -136,11 +136,20 @@ func (h *ProductsHandler) GetProductID(g *gin.Context) {
 		return
 	}
 
-	response := GetProductDetailsResponse{
-		ProductDTO:    ToProductDTO(&product),
-		ProductImages: ToProductImageDTOs(product.ProductImages),
-		Questions:     ToQuestionDTOs(product.Questions),
-		Bids:          ToBidDTOs(product.Bids),
+	similars, err := h.ProductRepo.GetSimilarProductsTo(ctx, &product)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusInternalServerError, "error": err.Error(), "id": paramId})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "can't find similar products"})
+		return
 	}
+
+	response := GetProductDetailsResponse{
+		ProductDTO:      ToProductDTO(&product),
+		ProductImages:   ToProductImageDTOs(product.ProductImages),
+		Questions:       ToQuestionDTOs(product.Questions),
+		Bids:            ToBidDTOs(product.Bids),
+		SimilarProducts: ToProductDTOs(similars),
+	}
+	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusOK, "response": similars})
 	g.JSON(http.StatusOK, response)
 }

@@ -134,9 +134,10 @@ async function login() {
         {{ loading ? t("login.loading") : t("login.action") }}
       </button>
     </div>
-        <div class="w-full flex justify-center text-sm text-zinc-600">
+
+    <div class="flex w-full justify-center text-sm font-semibold text-zinc-600">
       <span>{{ t("login.no_account") }}</span>
-      <router-link to="/register" class="ml-2 underline text-claret-600">
+      <router-link to="/register" class="text-claret-600 ml-2 underline">
         {{ t("login.register") }}
       </router-link>
     </div>
