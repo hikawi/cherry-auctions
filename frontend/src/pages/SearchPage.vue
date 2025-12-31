@@ -10,7 +10,7 @@ import {
 } from "lucide-vue-next";
 import { useAuthFetch } from "@/hooks/use-auth-fetch";
 import { endpoints } from "@/consts";
-import type { ProductListing } from "@/types";
+import type { Product } from "@/types";
 import ProductCard from "@/components/index/ProductCard.vue";
 import NavigationBar from "@/components/shared/NavigationBar.vue";
 
@@ -19,7 +19,7 @@ const { authFetch } = useAuthFetch();
 
 const loading = ref(true);
 const search = ref<string>();
-const products = ref<ProductListing[]>();
+const products = ref<Product[]>();
 const page = ref(1);
 const total = ref(0);
 const maxPages = ref(1);
