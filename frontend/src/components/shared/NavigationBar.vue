@@ -2,10 +2,13 @@
 import { useProfileStore } from "@/stores/profile";
 import {
   LucideAtSign,
+  LucideHandCoins,
   LucideHouse,
   LucideLayoutDashboard,
   LucideLogOut,
   LucidePackageSearch,
+  LucideRocket,
+  LucideStar,
   LucideUser,
 } from "lucide-vue-next";
 import { computed, ref } from "vue";
@@ -32,6 +35,25 @@ const links = [
     name: "navigation.acknowledgements",
     href: "/acknowledgements",
     icon: LucideAtSign,
+  },
+  {
+    name: "separator",
+    href: "separator",
+  },
+  {
+    name: "navigation.my_bids",
+    href: "/bids",
+    icon: LucideHandCoins,
+  },
+  {
+    name: "navigation.my_reviews",
+    href: "/reviews",
+    icon: LucideStar,
+  },
+  {
+    name: "navigation.my_subscriptions",
+    href: "/subscriptions",
+    icon: LucideRocket,
   },
   {
     name: "separator",

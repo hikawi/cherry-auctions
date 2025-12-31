@@ -64,8 +64,8 @@ parent: Other Specifications
   - [ ] Profile management: Change email, name, address, password.
   - [ ] View personal rating details/comments from others.
   - [ ] Lists: "My current bids" and "My won bids" (with seller review/comment).
-- [ ] **Permissions**
-  - [ ] Request selling privileges after 7 days of usage.
+- [x] **Permissions**
+  - [x] Request selling privileges after 7 days of usage.
 
 ### 3. Seller
 

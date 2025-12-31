@@ -96,6 +96,15 @@ definitions:
       updated_at:
         type: string
     type: object
+  products.CategoryDTO:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      parent_id:
+        type: integer
+    type: object
   products.GetProductDetailsResponse:
     properties:
       allows_unrated_buyers:
@@ -110,6 +119,10 @@ definitions:
         type: integer
       bin_price:
         type: number
+      categories:
+        items:
+          $ref: '#/definitions/products.CategoryDTO'
+        type: array
       created_at:
         type: string
       current_highest_bid:
@@ -132,6 +145,10 @@ definitions:
         type: array
       seller:
         $ref: '#/definitions/products.ProfileDTO'
+      similar_products:
+        items:
+          $ref: '#/definitions/products.ProductDTO'
+        type: array
       starting_bid:
         type: number
       step_bid_type:
@@ -181,6 +198,10 @@ definitions:
         type: integer
       bin_price:
         type: number
+      categories:
+        items:
+          $ref: '#/definitions/products.CategoryDTO'
+        type: array
       created_at:
         type: string
       current_highest_bid:
@@ -243,21 +264,34 @@ definitions:
       message:
         type: string
     type: object
-  users.GetMeResponse:
+  users.SubscriptionDTO:
     properties:
+      created_at:
+        type: string
+      expired_at:
+        type: string
+    type: object
+  users.UserDTO:
+    properties:
+      average_rating:
+        type: number
+      created_at:
+        type: string
       email:
         type: string
       id:
         type: integer
       name:
         type: string
-      oauth_type:
-        type: string
       roles:
         items:
           type: string
         type: array
+      subscription:
+        $ref: '#/definitions/users.SubscriptionDTO'
       verified:
+        type: boolean
+      waiting_approval:
         type: boolean
     type: object
 info:
@@ -629,7 +663,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/users.GetMeResponse'
+            $ref: '#/definitions/users.UserDTO'
         "401":
           description: When unauthenticated
           schema:
@@ -645,6 +679,29 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Gets your own profile.
+      tags:
+      - users
+  /users/request:
+    post:
+      description: Sends a request to the admin to approve or deny seller privileges.
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: When success
+          schema:
+            $ref: '#/definitions/shared.MessageResponse'
+        "401":
+          description: When unauthenticated
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: The request could not be completed due to server faults
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Requests seller privileges
       tags:
       - users
 produces:

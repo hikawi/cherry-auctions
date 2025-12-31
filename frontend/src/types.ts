@@ -1,10 +1,17 @@
+export type Subscription = {
+  expires_at: string;
+};
+
 export type Profile = {
   id: number;
   name: string;
   email: string;
-  roles: string[];
-  oauth_type: string;
   verified: boolean;
+  created_at: string;
+  average_rating: number;
+  waiting_approval: boolean;
+  roles: string[];
+  subscription?: Subscription;
 };
 
 export type ProductImage = {

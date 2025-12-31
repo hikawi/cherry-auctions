@@ -18,4 +18,5 @@ func (h *UsersHandler) SetupRouter(r *gin.RouterGroup) {
 	g := r.Group("/users")
 
 	g.GET("/me", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.GetMe)
+	g.POST("/request", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.PostRequest)
 }

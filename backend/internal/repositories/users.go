@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"strings"
+	"time"
 
 	"gorm.io/gorm"
 	"luny.dev/cherryauctions/internal/models"
@@ -15,7 +16,10 @@ type UserRepository struct {
 
 // GetUserByID retrieves a single user using an ID.
 func (repo *UserRepository) GetUserByID(ctx context.Context, id uint) (models.User, error) {
-	return gorm.G[models.User](repo.DB).Where("id = ?", id).Preload("Roles", nil).First(ctx)
+	return gorm.G[models.User](repo.DB).Where("id = ?", id).Preload("Roles", nil).Preload("Subscriptions", func(db gorm.PreloadBuilder) error {
+		db.Where("expired_at > ?", time.Now()).Limit(1)
+		return nil
+	}).First(ctx)
 }
 
 // GetUserByEmail returns a user with the email, if it found.
@@ -47,4 +51,9 @@ func (repo *UserRepository) RegisterNewUser(ctx context.Context, name string, em
 // Returns an error if it can't be saved.
 func (repo *UserRepository) SaveUser(ctx context.Context, user *models.User) error {
 	return gorm.G[models.User](repo.DB).Create(ctx, user)
+}
+
+// RequestUserApproval marks a user as requesting approval.
+func (repo *UserRepository) RequestUserApproval(ctx context.Context, id uint) (int, error) {
+	return gorm.G[models.User](repo.DB).Where("id = ?", id).Update(ctx, "waiting_approval", true)
 }

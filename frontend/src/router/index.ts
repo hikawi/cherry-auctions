@@ -26,6 +26,17 @@ const router = createRouter({
       name: "profile",
       path: "/profile",
       component: () => import("../pages/ProfilePage.vue"),
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      name: "subscriptions",
+      path: "/subscriptions",
+      component: () => import("../pages/SubscriptionPage.vue"),
+      meta: {
+        requiresAuth: true,
+      },
     },
     {
       name: "search",

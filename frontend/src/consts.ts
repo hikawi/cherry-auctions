@@ -17,4 +17,7 @@ export const endpoints = {
     delete: (id: unknown) => `${api}/v1/categories/${id}`,
   },
   self: `${api}/v1/users/me`,
+  users: {
+    request: `${api}/v1/users/request`,
+  },
 };

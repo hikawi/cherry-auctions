@@ -13,15 +13,15 @@ type SubscriptionDTO struct {
 }
 
 type UserDTO struct {
-	ID              uint              `json:"id"`
-	Name            string            `json:"name"`
-	Email           *string           `json:"email"`
-	Verified        bool              `json:"verified"`
-	CreatedAt       time.Time         `json:"created_at"`
-	AverageRating   float64           `json:"average_rating"`
-	WaitingApproval bool              `json:"waiting_approval"`
-	Roles           []string          `json:"roles"`
-	Subscriptions   []SubscriptionDTO `json:"subscriptions"`
+	ID              uint             `json:"id"`
+	Name            string           `json:"name"`
+	Email           *string          `json:"email"`
+	Verified        bool             `json:"verified"`
+	CreatedAt       time.Time        `json:"created_at"`
+	AverageRating   float64          `json:"average_rating"`
+	WaitingApproval bool             `json:"waiting_approval"`
+	Roles           []string         `json:"roles"`
+	Subscription    *SubscriptionDTO `json:"subscription"`
 }
 
 func ToSubscriptionDTO(m models.SellerSubscription) SubscriptionDTO {
@@ -32,6 +32,12 @@ func ToSubscriptionDTO(m models.SellerSubscription) SubscriptionDTO {
 }
 
 func ToUserDTO(m *models.User) UserDTO {
+	var subscription *SubscriptionDTO
+	if len(m.Subscriptions) > 0 {
+		dto := ToSubscriptionDTO(m.Subscriptions[0])
+		subscription = &dto
+	}
+
 	return UserDTO{
 		ID:              m.ID,
 		Name:            m.Name,
@@ -43,6 +49,6 @@ func ToUserDTO(m *models.User) UserDTO {
 		Roles: ranges.Each(m.Roles, func(r models.Role) string {
 			return r.ID
 		}),
-		Subscriptions: ranges.Each(m.Subscriptions, ToSubscriptionDTO),
+		Subscription: subscription,
 	}
 }

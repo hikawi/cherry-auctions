@@ -65,12 +65,24 @@
     }
   },
   "navigation": {
+    "bar_title": "Navigation",
     "home": "Home",
     "all_products": "All Products",
     "acknowledgements": "Acknowledgements",
-    "bar_title": "Navigation",
+    "my_bids": "My Bids",
+    "my_reviews": "My Reviews",
+    "my_products": "My Products",
+    "my_subscriptions": "My Subscriptions",
     "profile": "Profile",
     "logout": "Logout"
+  },
+  "subscriptions": {
+    "title": "My Subscriptions",
+    "no_subscriptions": "You don't have any susbcriptions active for seller privileges.",
+    "expires_in": "You have permissions to upload auctions! This will expire in {in}.",
+    "requesting": "Requesting...",
+    "request": "Request Privileges",
+    "already_requested": "Already requested"
   },
   "acknowledgements": {
     "title": "Acknowledgements",
@@ -109,6 +121,9 @@
     "bids": "Bids",
     "similar_products": "You may also like",
     "bid_list": "{name} bidded {price} at {at}"
+  },
+  "profile": {
+    "profile": "Profile"
   },
   "general": {
     "categories": "Categories",

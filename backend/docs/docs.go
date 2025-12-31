@@ -573,7 +573,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/users.GetMeResponse"
+                            "$ref": "#/definitions/users.UserDTO"
                         }
                     },
                     "401": {
@@ -584,6 +584,43 @@ const docTemplate = `{
                     },
                     "422": {
                         "description": "When your info had an invalid state on the server",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "The request could not be completed due to server faults",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/request": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Sends a request to the admin to approve or deny seller privileges.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Requests seller privileges",
+                "responses": {
+                    "204": {
+                        "description": "When success",
+                        "schema": {
+                            "$ref": "#/definitions/shared.MessageResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "When unauthenticated",
                         "schema": {
                             "$ref": "#/definitions/shared.ErrorResponse"
                         }
@@ -737,6 +774,20 @@ const docTemplate = `{
                 }
             }
         },
+        "products.CategoryDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parent_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "products.GetProductDetailsResponse": {
             "type": "object",
             "properties": {
@@ -757,6 +808,12 @@ const docTemplate = `{
                 },
                 "bin_price": {
                     "type": "number"
+                },
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/products.CategoryDTO"
+                    }
                 },
                 "created_at": {
                     "type": "string"
@@ -790,6 +847,12 @@ const docTemplate = `{
                 },
                 "seller": {
                     "$ref": "#/definitions/products.ProfileDTO"
+                },
+                "similar_products": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/products.ProductDTO"
+                    }
                 },
                 "starting_bid": {
                     "type": "number"
@@ -865,6 +928,12 @@ const docTemplate = `{
                 },
                 "bin_price": {
                     "type": "number"
+                },
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/products.CategoryDTO"
+                    }
                 },
                 "created_at": {
                     "type": "string"
@@ -962,9 +1031,26 @@ const docTemplate = `{
                 }
             }
         },
-        "users.GetMeResponse": {
+        "users.SubscriptionDTO": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "expired_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "users.UserDTO": {
+            "type": "object",
+            "properties": {
+                "average_rating": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
@@ -974,16 +1060,19 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "oauth_type": {
-                    "type": "string"
-                },
                 "roles": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
+                "subscription": {
+                    "$ref": "#/definitions/users.SubscriptionDTO"
+                },
                 "verified": {
+                    "type": "boolean"
+                },
+                "waiting_approval": {
                     "type": "boolean"
                 }
             }
