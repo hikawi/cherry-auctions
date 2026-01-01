@@ -43,13 +43,15 @@ Relevant Links:
 Docker for a lot of reasons. Vite is now recommended to run native instead. I'm
 sorry, it's `node_modules`.
 
-| Service        | Image                     | Ports                                | Description / Usage                                                                                                            |
-| -------------- | ------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
-| **Mailpit**    | `axllent/mailpit:latest`  | `1025` (SMTP)<br>`8025` (Web UI)     | Local SMTP server for development. Captures outgoing emails so they can be viewed in a browser without sending real emails.    |
-| **Fluentbit**  | `fluent/fluent-bit:4.2.2` | N/A                                  | Log aggregator to read from `/var/server.log`                                                                                  |
-| **RustFS**     | `rustfs/rustfs:latest`    | `9000` (S3 API)<br>`9001` (Admin UI) | S3-compatible object storage used for file uploads such as images and attachments. Acts as a local replacement for AWS S3.     |
-| **PostgreSQL** | `postgres:18-alpine`      | `5432` (Database)                    | Primary relational database storing application data such as users, auctions, bids, and transactions.                          |
-| **Backend**    | `cosmtrek/air`            | `3000` (Host) → `80` (Container)     | Backend API server with live reload. Handles authentication, business logic, database access, file uploads, and email sending. |
+| Service                   | Image                                      | Ports                                | Description / Usage                                                                                                            |
+| ------------------------- | ------------------------------------------ | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Mailpit**               | `axllent/mailpit:latest`                   | `1025` (SMTP)<br>`8025` (Web UI)     | Local SMTP server for development. Captures outgoing emails so they can be viewed in a browser without sending real emails.    |
+| **Fluentbit**             | `fluent/fluent-bit:4.2.2`                  | N/A                                  | Log aggregator to read from `/var/server.log`                                                                                  |
+| **RustFS**                | `rustfs/rustfs:latest`                     | `9000` (S3 API)<br>`9001` (Admin UI) | S3-compatible object storage used for file uploads such as images and attachments. Acts as a local replacement for AWS S3.     |
+| **PostgreSQL**            | `postgres:18-alpine`                       | `5432` (Database)                    | Primary relational database storing application data such as users, auctions, bids, and transactions.                          |
+| **OpenSearch**            | `opensearch-project/opensearch`            | `9200`                               | OpenSearch engine                                                                                                              |
+| **OpenSearch Dashboards** | `opensearch-project/opensearch-dashboards` | `5601`                               | Dashboards for OpenSearch engine                                                                                               |
+| **Backend**               | `cosmtrek/air`                             | `3000` (Host) → `80` (Container)     | Backend API server with live reload. Handles authentication, business logic, database access, file uploads, and email sending. |
 
 ## Prerequisites
 

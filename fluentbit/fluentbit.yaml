@@ -10,4 +10,11 @@ pipeline:
   outputs:
     - name: stdout
       match: cherry-auctions
-      json_date_format: java_sql_timestamp
+      json_date_format: iso8601
+
+    - name: es
+      match: "*"
+      host: cherry-auctions-opensearch
+      port: 9200
+      logstash_format: true
+      suppress_type_name: true
