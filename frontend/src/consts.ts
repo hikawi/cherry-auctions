@@ -8,6 +8,7 @@ export const endpoints = {
   products: {
     get: `${api}/v1/products`,
     details: (id: unknown) => `${api}/v1/products/${id}`,
+    favorite: `${api}/v1/products/favorite`,
     top: `${api}/v1/products/top`,
   },
   categories: {

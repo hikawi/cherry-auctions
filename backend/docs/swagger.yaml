@@ -133,6 +133,8 @@ definitions:
         type: string
       id:
         type: integer
+      is_favorite:
+        type: boolean
       name:
         type: string
       product_images:
@@ -212,6 +214,8 @@ definitions:
         type: string
       id:
         type: integer
+      is_favorite:
+        type: boolean
       name:
         type: string
       seller:
@@ -649,6 +653,69 @@ paths:
           schema:
             $ref: '#/definitions/shared.ErrorResponse'
       summary: Retrieves details on a single product.
+      tags:
+      - products
+  /products/favorite:
+    get:
+      description: Queries on my favorite products,
+      parameters:
+      - description: Search Query
+        in: query
+        name: query
+        type: string
+      - description: Page Number
+        in: query
+        name: page
+        type: integer
+      - description: Items per Page
+        in: query
+        name: per_page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/products.GetProductsResponse'
+        "401":
+          description: When unauthenticated
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: The server could not make the request
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Retrieves my favorite products.
+      tags:
+      - products
+    post:
+      description: Mark a product as my favorite, if it is not a favorite, otherwise,
+        unmark it.
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/shared.MessageResponse'
+        "401":
+          description: When unauthenticated
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "404":
+          description: Product could not be found
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: The server could not make the request
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Toggle a product as favorite.
       tags:
       - products
   /products/top:

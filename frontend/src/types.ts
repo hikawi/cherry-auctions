@@ -74,4 +74,5 @@ export interface Product {
   questions: Question[];
   bids: Bid[];
   product_images: ProductImage[];
+  is_favorite?: boolean;
 }

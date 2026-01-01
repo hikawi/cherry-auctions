@@ -5,12 +5,22 @@ import { useI18n } from "vue-i18n";
 import dayjs from "dayjs";
 import { useTimestamp } from "@vueuse/core";
 import PlaceholderAvatar from "../shared/PlaceholderAvatar.vue";
+import { LucideHeart, LucideSparkle } from "lucide-vue-next";
+import { useAuthFetch } from "@/hooks/use-auth-fetch";
+import { endpoints } from "@/consts";
+import { useProfileStore } from "@/stores/profile";
 
 const props = defineProps<{
   product: Product;
 }>();
+const emits = defineEmits<{
+  favoriteToggle: [id: number];
+}>();
+
 const { locale } = useI18n();
 const now = useTimestamp({ interval: 1000 });
+const { authFetch } = useAuthFetch();
+const profile = useProfileStore();
 
 const productLink = computed(() => `/products/${props.product.id}`);
 const expiresDisplay = computed(() => {
@@ -33,21 +43,49 @@ const isNew = computed(() => {
   const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
   return Math.abs(diffMs) <= THREE_DAYS_MS;
 });
+
+async function toggleFavorite() {
+  const res = await authFetch(endpoints.products.favorite, {
+    method: "POST",
+    body: JSON.stringify({ id: props.product.id }),
+  });
+  if (res.ok) {
+    emits("favoriteToggle", props.product.id);
+  }
+}
 </script>
 
 <template>
-  <a
-    :href="productLink"
+  <div
     class="relative flex flex-col gap-4 rounded-lg border border-zinc-300 bg-white p-4 pt-8 duration-200 hover:border-zinc-500"
   >
-    <div
-      class="from-watermelon-500 absolute -top-2 -right-2 rounded-xl bg-linear-to-r to-pink-600 px-4 py-2 font-semibold text-white uppercase shadow-md"
+    <button
+      class="absolute top-0 right-0 z-10 translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full border border-zinc-300 bg-white p-2 shadow-md hover:border-zinc-500"
+      @click="toggleFavorite"
+      v-if="profile.hasProfile"
+    >
+      <LucideHeart
+        class="duration-200"
+        :class="{
+          'text-claret-600 hover:fill-claret-600/50': !product.is_favorite,
+          'fill-claret-600 text-claret-600': product.is_favorite,
+        }"
+      />
+    </button>
+
+    <span
+      class="from-watermelon-500 bg-linear-to-r via-violet-500 to-pink-500 bg-clip-text text-lg font-black text-transparent uppercase"
       v-if="isNew"
     >
+      <LucideSparkle
+        class="fill-watermelon-500 text-watermelon-500 inline-block size-4 -translate-y-px"
+      />
       {{ $t("products.new") }}
-    </div>
+    </span>
 
-    <span class="text-lg font-semibold">{{ product.name }}</span>
+    <a :href="productLink" class="hover:text-claret-600 text-lg font-semibold duration-200">{{
+      product.name
+    }}</a>
     <img
       :src="product.thumbnail_url"
       :alt="product.name"
@@ -91,5 +129,5 @@ const isNew = computed(() => {
       <span v-if="shouldBeRelative">{{ $t("products.expires_in", { in: expiresDisplay }) }}</span>
       <span v-else>{{ $t("products.expires_at", { at: expiresAtDisplay }) }}</span>
     </div>
-  </a>
+  </div>
 </template>

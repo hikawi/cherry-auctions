@@ -51,9 +51,9 @@ parent: Other Specifications
 
 ### 2. Bidder
 
-- [ ] **Watch List**
-  - [ ] Save items from catalog or detail page.
-  - [ ] View "My favorites" in profile.
+- [x] **Watch List**
+  - [x] Save items from catalog or detail page.
+  - [x] View "My favorites" in profile.
 - [ ] **Bidding System**
   - [ ] Bid restriction: Minimum 80% rating check (Likes/Total).
   - [ ] New account bidding permission (if seller allowed).

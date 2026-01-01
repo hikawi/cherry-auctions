@@ -134,7 +134,9 @@
     "bid_list": "{name} bidded {price} at {at}"
   },
   "profile": {
-    "profile": "Profile"
+    "profile": "Profile",
+    "favorites": "My Favorites",
+    "no_favorites": "No favorites yet"
   },
   "general": {
     "categories": "Categories",

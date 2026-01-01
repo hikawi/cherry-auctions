@@ -54,6 +54,11 @@ const router = createRouter({
       component: () => import("../pages/RegisterPage.vue"),
     },
     {
+      name: "logout",
+      path: "/logout",
+      component: () => import("../pages/LogoutPage.vue"),
+    },
+    {
       name: "forgot",
       path: "/forgot",
       component: () => import("../pages/ForgotPasswordPage.vue"),

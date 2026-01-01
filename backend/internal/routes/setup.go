@@ -80,7 +80,8 @@ func SetupRoutes(server *gin.Engine, deps ServerDependency) {
 	categoriesHandler.SetupRouter(versionedGroup)
 
 	productsHandler := products.ProductsHandler{
-		ProductRepo: deps.Repositories.ProductRepository,
+		ProductRepo:       deps.Repositories.ProductRepository,
+		MiddlewareService: deps.Services.MiddlewareService,
 	}
 	productsHandler.SetupRouter(versionedGroup)
 

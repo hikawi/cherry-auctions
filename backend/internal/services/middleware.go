@@ -28,6 +28,15 @@ func (s *MiddlewareService) parseAuthHeaders(g *gin.Context) (*JWTSubject, error
 	return claims, nil
 }
 
+func (s *MiddlewareService) SoftAuthorizedRoute(g *gin.Context) {
+	claims, err := s.parseAuthHeaders(g)
+	if err == nil {
+		g.Set("claims", claims)
+	}
+
+	g.Next()
+}
+
 // AuthorizedRoleRoute creates a GIN handler that forces the user to have a specified permission name
 // to be allowed to proceed. Otherwise, block with `403 forbidden`.
 //
