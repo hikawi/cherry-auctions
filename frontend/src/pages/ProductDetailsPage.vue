@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import ProductCard from "@/components/index/ProductCard.vue";
+import AvatarCircle from "@/components/shared/AvatarCircle.vue";
 import LoadingSpinner from "@/components/shared/LoadingSpinner.vue";
 import NavigationBar from "@/components/shared/NavigationBar.vue";
-import PlaceholderAvatar from "@/components/shared/PlaceholderAvatar.vue";
 import WhiteContainer from "@/components/shared/WhiteContainer.vue";
 import { endpoints } from "@/consts";
 import { useAuthFetch } from "@/hooks/use-auth-fetch";
@@ -187,7 +187,11 @@ onMounted(() => {
             </div>
 
             <div class="flex w-full flex-row items-center gap-2">
-              <PlaceholderAvatar :name="data.seller.name" class="size-8" />
+              <AvatarCircle
+                :name="data.seller.name"
+                :avatar_url="data.seller.avatar_url"
+                class="size-8"
+              />
               <span class="text-lg"
                 >{{ data.seller.name }} ({{
                   data.seller.email ? data.seller.email : $t("products.deleted_email")
@@ -256,7 +260,7 @@ onMounted(() => {
               <span class="w-full">
                 {{
                   $t("products.bid_list", {
-                    name: truncate(bid.bidder.name),
+                    name: truncate(bid.bidder.name || ""),
                     price: $n(bid.price, "currency"),
                     at: createAbsoluteTime(bid.created_at),
                   })
@@ -281,7 +285,11 @@ onMounted(() => {
             class="flex w-full flex-col gap-2 rounded-2xl border border-zinc-500 p-4"
           >
             <span class="flex flex-row items-center gap-2 text-sm font-semibold">
-              <PlaceholderAvatar :name="question.user.name" class="size-6!" />
+              <AvatarCircle
+                :name="question.user.name"
+                :avatar_url="question.user.avatar_url"
+                class="size-8"
+              />
               {{ $t("products.asked_by", { name: question.user.name }) }}
             </span>
 

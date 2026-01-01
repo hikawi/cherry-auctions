@@ -61,7 +61,7 @@ parent: Other Specifications
   - [ ] Confirmation dialog for bids.
 - [ ] **History & Profile**
   - [x] Masked bid history (Timestamp, Name, Price) in card or tabular view.
-  - [ ] Profile management: Change email, name, address, password.
+  - [x] Profile management: Change email, name, address, password.
   - [ ] View personal rating details/comments from others.
   - [ ] Lists: "My current bids" and "My won bids" (with seller review/comment).
 - [x] **Permissions**

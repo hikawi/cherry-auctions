@@ -15,8 +15,9 @@ type SubscriptionDTO struct {
 
 type UserDTO struct {
 	ID              uint             `json:"id"`
-	Name            string           `json:"name"`
+	Name            *string          `json:"name"`
 	Email           *string          `json:"email"`
+	Address         *string          `json:"address"`
 	AvatarURL       *string          `json:"avatar_url"`
 	Verified        bool             `json:"verified"`
 	CreatedAt       time.Time        `json:"created_at"`
@@ -44,6 +45,7 @@ func ToUserDTO(m *models.User) UserDTO {
 		ID:              m.ID,
 		Name:            m.Name,
 		Email:           m.Email,
+		Address:         m.Address,
 		AvatarURL:       m.AvatarURL,
 		Verified:        m.Verified,
 		CreatedAt:       m.CreatedAt,
@@ -80,4 +82,9 @@ type PostAvatarRequest struct {
 
 type PostAvatarResponse struct {
 	AvatarURL string `json:"avatar_url"`
+}
+
+type PostProfileRequest struct {
+	Name    *string `json:"name" form:"name" binding:"min=2,max=200,omitempty"`
+	Address *string `json:"address" form:"address" binding:"min=2,omitempty"`
 }

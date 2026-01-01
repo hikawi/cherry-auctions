@@ -45,7 +45,7 @@ func (repo *UserRepository) RegisterNewUser(ctx context.Context, name string, em
 	}
 
 	user := models.User{
-		Name:      name,
+		Name:      &name,
 		Email:     &email,
 		Password:  &password,
 		OauthType: "none",
@@ -96,4 +96,8 @@ func (repo *UserRepository) ApproveUser(ctx context.Context, id uint) error {
 
 func (repo *UserRepository) UpdateAvatarURL(ctx context.Context, id uint, url string) (int, error) {
 	return gorm.G[models.User](repo.DB).Where("id = ?", id).Update(ctx, "avatar_url", url)
+}
+
+func (repo *UserRepository) UpdateProfile(ctx context.Context, id uint, name *string, address *string) (int, error) {
+	return gorm.G[models.User](repo.DB).Where("id = ?", id).Updates(ctx, models.User{Name: name, Address: address})
 }

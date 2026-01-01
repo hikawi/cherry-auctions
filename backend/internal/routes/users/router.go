@@ -24,4 +24,5 @@ func (h *UsersHandler) SetupRouter(r *gin.RouterGroup) {
 	g.POST("/request", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.PostRequest)
 	g.POST("/approve", h.MiddlewareService.AuthorizedRoute(models.ROLE_ADMIN), h.PostApprove)
 	g.POST("/avatar", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.PostAvatar)
+	g.PUT("/profile", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.PutProfile)
 }

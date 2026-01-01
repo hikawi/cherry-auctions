@@ -155,6 +155,7 @@ func (h *UsersHandler) PostAvatar(g *gin.Context) {
 	// govips can load directly from an io.Reader, which is memory efficient
 	img, err := vips.NewImageFromReader(file)
 	if err != nil {
+		fmt.Println("what")
 		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": err.Error(), "status": http.StatusBadRequest})
 		g.AbortWithStatusJSON(http.StatusBadRequest, shared.ErrorResponse{Error: "invalid image format"})
 		return
@@ -204,6 +205,44 @@ func (h *UsersHandler) PostAvatar(g *gin.Context) {
 	response := PostAvatarResponse{
 		AvatarURL: avatarURL,
 	}
+	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusOK, "response": response})
+	g.JSON(http.StatusOK, response)
+}
+
+// PutProfile godoc
+//
+//	@summary		Updates your user profile
+//	@description	Updates the current authenticated user's profile
+//	@tags			users
+//	@accept			json
+//	@produce		json
+//	@security		ApiKeyAuth
+//	@param			profile	body		users.PostProfileRequest	true	"Profile data"
+//	@success		200		{object}	shared.MessageResponse		"When successfully changed"
+//	@failure		400		{object}	shared.ErrorResponse		"Invalid body"
+//	@failure		401		{object}	shared.ErrorResponse		"When unauthorized"
+//	@failure		500		{object}	shared.ErrorResponse		"The request could not be completed due to server faults"
+//	@router			/users/profile [PUT]
+func (h *UsersHandler) PutProfile(g *gin.Context) {
+	ctx := g.Request.Context()
+	claimsAny, _ := g.Get("claims")
+	claims := claimsAny.(*services.JWTSubject)
+
+	var body PostProfileRequest
+	if err := g.ShouldBind(&body); err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": err.Error(), "status": http.StatusBadRequest})
+		g.AbortWithStatusJSON(http.StatusBadRequest, shared.ErrorResponse{Error: "bad request"})
+		return
+	}
+
+	_, err := h.UserRepo.UpdateProfile(ctx, claims.UserID, body.Name, body.Address)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": err.Error(), "status": http.StatusInternalServerError})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "couldn't update profile"})
+		return
+	}
+
+	response := shared.MessageResponse{Message: "updated profile"}
 	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusOK, "response": response})
 	g.JSON(http.StatusOK, response)
 }

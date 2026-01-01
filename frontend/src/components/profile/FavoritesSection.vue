@@ -26,7 +26,6 @@ async function fetchFavorites() {
       const json = await res.json();
       data.value = json.data;
       maxPages.value = json.total_pages;
-      console.log(json);
     }
   } finally {
     loading.value = false;
@@ -41,7 +40,10 @@ onMounted(() => {
 <template>
   <h2 class="text-2xl font-semibold">{{ $t("profile.favorites") }}</h2>
 
-  <div class="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-3" v-if="data && data.length > 0">
+  <div
+    class="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3"
+    v-if="data && data.length > 0"
+  >
     <template v-for="product in data" :key="product.id">
       <ProductCard :product @favoriteToggle="fetchFavorites" />
     </template>

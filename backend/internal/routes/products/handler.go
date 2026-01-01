@@ -1,7 +1,6 @@
 package products
 
 import (
-	"fmt"
 	"math"
 	"net/http"
 	"strconv"
@@ -173,7 +172,6 @@ func (h *ProductsHandler) GetFavoriteProducts(g *gin.Context) {
 
 	productsDto := make([]ProductDTO, 0)
 	for _, prod := range pointers {
-		fmt.Println(prod.IsFavorite)
 		productsDto = append(productsDto, ToProductDTO(prod))
 	}
 

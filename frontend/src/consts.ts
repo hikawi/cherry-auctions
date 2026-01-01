@@ -22,5 +22,7 @@ export const endpoints = {
     all: `${api}/v1/users`,
     request: `${api}/v1/users/request`,
     approve: `${api}/v1/users/approve`,
+    avatar: `${api}/v1/users/avatar`,
+    profile: `${api}/v1/users/profile`,
   },
 };

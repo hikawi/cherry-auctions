@@ -92,30 +92,6 @@ services:
       retries: 3
       interval: 1m
 
-  frontend:
-    image: node:24-alpine
-    container_name: cherry-auctions-frontend
-    hostname: frontend
-    networks:
-      - default
-    working_dir: /app
-    ports:
-      - 5173:5173
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-      - /app/.pnpm-store # To make sure PNPM inside the container doesn't leak out
-    command: # I really wanted to use NPM for compatibility but 46s startup VS 330ms startup? Come on.
-      - /bin/sh
-      - -c
-      - |
-        corepack enable pnpm
-        pnpm i --frozen-lockfile
-        pnpm dev
-    depends_on:
-      rustfs:
-        condition: service_healthy
-
   backend:
     build:
       context: ./backend

@@ -11,14 +11,11 @@ import {
   LucideStar,
   LucideUser,
 } from "lucide-vue-next";
-import { computed, ref } from "vue";
+import { ref } from "vue";
+import AvatarCircle from "./AvatarCircle.vue";
 
 const profile = useProfileStore();
 const menuOpen = ref(false);
-
-const urlEncodedName = computed(() => {
-  return `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.profile?.name || "")}`;
-});
 
 const links = [
   {
@@ -91,10 +88,7 @@ const links = [
     </a>
 
     <div @click="menuOpen = !menuOpen" v-if="profile.hasProfile" class="relative">
-      <img
-        :src="urlEncodedName"
-        class="hover:ring-claret-600 aspect-square h-10 w-auto cursor-pointer rounded-full hover:ring-2"
-      />
+      <AvatarCircle :name="profile.profile?.name" :avatar_url="profile.profile?.avatar_url" hover />
 
       <div
         v-if="menuOpen"

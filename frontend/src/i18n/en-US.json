@@ -137,6 +137,10 @@
   "profile": {
     "profile": "Profile",
     "favorites": "My Favorites",
+    "upload_avatar": "Change Picture",
+    "email": "Email Address",
+    "name": "Full Name",
+    "address": "Address",
     "no_favorites": "No favorites yet"
   },
   "general": {
@@ -153,7 +157,8 @@
     "search": "Search",
     "clear": "Clear",
     "refresh": "Refresh",
-    "refreshing": "Refreshing"
+    "refreshing": "Refreshing",
+    "loading": "Loading"
   },
   "others": {
     "403": {
