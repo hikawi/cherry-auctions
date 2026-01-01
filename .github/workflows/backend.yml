@@ -31,6 +31,9 @@ jobs:
           go-version-file: "./backend/go.mod"
           cache-dependency-path: "backend/go.sum"
 
+      - name: Setup dependencies
+        run: apt-get update && apt-get install libvips-dev libvips-tools pkg-config
+
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v9
         with:
@@ -80,6 +83,9 @@ jobs:
           go-version-file: "./backend/go.mod"
           cache-dependency-path: "backend/go.sum"
 
+      - name: Setup dependencies
+        run: apt-get update && apt-get install libvips-dev libvips-tools pkg-config
+
       - name: Test
         run: go test ./... -cover
         working-directory: backend
@@ -109,6 +115,9 @@ jobs:
         with:
           go-version-file: "./backend/go.mod"
           cache-dependency-path: "backend/go.sum"
+
+      - name: Setup dependencies
+        run: apt-get update && apt-get install libvips-dev libvips-tools pkg-config
 
       - name: Build
         working-directory: backend
@@ -157,7 +166,7 @@ jobs:
       cancel-in-progress: false
     environment:
       name: Production
-      url: https://status.luny.dev
+      url: https://api.cherry-auctions.luny.dev
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
