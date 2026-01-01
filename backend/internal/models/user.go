@@ -10,7 +10,7 @@ import (
 // User is the main struct that binds everything together.
 type User struct {
 	ID           uint    `gorm:"column:id;primaryKey;autoIncrement"`
-	Name         string  `gorm:"column:name;not null;size:200"`
+	Name         *string `gorm:"column:name;size:200"`
 	Email        *string `gorm:"column:email;size:200;unique;uniqueIndex"`
 	Password     *string `gorm:"column:password"`
 	Address      *string

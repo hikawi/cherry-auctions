@@ -4,11 +4,11 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import dayjs from "dayjs";
 import { useTimestamp } from "@vueuse/core";
-import PlaceholderAvatar from "../shared/PlaceholderAvatar.vue";
 import { LucideHeart, LucideSparkle } from "lucide-vue-next";
 import { useAuthFetch } from "@/hooks/use-auth-fetch";
 import { endpoints } from "@/consts";
 import { useProfileStore } from "@/stores/profile";
+import AvatarCircle from "../shared/AvatarCircle.vue";
 
 const props = defineProps<{
   product: Product;
@@ -93,7 +93,7 @@ async function toggleFavorite() {
     />
 
     <div class="flex w-full flex-row items-center justify-start gap-2">
-      <PlaceholderAvatar :name="product.seller.name" />
+      <AvatarCircle :name="product.seller.name" :avatar_url="product.seller.avatar_url" />
       <span>{{ product.seller.name }}</span>
     </div>
 

@@ -4,8 +4,10 @@ export type Subscription = {
 
 export type Profile = {
   id: number;
-  name: string;
-  email: string;
+  name?: string;
+  email?: string;
+  avatar_url?: string;
+  address?: string;
   verified: boolean;
   created_at: string;
   average_rating: number;
@@ -31,8 +33,9 @@ export type Category = {
 };
 
 export interface SmallUser {
-  name: string;
+  name?: string;
   email?: string;
+  avatar_url?: string;
 }
 
 export type Question = {

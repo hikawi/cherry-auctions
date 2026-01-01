@@ -290,6 +290,16 @@ definitions:
       avatar_url:
         type: string
     type: object
+  users.PostProfileRequest:
+    properties:
+      address:
+        minLength: 2
+        type: string
+      name:
+        maxLength: 200
+        minLength: 2
+        type: string
+    type: object
   users.SubscriptionDTO:
     properties:
       created_at:
@@ -299,6 +309,8 @@ definitions:
     type: object
   users.UserDTO:
     properties:
+      address:
+        type: string
       avatar_url:
         type: string
       average_rating:
@@ -860,6 +872,42 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Gets your own profile.
+      tags:
+      - users
+  /users/profile:
+    put:
+      consumes:
+      - application/json
+      description: Updates the current authenticated user's profile
+      parameters:
+      - description: Profile data
+        in: body
+        name: profile
+        required: true
+        schema:
+          $ref: '#/definitions/users.PostProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: When successfully changed
+          schema:
+            $ref: '#/definitions/shared.MessageResponse'
+        "400":
+          description: Invalid body
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "401":
+          description: When unauthorized
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: The request could not be completed due to server faults
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Updates your user profile
       tags:
       - users
   /users/request:

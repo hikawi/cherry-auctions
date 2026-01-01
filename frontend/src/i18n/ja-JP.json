@@ -137,6 +137,10 @@
   "profile": {
     "profile": "プロフィール",
     "favorites": "お気に入り",
+    "upload_avatar": "写真編集",
+    "email": "メールアドレス",
+    "name": "氏名",
+    "address": "住所",
     "no_favorites": "お気に入りがありません"
   },
   "general": {
@@ -153,7 +157,8 @@
     "search": "探検",
     "clear": "消す",
     "refresh": "リロード",
-    "refreshing": "リロード中"
+    "refreshing": "リロード中",
+    "loading": "読み込み中"
   },
   "others": {
     "403": {
