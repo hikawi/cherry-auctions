@@ -6,9 +6,10 @@ import PlaceholderAvatar from "@/components/shared/PlaceholderAvatar.vue";
 import WhiteContainer from "@/components/shared/WhiteContainer.vue";
 import { endpoints } from "@/consts";
 import { useAuthFetch } from "@/hooks/use-auth-fetch";
+import { useProfileStore } from "@/stores/profile";
 import type { Product } from "@/types";
 import dayjs from "dayjs";
-import { LucideChevronLeft, LucideCircle, LucideReply } from "lucide-vue-next";
+import { LucideChevronLeft, LucideCircle, LucideHeart, LucideReply } from "lucide-vue-next";
 import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
@@ -16,6 +17,7 @@ import { useRoute } from "vue-router";
 const route = useRoute();
 const { locale } = useI18n();
 const { authFetch } = useAuthFetch();
+const profile = useProfileStore();
 
 const loading = ref(false);
 const data = ref<
@@ -70,6 +72,34 @@ function truncate(s: string): string {
   return prefix.padEnd(8, "*");
 }
 
+async function toggleFavorite() {
+  if (!data.value) {
+    return;
+  }
+
+  const res = await authFetch(endpoints.products.favorite, {
+    method: "POST",
+    body: JSON.stringify({ id: data.value.id }),
+  });
+  if (res.ok) {
+    data.value = { ...data.value, is_favorite: !data.value?.is_favorite };
+    console.log(data.value);
+  }
+}
+
+function toggleSimilarFavorite(id: number) {
+  if (!data.value) {
+    return;
+  }
+
+  data.value = {
+    ...data.value,
+    similar_products: data.value.similar_products?.map((val) =>
+      val.id != id ? val : { ...val, is_favorite: !val.is_favorite },
+    ),
+  };
+}
+
 onMounted(() => {
   fetchProduct();
 });
@@ -111,7 +141,7 @@ onMounted(() => {
       <!-- The product -->
       <div class="grid w-full max-w-4xl grid-cols-1 gap-8 lg:grid-cols-2">
         <!-- The product card -->
-        <div class="flex w-full flex-col items-center justify-start gap-4">
+        <div class="relative flex w-full flex-col items-center justify-start gap-4">
           <img
             :src="data.thumbnail_url"
             :alt="data.name"
@@ -119,6 +149,20 @@ onMounted(() => {
             height="400"
             class="aspect-square h-auto w-full rounded-xl object-cover"
           />
+
+          <button
+            class="absolute top-0 right-0 z-10 translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full border border-zinc-300 bg-white p-2 shadow-md hover:border-zinc-500"
+            v-if="profile.hasProfile"
+            @click="toggleFavorite"
+          >
+            <LucideHeart
+              class="duration-200"
+              :class="{
+                'text-claret-600 hover:fill-claret-600/50': !data.is_favorite,
+                'fill-claret-600 text-claret-600': data.is_favorite,
+              }"
+            />
+          </button>
         </div>
 
         <!-- The data card -->
@@ -158,8 +202,24 @@ onMounted(() => {
           </div>
 
           <div class="grid grid-cols-1 gap-2 md:grid-cols-2">
+            <span
+              class="text-claret-600 w-full text-center font-semibold md:col-span-2"
+              v-if="
+                !profile.profile ||
+                profile.profile.average_rating < 0.8 ||
+                !data.allows_unrated_buyers
+              "
+            >
+              {{ $t("products.cant_bid") }}
+            </span>
+
             <button
-              class="bg-claret-600 hover:text-claret-600 border-claret-600 flex cursor-pointer flex-col items-center justify-center gap-0 rounded-xl border-2 px-4 py-2 text-white duration-200 hover:bg-white"
+              class="bg-claret-600 enabled:hover:text-claret-600 border-claret-600 flex cursor-pointer flex-col items-center justify-center gap-0 rounded-xl border-2 px-4 py-2 text-white duration-200 enabled:hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+              :disabled="
+                !profile.profile ||
+                profile.profile.average_rating < 0.8 ||
+                !data.allows_unrated_buyers
+              "
             >
               <span class="text-lg font-semibold">{{ $t("products.bid") }}</span>
               <span class="text-sm"
@@ -248,7 +308,12 @@ onMounted(() => {
         <h2 class="text-xl font-bold">{{ $t("products.similar_products") }}</h2>
 
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <ProductCard v-for="product in data.similar_products" :key="product.id" :product />
+          <ProductCard
+            v-for="product in data.similar_products"
+            :key="product.id"
+            :product
+            @favoriteToggle="() => toggleSimilarFavorite(product.id)"
+          />
         </div>
       </section>
     </div>
