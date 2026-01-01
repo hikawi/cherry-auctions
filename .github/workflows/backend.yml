@@ -25,16 +25,16 @@ jobs:
       - uses: wagoid/commitlint-github-action@v6
         name: Commitlint
 
+      - name: Setup dependencies
+        run: sudo apt-get update && sudo apt-get install libvips-dev libvips-tools pkg-config
+
       - uses: actions/setup-go@v6
         name: Setup Go
         with:
           go-version-file: "./backend/go.mod"
           cache-dependency-path: "backend/go.sum"
 
-      - name: Setup dependencies
-        run: apt-get update && apt-get install libvips-dev libvips-tools pkg-config
-
-      - name: golangci-lint
+      - name: Lint Golang
         uses: golangci/golangci-lint-action@v9
         with:
           version: v2.6
@@ -84,7 +84,7 @@ jobs:
           cache-dependency-path: "backend/go.sum"
 
       - name: Setup dependencies
-        run: apt-get update && apt-get install libvips-dev libvips-tools pkg-config
+        run: sudo apt-get update && sudo apt-get install libvips-dev libvips-tools pkg-config
 
       - name: Test
         run: go test ./... -cover
@@ -117,7 +117,7 @@ jobs:
           cache-dependency-path: "backend/go.sum"
 
       - name: Setup dependencies
-        run: apt-get update && apt-get install libvips-dev libvips-tools pkg-config
+        run: sudo apt-get update && sudo apt-get install libvips-dev libvips-tools pkg-config
 
       - name: Build
         working-directory: backend
