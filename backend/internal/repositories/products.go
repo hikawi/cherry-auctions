@@ -123,3 +123,72 @@ func (r *ProductRepository) GetSimilarProductsTo(ctx context.Context, product *m
 		Error
 	return products, err
 }
+
+func (r *ProductRepository) GetFavoriteProducts(ctx context.Context, userID uint, limit int, offset int) ([]models.Product, error) {
+	var products []models.Product
+	err := r.DB.Model(&models.Product{}).WithContext(ctx).
+		Joins("JOIN favorite_products ON products.id = favorite_products.product_id").
+		Where("favorite_products.user_id = ?", userID).
+		Preload("Seller").
+		Preload("Categories").
+		Preload("CurrentHighestBid").
+		Distinct("products.*").
+		Limit(limit).
+		Offset(offset).
+		Order("products.id").
+		Find(&products).
+		Error
+	return products, err
+}
+
+func (r *ProductRepository) CountFavoriteProducts(ctx context.Context, userID uint) (int64, error) {
+	var count int64
+	err := r.DB.Table("favorite_products").Where("user_id = ?", userID).Count(&count).Error
+	return count, err
+}
+
+func (r *ProductRepository) ToggleFavoriteProduct(ctx context.Context, userID uint, productID uint) error {
+	return r.DB.Transaction(func(tx *gorm.DB) error {
+		data := models.FavoriteProduct{
+			UserID:    userID,
+			ProductID: productID,
+		}
+		_, err := gorm.G[models.FavoriteProduct](tx).Where("user_id = ? AND product_id = ?", userID, productID).First(ctx)
+		if err == nil {
+			_, err = gorm.G[models.FavoriteProduct](tx).Where("user_id = ? AND product_id = ?", userID, productID).Delete(ctx)
+			return err
+		}
+
+		return gorm.G[models.FavoriteProduct](tx).Create(ctx, &data)
+	})
+}
+
+// AttachFavoriteStatus is a temporary function to attach a "IsFavorite" field
+// to products, just so we don't have to make too many queries.
+func (r *ProductRepository) AttachFavoriteStatus(ctx context.Context, userID uint, products ...*models.Product) {
+	if userID == 0 || len(products) == 0 {
+		return
+	}
+
+	// 1. Collect all IDs from the products we just fetched
+	ids := make([]uint, len(products))
+	for i, p := range products {
+		ids[i] = p.ID
+	}
+
+	// 2. Query the favorite table once for the whole batch
+	var favoriteIDs []uint
+	r.DB.WithContext(ctx).Table("favorite_products").
+		Where("user_id = ? AND product_id IN ?", userID, ids).
+		Pluck("product_id", &favoriteIDs)
+
+	// 3. Map the results back to the structs
+	favMap := make(map[uint]bool)
+	for _, id := range favoriteIDs {
+		favMap[id] = true
+	}
+
+	for _, p := range products {
+		p.IsFavorite = favMap[p.ID]
+	}
+}

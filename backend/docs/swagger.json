@@ -484,6 +484,104 @@
                 }
             }
         },
+        "/products/favorite": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Queries on my favorite products,",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Retrieves my favorite products.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Search Query",
+                        "name": "query",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page Number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Items per Page",
+                        "name": "per_page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/products.GetProductsResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "When unauthenticated",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "The server could not make the request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Mark a product as my favorite, if it is not a favorite, otherwise, unmark it.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Toggle a product as favorite.",
+                "responses": {
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "$ref": "#/definitions/shared.MessageResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "When unauthenticated",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Product could not be found",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "The server could not make the request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/products/top": {
             "get": {
                 "description": "Queriee top-products via some metrics, instead of a pure query like /products.",
@@ -907,6 +1005,9 @@
                 "id": {
                     "type": "integer"
                 },
+                "is_favorite": {
+                    "type": "boolean"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -1026,6 +1127,9 @@
                 },
                 "id": {
                     "type": "integer"
+                },
+                "is_favorite": {
+                    "type": "boolean"
                 },
                 "name": {
                     "type": "string"

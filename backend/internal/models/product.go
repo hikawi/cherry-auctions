@@ -30,6 +30,7 @@ type Product struct {
 	BidsCount           int   `gorm:"default:0;not null"`
 
 	SearchVector string `gorm:"type:tsvector;index:,type:gin"`
+	IsFavorite   bool   `gorm:"-"`
 }
 
 // Courtesy of AI.

@@ -27,6 +27,22 @@ async function fetchTopProducts() {
     loading.value = false;
   }
 }
+
+function toggleFavoriteStatus(id: number) {
+  if (data.value) {
+    data.value = {
+      ending_soon: data.value.ending_soon.map((val) =>
+        val.id != id ? val : { ...val, is_favorite: !val.is_favorite },
+      ),
+      highest_bids: data.value.highest_bids.map((val) =>
+        val.id != id ? val : { ...val, is_favorite: !val.is_favorite },
+      ),
+      top_bids: data.value.top_bids.map((val) =>
+        val.id != id ? val : { ...val, is_favorite: !val.is_favorite },
+      ),
+    };
+  }
+}
 </script>
 
 <template>
@@ -52,7 +68,12 @@ async function fetchTopProducts() {
           {{ $t("home.no_products") }}
         </p>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" v-else>
-          <ProductCard v-for="product in data.ending_soon" :key="product.id" :product />
+          <ProductCard
+            v-for="product in data.ending_soon"
+            :key="product.id"
+            :product
+            @click="() => toggleFavoriteStatus(product.id)"
+          />
         </div>
       </section>
 
@@ -63,7 +84,12 @@ async function fetchTopProducts() {
           {{ $t("home.no_products") }}
         </p>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" v-else>
-          <ProductCard v-for="product in data.top_bids" :key="product.id" :product />
+          <ProductCard
+            v-for="product in data.top_bids"
+            :key="product.id"
+            :product
+            @click="() => toggleFavoriteStatus(product.id)"
+          />
         </div>
       </section>
 
@@ -77,7 +103,12 @@ async function fetchTopProducts() {
           {{ $t("home.no_products") }}
         </p>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" v-else>
-          <ProductCard v-for="product in data.highest_bids" :key="product.id" :product />
+          <ProductCard
+            v-for="product in data.highest_bids"
+            :key="product.id"
+            :product
+            @click="() => toggleFavoriteStatus(product.id)"
+          />
         </div>
       </section>
     </div>

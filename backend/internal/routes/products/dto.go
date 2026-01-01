@@ -49,6 +49,7 @@ type ProductDTO struct {
 	CurrentHighestBid   *BidDTO       `json:"current_highest_bid"`
 	Categories          []CategoryDTO `json:"categories"`
 	BidsCount           int           `json:"bids_count"`
+	IsFavorite          bool          `json:"is_favorite"`
 }
 
 type QuestionDTO struct {
@@ -157,13 +158,14 @@ func ToProductDTO(m *models.Product) ProductDTO {
 		CurrentHighestBid:   highestBid,
 		BidsCount:           m.BidsCount,
 		Categories:          ranges.Each(m.Categories, ToCategoryDTO),
+		IsFavorite:          m.IsFavorite,
 	}
 }
 
-func ToProductDTOs(products []models.Product) []ProductDTO {
+func ToProductDTOs(products []*models.Product) []ProductDTO {
 	var dtos []ProductDTO
 	for _, product := range products {
-		dtos = append(dtos, ToProductDTO(&product))
+		dtos = append(dtos, ToProductDTO(product))
 	}
 	return dtos
 }
@@ -172,6 +174,10 @@ type GetProductsQuery struct {
 	Query   string `form:"query" json:"query"`
 	Page    int    `form:"page" binding:"number,gt=0,omitempty" json:"page"`
 	PerPage int    `form:"per_page" binding:"number,gt=0,omitempty" json:"per_page"`
+}
+
+type PostProductIDBody struct {
+	ID uint `form:"id" json:"id" binding:"required,number,gt=0"`
 }
 
 type GetProductsResponse struct {

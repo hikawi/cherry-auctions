@@ -98,7 +98,7 @@ const links = [
 
       <div
         v-if="menuOpen"
-        class="absolute right-0 -bottom-1 z-10 flex w-fit translate-y-full flex-col rounded-xl border border-zinc-500 bg-white shadow-md"
+        class="absolute right-0 -bottom-1 z-20 flex w-fit translate-y-full flex-col rounded-xl border border-zinc-500 bg-white shadow-md"
       >
         <template v-for="link in links" :key="link.href">
           <div
