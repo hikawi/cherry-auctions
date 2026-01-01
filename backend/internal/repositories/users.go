@@ -93,3 +93,7 @@ func (repo *UserRepository) ApproveUser(ctx context.Context, id uint) error {
 		return nil
 	})
 }
+
+func (repo *UserRepository) UpdateAvatarURL(ctx context.Context, id uint, url string) (int, error) {
+	return gorm.G[models.User](repo.DB).Where("id = ?", id).Update(ctx, "avatar_url", url)
+}

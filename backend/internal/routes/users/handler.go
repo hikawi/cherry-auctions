@@ -1,14 +1,20 @@
 package users
 
 import (
+	"bytes"
+	"crypto/sha256"
+	"encoding/hex"
+	"fmt"
 	"math"
 	"net/http"
 
+	"github.com/davidbyttow/govips/v2/vips"
 	"github.com/gin-gonic/gin"
 	"luny.dev/cherryauctions/internal/logging"
 	"luny.dev/cherryauctions/internal/models"
 	"luny.dev/cherryauctions/internal/routes/shared"
 	"luny.dev/cherryauctions/internal/services"
+	"luny.dev/cherryauctions/pkg/closer"
 	"luny.dev/cherryauctions/pkg/ranges"
 )
 
@@ -107,6 +113,99 @@ func (h *UsersHandler) PostApprove(g *gin.Context) {
 	response := shared.MessageResponse{Message: "approved successfully"}
 	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusNoContent, "response": response})
 	g.JSON(http.StatusNoContent, response)
+}
+
+// PostAvatar godoc
+//
+//	@summary		Changes my avatar.
+//	@description	Uploads and changes my avatar.
+//	@tags			users
+//	@produce		json
+//	@security		ApiKeyAuth
+//	@Accept			multipart/form-data
+//	@Produce		json
+//	@Param			avatar	formData	file						true	"account image"
+//	@success		200		{object}	users.PostAvatarResponse	"When success"
+//	@failure		400		{object}	shared.ErrorResponse		"Invalid request"
+//	@failure		401		{object}	shared.ErrorResponse		"When unauthenticated"
+//	@failure		413		{object}	shared.ErrorResponse		"When the image is too big"
+//	@failure		500		{object}	shared.ErrorResponse		"The request could not be completed due to server faults"
+//	@router			/users/avatar [POST]
+func (h *UsersHandler) PostAvatar(g *gin.Context) {
+	ctx := g.Request.Context()
+	claimsAny, _ := g.Get("claims")
+	claims := claimsAny.(*services.JWTSubject)
+
+	var body PostAvatarRequest
+	if err := g.ShouldBind(&body); err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": err.Error(), "status": http.StatusBadRequest})
+		g.AbortWithStatusJSON(http.StatusBadRequest, shared.ErrorResponse{Error: "bad request"})
+		return
+	}
+
+	if body.Avatar.Size > (10 << 20) /* 10MB */ {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": "image too large", "status": http.StatusRequestEntityTooLarge, "size": body.Avatar.Size})
+		g.AbortWithStatusJSON(http.StatusRequestEntityTooLarge, shared.ErrorResponse{Error: "max 10MB allowed"})
+		return
+	}
+
+	file, _ := body.Avatar.Open()
+	defer closer.CloseResources(file)
+
+	// govips can load directly from an io.Reader, which is memory efficient
+	img, err := vips.NewImageFromReader(file)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": err.Error(), "status": http.StatusBadRequest})
+		g.AbortWithStatusJSON(http.StatusBadRequest, shared.ErrorResponse{Error: "invalid image format"})
+		return
+	}
+	defer img.Close()
+
+	// .Thumbnail is the most optimized way to resize in vips
+	// InterestingAttention uses an algorithm to find the most "interesting" part (usually a face)
+	err = img.Thumbnail(256, 256, vips.InterestingAttention)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": err.Error(), "status": http.StatusInternalServerError})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "processing failed"})
+		return
+	}
+
+	ep := vips.NewWebpExportParams()
+	ep.Quality = 75
+	ep.StripMetadata = true
+
+	webpBuffer, _, err := img.ExportWebp(ep)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": err.Error(), "status": http.StatusInternalServerError})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "encoding failed"})
+		return
+	}
+
+	// 6. Upload to S3
+	hash := sha256.Sum256(webpBuffer)
+	hashString := hex.EncodeToString(hash[:])
+	key := fmt.Sprintf("avatars/%s.webp", hashString)
+	err = h.S3Service.PutObject(ctx, key, bytes.NewReader(webpBuffer))
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": err.Error(), "status": http.StatusInternalServerError})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "storage upload failed"})
+		return
+	}
+
+	// Set it up on the user.
+	avatarURL := fmt.Sprintf("%s/%s", h.S3PermURL, key)
+	_, err = h.UserRepo.UpdateAvatarURL(ctx, claims.UserID, avatarURL)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": err.Error(), "status": http.StatusInternalServerError})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "can't update avatar url"})
+		return
+	}
+
+	response := PostAvatarResponse{
+		AvatarURL: avatarURL,
+	}
+	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusOK, "response": response})
+	g.JSON(http.StatusOK, response)
 }
 
 // GetUsers godoc

@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/davidbyttow/govips/v2/vips"
 	"github.com/gin-gonic/gin"
 	"luny.dev/cherryauctions/internal/config"
 	"luny.dev/cherryauctions/internal/infra"
@@ -29,6 +30,8 @@ import (
 // @description				Classic Bearer token, authenticated by using the login endpoint, which should grant an access token. To refresh it, use the RefreshToken cookie.
 func main() {
 	cfg := config.Load()
+	vips.Startup(nil)
+	defer vips.Shutdown()
 
 	logging.InitLogger()
 
@@ -49,6 +52,7 @@ func main() {
 	passwordService := &services.PasswordService{RandomService: randomService}
 	captchaService := &services.CaptchaService{RecaptchaSecret: cfg.RecaptchaSecret}
 	middlewareService := &services.MiddlewareService{JWTService: jwtService}
+	s3Service := services.NewS3Service(cfg.AWS.BucketName, s3Client)
 
 	// Weird to do this even in production.
 	infra.MigrateModels(db)
@@ -68,6 +72,7 @@ func main() {
 			PasswordService:   passwordService,
 			CaptchaService:    captchaService,
 			MiddlewareService: middlewareService,
+			S3Service:         s3Service,
 		},
 		Repositories: repositories.RepositoryRegistry{
 			CategoryRepository:     categoryRepo,

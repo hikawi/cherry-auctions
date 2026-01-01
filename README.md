@@ -48,7 +48,30 @@ Relevant Links:
 | **Frontend**   | `node:24-alpine`          | `5173` (Dev Server)                  | Frontend development server using PNPM with hot reloading (e.g. Vite). Serves the web UI during development.                   |
 | **Backend**    | `cosmtrek/air`            | `3000` (Host) → `80` (Container)     | Backend API server with live reload. Handles authentication, business logic, database access, file uploads, and email sending. |
 
+## Prerequisites
+
+### libvips
+
+The Go backend uses `libvips` to handle image processing to convert images from
+and to webp, before storing it into S3. Install it on your device with your
+respective installation methods.
+
+```bash
+# MacOS
+brew install vips pkg-config
+
+# Alpine (Docker)
+apk add vips
+
+# Honestly, if you're on Linux, you're on your own. You should know what to do.
+```
+
+For Windows users, it's better to use WSL here. `govips` does not support or care
+for Windows native runtime with `libvips`.
+
 ## Getting Started
+
+### Method 1: Docker-based
 
 This monorepo is orchestrated by Docker Compose. Although you can `cd` into each
 directory and spin up the service natively yourself (by using Go compiler or
@@ -63,6 +86,8 @@ current directory.
 docker compose up --build
 ```
 
+### Method 2: Native Installation
+
 Otherwise, you can install the following for this project:
 
 - OpenSearch
@@ -73,8 +98,8 @@ Otherwise, you can install the following for this project:
 - Postgres (or Postgis, or any Postgres-compatible database), expected to be on
   port 5432.
 - S3-compliant database (I expected to use RustFS, migrating away from MinIO),
-  but you can use any other like Ceph or Bunny Storage.
-- SMTP server.
+  but you can use any other like Ceph or Bunny Storage. Or you can use AWS itself.
+- SMTP server. You have to set this up yourself.
 - Air by Cosmtrek for hot-reloading Go modules.
 
 **Note**: Some stuff won't be installed by Docker, as it's unnecessary to do so.

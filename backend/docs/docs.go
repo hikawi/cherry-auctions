@@ -732,6 +732,68 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/avatar": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Uploads and changes my avatar.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json",
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Changes my avatar.",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "account image",
+                        "name": "avatar",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "When success",
+                        "schema": {
+                            "$ref": "#/definitions/users.PostAvatarResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "When unauthenticated",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "413": {
+                        "description": "When the image is too big",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "The request could not be completed due to server faults",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/me": {
             "get": {
                 "security": [
@@ -1168,6 +1230,9 @@ const docTemplate = `{
         "products.ProfileDTO": {
             "type": "object",
             "properties": {
+                "avatar_url": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
@@ -1238,6 +1303,14 @@ const docTemplate = `{
                 }
             }
         },
+        "users.PostAvatarResponse": {
+            "type": "object",
+            "properties": {
+                "avatar_url": {
+                    "type": "string"
+                }
+            }
+        },
         "users.SubscriptionDTO": {
             "type": "object",
             "properties": {
@@ -1252,6 +1325,9 @@ const docTemplate = `{
         "users.UserDTO": {
             "type": "object",
             "properties": {
+                "avatar_url": {
+                    "type": "string"
+                },
                 "average_rating": {
                     "type": "number"
                 },

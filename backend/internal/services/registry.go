@@ -6,4 +6,5 @@ type ServiceRegistry struct {
 	RandomService     *RandomService
 	PasswordService   *PasswordService
 	MiddlewareService *MiddlewareService
+	S3Service         *S3Service
 }
