@@ -131,7 +131,8 @@
     "questions": "Questions",
     "bids": "Bids",
     "similar_products": "You may also like",
-    "bid_list": "{name} bidded {price} at {at}"
+    "bid_list": "{name} bidded {price} at {at}",
+    "cant_bid": "You can't bid on this product"
   },
   "profile": {
     "profile": "Profile",

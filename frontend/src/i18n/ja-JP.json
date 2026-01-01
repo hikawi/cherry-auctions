@@ -131,10 +131,13 @@
     "questions": "商品への質問一覧",
     "similar_products": "この商品をチェックした人はこんな商品もチェックしています",
     "bids": "すべての入札",
-    "bid_list": "{name}さんが{price}で{at}に入札しました"
+    "bid_list": "{name}さんが{price}で{at}に入札しました",
+    "cant_bid": "入札することができません"
   },
   "profile": {
-    "profile": "プロフィール"
+    "profile": "プロフィール",
+    "favorites": "お気に入り",
+    "no_favorites": "お気に入りがありません"
   },
   "general": {
     "categories": "カテゴリー",
