@@ -10,8 +10,67 @@ volumes:
     name: cherry-auctions-postgres-data
   rustfsdata:
     name: cherry-auctions-rustfs-data
+  opensearch-data:
+    name: cherry-auctions-opensearch-data
 
 services:
+  # Taken from OpenSearch's Docker example file for local development
+  opensearch:
+    image: opensearchproject/opensearch
+    container_name: cherry-auctions-opensearch
+    hostname: cherry-auctions-opensearch
+    environment:
+      - cluster.name=opensearch-cluster # Name the cluster
+      - node.name=opensearch-node # Name the node that will run in this container
+      - discovery.seed_hosts=opensearch-node # Nodes to look for when discovering the cluster
+      - cluster.initial_master_nodes=opensearch-node
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m" # Set min and max JVM heap sizes to at least 50% of system RAM
+      - "DISABLE_INSTALL_DEMO_CONFIG=true" # Prevents execution of bundled demo script which installs demo certificates and security configurations to OpenSearch
+      - "DISABLE_SECURITY_PLUGIN=true" # Disables Security plugin
+    networks:
+      - default
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536 # maximum number of open files for the OpenSearch user, set to at least 65536 on modern systems
+        hard: 65536
+    volumes:
+      - opensearch-data:/usr/share/opensearch/data
+    ports:
+      - 9200:9200
+      - 9600:9600
+    healthcheck:
+      test: ["CMD", "curl", "-fsSL", "http://localhost:9200/_cluster/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
+  # Taken from OpenSearch's Docker example file
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards
+    container_name: cherry-auctions-opensearch-dashboard
+    ports:
+      - 5601:5601
+    networks:
+      - default
+    expose:
+      - "5601" # Expose port 5601 for web access to OpenSearch Dashboards
+    environment:
+      - 'OPENSEARCH_HOSTS=["http://cherry-auctions-opensearch:9200"]'
+      - "DISABLE_SECURITY_DASHBOARDS_PLUGIN=true" # disables security dashboards plugin in OpenSearch Dashboards
+    healthcheck:
+      test: ["CMD", "curl", "-fsSL", "http://localhost:5601/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      opensearch:
+        condition: service_healthy
+
   fluentbit:
     image: fluent/fluent-bit:4.2.2
     container_name: cherry-auctions-fluentbit
