@@ -12,6 +12,8 @@ type UsersHandler struct {
 	DB                *gorm.DB
 	MiddlewareService *services.MiddlewareService
 	UserRepo          *repositories.UserRepository
+	S3Service         *services.S3Service
+	S3PermURL         string
 }
 
 func (h *UsersHandler) SetupRouter(r *gin.RouterGroup) {
@@ -21,4 +23,5 @@ func (h *UsersHandler) SetupRouter(r *gin.RouterGroup) {
 	g.GET("", h.MiddlewareService.AuthorizedRoute(models.ROLE_ADMIN), h.GetUsers)
 	g.POST("/request", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.PostRequest)
 	g.POST("/approve", h.MiddlewareService.AuthorizedRoute(models.ROLE_ADMIN), h.PostApprove)
+	g.POST("/avatar", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.PostAvatar)
 }

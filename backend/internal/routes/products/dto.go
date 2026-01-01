@@ -13,8 +13,9 @@ type ProductImageDTO struct {
 }
 
 type ProfileDTO struct {
-	Name  string  `json:"name"`
-	Email *string `json:"email"`
+	Name      string  `json:"name"`
+	Email     *string `json:"email"`
+	AvatarURL *string `json:"avatar_url"`
 }
 
 type CategoryDTO struct {
@@ -63,8 +64,9 @@ type QuestionDTO struct {
 
 func ToProfileDTO(m models.User) ProfileDTO {
 	return ProfileDTO{
-		Name:  m.Name,
-		Email: m.Email,
+		Name:      m.Name,
+		Email:     m.Email,
+		AvatarURL: m.AvatarURL,
 	}
 }
 

@@ -69,6 +69,8 @@ func SetupRoutes(server *gin.Engine, deps ServerDependency) {
 		DB:                deps.DB,
 		MiddlewareService: deps.Services.MiddlewareService,
 		UserRepo:          deps.Repositories.UserRepository,
+		S3Service:         deps.Services.S3Service,
+		S3PermURL:         deps.Config.AWS.S3PermURL,
 	}
 	usersHandler.SetupRouter(versionedGroup)
 

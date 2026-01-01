@@ -238,6 +238,8 @@ definitions:
     type: object
   products.ProfileDTO:
     properties:
+      avatar_url:
+        type: string
       email:
         type: string
       name:
@@ -283,6 +285,11 @@ definitions:
       total_pages:
         type: integer
     type: object
+  users.PostAvatarResponse:
+    properties:
+      avatar_url:
+        type: string
+    type: object
   users.SubscriptionDTO:
     properties:
       created_at:
@@ -292,6 +299,8 @@ definitions:
     type: object
   users.UserDTO:
     properties:
+      avatar_url:
+        type: string
       average_rating:
         type: number
       created_at:
@@ -784,6 +793,46 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Approves seller privileges
+      tags:
+      - users
+  /users/avatar:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads and changes my avatar.
+      parameters:
+      - description: account image
+        in: formData
+        name: avatar
+        required: true
+        type: file
+      produces:
+      - application/json
+      - application/json
+      responses:
+        "200":
+          description: When success
+          schema:
+            $ref: '#/definitions/users.PostAvatarResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "401":
+          description: When unauthenticated
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "413":
+          description: When the image is too big
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: The request could not be completed due to server faults
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Changes my avatar.
       tags:
       - users
   /users/me:

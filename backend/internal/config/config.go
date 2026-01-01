@@ -31,6 +31,7 @@ type Config struct {
 		SessionToken    string
 		S3Base          string
 		S3UsePathStyle  bool
+		S3PermURL       string
 		BucketName      string
 	}
 
@@ -67,6 +68,7 @@ func Load() *Config {
 	cfg.AWS.SessionToken = env.Fatalenv("AWS_SESSION_TOKEN")
 	cfg.AWS.S3Base = env.Fatalenv("AWS_S3_BASE")
 	cfg.AWS.S3UsePathStyle = env.FatalenvBool("AWS_S3_USE_PATH_STYLE")
+	cfg.AWS.S3PermURL = env.Fatalenv("AWS_S3_PERM_URL")
 	cfg.AWS.BucketName = env.Fatalenv("AWS_BUCKET_NAME")
 
 	// SMTP

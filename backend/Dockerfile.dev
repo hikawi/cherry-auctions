@@ -1,0 +1,7 @@
+FROM cosmtrek/air
+
+# Install build dependencies for CGO + libvips
+RUN apt-get update && apt-get -y install pkg-config libvips-dev libvips-tools
+
+WORKDIR /app
+

@@ -1,6 +1,7 @@
 package users
 
 import (
+	"mime/multipart"
 	"time"
 
 	"luny.dev/cherryauctions/internal/models"
@@ -16,6 +17,7 @@ type UserDTO struct {
 	ID              uint             `json:"id"`
 	Name            string           `json:"name"`
 	Email           *string          `json:"email"`
+	AvatarURL       *string          `json:"avatar_url"`
 	Verified        bool             `json:"verified"`
 	CreatedAt       time.Time        `json:"created_at"`
 	AverageRating   float64          `json:"average_rating"`
@@ -42,6 +44,7 @@ func ToUserDTO(m *models.User) UserDTO {
 		ID:              m.ID,
 		Name:            m.Name,
 		Email:           m.Email,
+		AvatarURL:       m.AvatarURL,
 		Verified:        m.Verified,
 		CreatedAt:       m.CreatedAt,
 		AverageRating:   m.AverageRating,
@@ -69,4 +72,12 @@ type GetUsersResponse struct {
 
 type PostApproveRequest struct {
 	ID int `json:"id" binding:"number,gt=0"`
+}
+
+type PostAvatarRequest struct {
+	Avatar *multipart.FileHeader `form:"avatar" binding:"required"`
+}
+
+type PostAvatarResponse struct {
+	AvatarURL string `json:"avatar_url"`
 }
