@@ -52,3 +52,21 @@ func ToUserDTO(m *models.User) UserDTO {
 		Subscription: subscription,
 	}
 }
+
+type GetUsersQuery struct {
+	Query   string `form:"query" json:"query"`
+	Page    int    `form:"page" binding:"number,gt=0,omitempty" json:"page"`
+	PerPage int    `form:"per_page" binding:"number,gt=0,omitempty" json:"per_page"`
+}
+
+type GetUsersResponse struct {
+	Data       []UserDTO `json:"data"`
+	Total      int64     `json:"total"`
+	TotalPages int       `json:"total_pages"`
+	Page       int       `json:"page"`
+	PerPage    int       `json:"per_page"`
+}
+
+type PostApproveRequest struct {
+	ID int `json:"id" binding:"number,gt=0"`
+}

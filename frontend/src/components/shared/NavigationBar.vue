@@ -60,8 +60,8 @@ const links = [
     href: "separator",
   },
   {
-    name: "/admin",
-    href: "Admin Dashboard",
+    href: "/admin",
+    name: "navigation.admin",
     icon: LucideLayoutDashboard,
     admin: true,
   },
@@ -108,10 +108,12 @@ const links = [
           <a
             v-else-if="!link.admin || profile.isAdmin"
             :href="link.href"
-            class="flex min-w-fit flex-row items-center gap-2 border-b border-zinc-300 bg-white px-4 py-2 duration-200 first-of-type:rounded-t-xl last-of-type:rounded-b-xl last-of-type:border-0 hover:bg-zinc-200"
+            class="flex flex-row items-center gap-2 border-b border-zinc-300 bg-white px-4 py-2 whitespace-nowrap duration-200 first-of-type:rounded-t-xl last-of-type:rounded-b-xl last-of-type:border-0 hover:bg-zinc-200"
           >
-            <component :is="link.icon" class="size-4 translate-y-0.5" />
-            {{ $t(link.name!) }}
+            <component :is="link.icon" class="size-4 min-w-fit translate-y-0.5" />
+            <span class="min-w-fit">
+              {{ $t(link.name!) }}
+            </span>
           </a>
         </template>
       </div>

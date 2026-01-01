@@ -62,15 +62,38 @@
       "no_subcategories": "サブカテゴリーがありません",
       "cant_load": "カテゴリーを読み込むことができません",
       "error_invalid_name": "カテゴリー名前が短すぎますか、長過ぎます。"
+    },
+    "users": {
+      "title": "ユーザー管理",
+      "page": "ページ{page}・{max_pages}",
+      "email": "メールアドレス {email}",
+      "verified": "承認済み {verified}",
+      "average_rating": "評価 {rating}",
+      "roles": "ロール {roles}",
+      "approve": "出品権利許可",
+      "subscription_expires_in": "出品権利許可あと{in}"
     }
   },
   "navigation": {
+    "bar_title": "ナビゲーション",
     "home": "ホーム",
     "all_products": "商品",
     "acknowledgements": "謝辞",
-    "bar_title": "ナビゲーション",
+    "my_bids": "入札一覧",
+    "my_reviews": "レビュー一覧",
+    "my_products": "商品一覧",
+    "my_subscriptions": "購読一覧",
     "profile": "プロフィール",
-    "logout": "ログアウト"
+    "logout": "ログアウト",
+    "admin": "管理者のツール"
+  },
+  "subscriptions": {
+    "title": "サブスクリプション",
+    "no_subscriptions": "現在サブスクリプションが有効ではないため、出品できません。",
+    "expires_in": "現在出品可能です。（有効期限：{in}）",
+    "requesting": "申請中",
+    "request": "出品許可を申請する",
+    "already_requested": "申請済み"
   },
   "acknowledgements": {
     "title": "謝辞",
@@ -106,8 +129,12 @@
     "no_questions": "質問はまだありません",
     "no_bids": "入札はまだありません。一番乗りで入札しませんか？",
     "questions": "商品への質問一覧",
+    "similar_products": "この商品をチェックした人はこんな商品もチェックしています",
     "bids": "すべての入札",
     "bid_list": "{name}さんが{price}で{at}に入札しました"
+  },
+  "profile": {
+    "profile": "プロフィール"
   },
   "general": {
     "categories": "カテゴリー",

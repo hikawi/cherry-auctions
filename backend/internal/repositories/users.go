@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"time"
 
@@ -29,6 +30,13 @@ func (repo *UserRepository) GetUserByEmail(ctx context.Context, email string) (m
 	return gorm.G[models.User](repo.DB).Preload("Roles", nil).Where("email ILIKE ?", strings.ToLower(email)).First(ctx)
 }
 
+func (repo *UserRepository) GetUsers(ctx context.Context, limit int, offset int) ([]models.User, error) {
+	return gorm.G[models.User](repo.DB).Preload("Roles", nil).Preload("Subscriptions", func(db gorm.PreloadBuilder) error {
+		db.Where("expired_at > ?", time.Now()).Limit(1)
+		return nil
+	}).Order("id").Limit(limit).Offset(offset).Find(ctx)
+}
+
 // RegisterNewUser registers a new user with a default role.
 func (repo *UserRepository) RegisterNewUser(ctx context.Context, name string, email string, password string) (models.User, error) {
 	defaultRole, err := repo.RoleRepository.GetRoleByID(ctx, "user")
@@ -47,6 +55,10 @@ func (repo *UserRepository) RegisterNewUser(ctx context.Context, name string, em
 	return user, err
 }
 
+func (repo *UserRepository) CountUsers(ctx context.Context) (int64, error) {
+	return gorm.G[models.User](repo.DB).Count(ctx, "id")
+}
+
 // SaveUser creates a new user with the model passed in.
 // Returns an error if it can't be saved.
 func (repo *UserRepository) SaveUser(ctx context.Context, user *models.User) error {
@@ -56,4 +68,28 @@ func (repo *UserRepository) SaveUser(ctx context.Context, user *models.User) err
 // RequestUserApproval marks a user as requesting approval.
 func (repo *UserRepository) RequestUserApproval(ctx context.Context, id uint) (int, error) {
 	return gorm.G[models.User](repo.DB).Where("id = ?", id).Update(ctx, "waiting_approval", true)
+}
+
+func (repo *UserRepository) ApproveUser(ctx context.Context, id uint) error {
+	return repo.DB.Transaction(func(tx *gorm.DB) error {
+		rows, err := gorm.G[models.User](tx).Where("id = ?", id).Update(ctx, "waiting_approval", false)
+		if err != nil {
+			return err
+		}
+		if rows != 1 {
+			return errors.New("couldn't mark as no longer waiting for approval")
+		}
+
+		// Add a subscription
+		subscription := models.SellerSubscription{
+			UserID:    id,
+			ExpiredAt: time.Now().Add(time.Minute * 60 * 24 * 7), // 7 days, should be made configured later
+		}
+		err = gorm.G[models.SellerSubscription](tx).Create(ctx, &subscription)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
 }

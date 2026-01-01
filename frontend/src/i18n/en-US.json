@@ -62,6 +62,16 @@
       "no_subcategories": "No sub-categories",
       "cant_load": "Unable to load categories",
       "error_invalid_name": "Category name is too long or too short."
+    },
+    "users": {
+      "title": "Manage Users",
+      "page": "Page {page} of {max_pages}",
+      "email": "Email Address: {email}",
+      "verified": "Verified: {verified}",
+      "average_rating": "Average Rating: {rating}",
+      "roles": "Roles: {roles}",
+      "approve": "Approve Seller Privileges",
+      "subscription_expires_in": "Selling Subscription expires {in}"
     }
   },
   "navigation": {
@@ -74,7 +84,8 @@
     "my_products": "My Products",
     "my_subscriptions": "My Subscriptions",
     "profile": "Profile",
-    "logout": "Logout"
+    "logout": "Logout",
+    "admin": "Admin Tools"
   },
   "subscriptions": {
     "title": "My Subscriptions",

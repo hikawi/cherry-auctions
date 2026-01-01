@@ -88,7 +88,7 @@ parent: Other Specifications
 - [ ] **Management (List, Details, Add, Delete, Update)**
   - [x] Category Management: Block delete if products exist in category.
   - [ ] Product Management: Remove any product.
-  - [ ] User Management: Approve/Reject seller upgrade requests.
+  - [x] User Management: Approve/Reject seller upgrade requests.
 - [ ] **Global Controls**
   - [ ] Configure global auto-extend settings (When and how much).
 - [ ] **Dashboard**

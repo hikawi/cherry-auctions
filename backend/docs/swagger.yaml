@@ -264,6 +264,21 @@ definitions:
       message:
         type: string
     type: object
+  users.GetUsersResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/users.UserDTO'
+        type: array
+      page:
+        type: integer
+      per_page:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
   users.SubscriptionDTO:
     properties:
       created_at:
@@ -654,6 +669,56 @@ paths:
       summary: Retrieves a list of products of top-categories.
       tags:
       - products
+  /users:
+    get:
+      description: Retrieves all users.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: All users
+          schema:
+            $ref: '#/definitions/users.GetUsersResponse'
+        "401":
+          description: When unauthorized
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: The request could not be completed due to server faults
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Retrieves all users
+      tags:
+      - users
+  /users/approve:
+    post:
+      description: Approves seller privileges
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: When success
+          schema:
+            $ref: '#/definitions/shared.MessageResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "401":
+          description: When unauthenticated
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: The request could not be completed due to server faults
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Approves seller privileges
+      tags:
+      - users
   /users/me:
     get:
       description: Retrieves information about your own profile if authenticated.

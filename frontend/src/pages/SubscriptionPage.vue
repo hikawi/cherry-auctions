@@ -15,7 +15,7 @@ const { locale } = useI18n();
 
 const loading = ref(false);
 const expiresIn = computed(() => {
-  const time = profile.profile?.subscription?.expires_at;
+  const time = profile.profile?.subscription?.expired_at;
   if (time) {
     return dayjs(time).locale(locale.value).fromNow();
   }

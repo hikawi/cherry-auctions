@@ -1,5 +1,5 @@
 export type Subscription = {
-  expires_at: string;
+  expired_at: string;
 };
 
 export type Profile = {

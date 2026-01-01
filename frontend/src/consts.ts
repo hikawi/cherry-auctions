@@ -18,6 +18,8 @@ export const endpoints = {
   },
   self: `${api}/v1/users/me`,
   users: {
+    all: `${api}/v1/users`,
     request: `${api}/v1/users/request`,
+    approve: `${api}/v1/users/approve`,
   },
 };
