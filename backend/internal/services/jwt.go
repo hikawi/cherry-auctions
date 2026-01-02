@@ -14,18 +14,20 @@ type JWTService struct {
 }
 
 type JWTSubject struct {
-	UserID uint   `json:"user_id"`
-	Email  string `json:"email"`
-	Roles  string `json:"roles"`
+	UserID                uint       `json:"user_id"`
+	Email                 string     `json:"email"`
+	Roles                 string     `json:"roles"`
+	SubscriptionExpiredAt *time.Time `json:"subscription_expired_at"`
 	jwt.RegisteredClaims
 }
 
 // SignJWT signs a JWT based on the environment variables and returns a signed string.
-func (s *JWTService) SignJWT(id uint, email string, roles string) (string, error) {
+func (s *JWTService) SignJWT(id uint, email string, roles string, subscription *time.Time) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, JWTSubject{
 		id,
 		email,
 		roles,
+		subscription,
 		jwt.RegisteredClaims{
 			Issuer:    s.JWTDomain,
 			Audience:  jwt.ClaimStrings{s.JWTAudience},

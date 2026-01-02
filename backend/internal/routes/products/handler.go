@@ -1,15 +1,24 @@
 package products
 
 import (
+	"bytes"
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"fmt"
 	"math"
 	"net/http"
 	"strconv"
+	"time"
 
+	"github.com/davidbyttow/govips/v2/vips"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/sync/errgroup"
 	"luny.dev/cherryauctions/internal/logging"
 	"luny.dev/cherryauctions/internal/models"
 	"luny.dev/cherryauctions/internal/routes/shared"
 	"luny.dev/cherryauctions/internal/services"
+	"luny.dev/cherryauctions/pkg/closer"
 	"luny.dev/cherryauctions/pkg/ranges"
 )
 
@@ -278,4 +287,153 @@ func (h *ProductsHandler) GetProductID(g *gin.Context) {
 	}
 	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusOK, "response": similars})
 	g.JSON(http.StatusOK, response)
+}
+
+// Function courtesy of Gemini, based on the function in users/handler.go.
+func (h *ProductsHandler) uploadImages(ctx context.Context, body PostProductBody) ([]string, error) {
+	// Create an errgroup with the request context
+	g, gCtx := errgroup.WithContext(ctx)
+
+	// Slice to hold the resulting URLs.
+	// We use a fixed length to avoid race conditions when writing to indices.
+	imageURLs := make([]string, len(body.ProductImages))
+
+	for i, fileHeader := range body.ProductImages {
+		g.Go(func() error {
+			// 1. Open File
+			file, err := fileHeader.Open()
+			if err != nil {
+				return fmt.Errorf("failed to open file %d: %w", i, err)
+			}
+			defer closer.CloseResources(file)
+
+			// 2. Load into VIPS
+			img, err := vips.NewImageFromReader(file)
+			if err != nil {
+				return fmt.Errorf("invalid image format for file %d: %w", i, err)
+			}
+			defer img.Close()
+
+			// 3. Process (Thumbnail)
+			// For product images, you might want a larger size than avatars
+			err = img.Thumbnail(800, 800, vips.InterestingAttention)
+			if err != nil {
+				return fmt.Errorf("processing failed for file %d: %w", i, err)
+			}
+
+			// 4. Export to WebP
+			ep := vips.NewWebpExportParams()
+			ep.Quality = 75
+			ep.StripMetadata = true
+			webpBuffer, _, err := img.ExportWebp(ep)
+			if err != nil {
+				return fmt.Errorf("encoding failed for file %d: %w", i, err)
+			}
+
+			// 5. Upload to S3
+			hash := sha256.Sum256(webpBuffer)
+			hashString := hex.EncodeToString(hash[:])
+			key := fmt.Sprintf("products/%s.webp", hashString)
+
+			// Use gCtx to respect group cancellation if another upload fails
+			err = h.S3Service.PutObject(gCtx, key, bytes.NewReader(webpBuffer))
+			if err != nil {
+				return fmt.Errorf("storage upload failed for file %d: %w", i, err)
+			}
+
+			// 6. Store the URL in the slice at the correct index
+			imageURLs[i] = fmt.Sprintf("%s/%s", h.S3PermURL, key)
+			return nil
+		})
+	}
+
+	// Wait for all uploads to finish or the first error to occur
+	if err := g.Wait(); err != nil {
+		return nil, err
+	}
+
+	return imageURLs, nil
+}
+
+// PostProduct godoc
+//
+//	@summary		Posts a new product.
+//	@description	Posts a new product up for auctions.
+//	@tags			products
+//	@security ApiKeyAuth
+//	@accept multipart/form-data
+//	@produce		json
+//	@success		201	{object}	shared.MessageResponse "Successfully created an auction"
+//	@failure 400 {object} shared.ErrorResponse "When the multipart data is invalid"
+//	@failure 401 {object} shared.ErrorResponse "When the user is unauthorized"
+//	@failure 403 {object} shared.ErrorResponse "When the user isn't subscribed"
+//	@failure		404	{object}	shared.ErrorResponse	"The server couldn't find the requested product"
+//	@failure		500	{object}	shared.ErrorResponse	"The server could not make the request"
+//	@router			/products/{id} [get]
+func (h *ProductsHandler) PostProduct(g *gin.Context) {
+	ctx := g.Request.Context()
+	claimsAny, _ := g.Get("claims")
+	claims := claimsAny.(*services.JWTSubject)
+
+	// Make sure the user has the permission.
+	if claims.SubscriptionExpiredAt == nil || claims.SubscriptionExpiredAt.Before(time.Now()) {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusForbidden, "error": "user can't post"})
+		g.AbortWithStatusJSON(http.StatusForbidden, shared.ErrorResponse{Error: "you can't post"})
+		return
+	}
+
+	var body PostProductBody
+	if err := g.ShouldBind(&body); err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusBadRequest, "error": err.Error()})
+		g.AbortWithStatusJSON(http.StatusBadRequest, shared.ErrorResponse{Error: "bad request"})
+		return
+	}
+
+	// Validation for product images size.
+	for _, img := range body.ProductImages {
+		if img.Size > (10 << 20) /* 10MB */ {
+			logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": "image too large", "status": http.StatusRequestEntityTooLarge, "size": img.Size})
+			g.AbortWithStatusJSON(http.StatusRequestEntityTooLarge, shared.ErrorResponse{Error: "max 10MB allowed"})
+			return
+		}
+	}
+
+	// Try to upload the images separately.
+	urls, err := h.uploadImages(ctx, body)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": err.Error(), "status": http.StatusInternalServerError, "body": body})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "failed to upload image"})
+		return
+	}
+
+	product := models.Product{
+		Name:                body.Name,
+		Description:         body.Description,
+		StartingBid:         body.StartingBid,
+		StepBidType:         body.StepBidType,
+		StepBidValue:        body.StepBidValue,
+		BINPrice:            body.BINPrice,
+		AllowsUnratedBuyers: body.AllowsUnrated,
+		AutoExtendsTime:     body.AutoExtends,
+		ExpiredAt:           body.ExpiredAt,
+		SellerID:            claims.UserID,
+		ThumbnailURL:        urls[0],
+		ProductImages: ranges.Each(urls[1:], func(url string) models.ProductImage {
+			return models.ProductImage{
+				URL:     url,
+				AltText: body.Name,
+			}
+		}),
+	}
+
+	// Create the product
+	err = h.ProductRepo.CreateProduct(ctx, &product)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": err.Error(), "status": http.StatusInternalServerError, "body": body, "urls": urls})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "failed to create product"})
+		return
+	}
+
+	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusCreated, "body": body, "response": product})
+	g.JSON(http.StatusCreated, product)
 }

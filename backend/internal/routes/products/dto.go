@@ -1,6 +1,7 @@
 package products
 
 import (
+	"mime/multipart"
 	"time"
 
 	"luny.dev/cherryauctions/internal/models"
@@ -39,7 +40,7 @@ type ProductDTO struct {
 	StartingBid         float64       `json:"starting_bid"`
 	StepBidType         string        `json:"step_bid_type"`
 	StepBidValue        float64       `json:"step_bid_value"`
-	BINPrice            float64       `json:"bin_price"`
+	BINPrice            *float64      `json:"bin_price"`
 	Description         string        `json:"description"`
 	ThumbnailURL        string        `json:"thumbnail_url"`
 	AllowsUnratedBuyers bool          `json:"allows_unrated_buyers"`
@@ -202,4 +203,17 @@ type GetProductDetailsResponse struct {
 	Questions       []QuestionDTO     `json:"questions"`
 	Bids            []BidDTO          `json:"bids"`
 	SimilarProducts []ProductDTO      `json:"similar_products"`
+}
+
+type PostProductBody struct {
+	Name          string                  `form:"name" binding:"required,min=2" json:"name"`
+	Description   string                  `form:"description" binding:"required,min=50" json:"description"`
+	StartingBid   float64                 `form:"starting_bid" binding:"required,number,gt=0" json:"starting_bid"`
+	ProductImages []*multipart.FileHeader `form:"product_images" binding:"required" json:"product_images"`
+	StepBidValue  float64                 `form:"step_bid_value" binding:"required,number,gt=0" json:"step_bid_value"`
+	StepBidType   string                  `form:"step_bid_type" binding:"required,oneof=percentage fixed" json:"step_bid_type"`
+	BINPrice      *float64                `form:"bin_price" binding:"omitempty,number,gt=0" json:"bin_price"`
+	AllowsUnrated bool                    `form:"allows_unrated" json:"allows_unrated"`
+	AutoExtends   bool                    `form:"auto_extends" json:"auto_extends"`
+	ExpiredAt     time.Time               `form:"expired_at" binding:"required,gt" json:"expired_at"`
 }
