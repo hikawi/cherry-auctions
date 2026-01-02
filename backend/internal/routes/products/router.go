@@ -11,6 +11,8 @@ import (
 type ProductsHandler struct {
 	ProductRepo       *repositories.ProductRepository
 	MiddlewareService *services.MiddlewareService
+	S3Service         *services.S3Service
+	S3PermURL         string
 }
 
 func (h *ProductsHandler) SetupRouter(g *gin.RouterGroup) {
@@ -20,5 +22,6 @@ func (h *ProductsHandler) SetupRouter(g *gin.RouterGroup) {
 	r.GET("/top", h.MiddlewareService.SoftAuthorizedRoute, h.GetProductsTop)
 	r.GET("/favorite", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.GetFavoriteProducts)
 	r.POST("/favorite", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.PostFavoriteProduct)
+	r.POST("", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.PostProduct)
 	r.GET("/:id", h.MiddlewareService.SoftAuthorizedRoute, h.GetProductID)
 }

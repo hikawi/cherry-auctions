@@ -161,7 +161,8 @@
     "bids": "Bids",
     "similar_products": "You may also like",
     "bid_list": "{name} bidded {price} at {at}",
-    "cant_bid": "You can't bid on this product"
+    "cant_bid": "You can't bid on this product",
+    "description": "Product Description"
   },
   "profile": {
     "profile": "Profile",

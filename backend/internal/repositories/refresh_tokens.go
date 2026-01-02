@@ -26,7 +26,14 @@ func (repo *RefreshTokenRepository) SaveUserToken(ctx context.Context, id uint, 
 }
 
 func (repo *RefreshTokenRepository) GetRefreshToken(ctx context.Context, token string) (models.RefreshToken, error) {
-	refreshToken, err := gorm.G[models.RefreshToken](repo.DB).Preload("User.Roles", nil).Where("refresh_token = ?", token).First(ctx)
+	refreshToken, err := gorm.G[models.RefreshToken](repo.DB).
+		Preload("User.Roles", nil).
+		Preload("User.Subscriptions", func(db gorm.PreloadBuilder) error {
+			db.Where("expired_at > ?", time.Now()).Limit(1)
+			return nil
+		}).
+		Where("refresh_token = ?", token).
+		First(ctx)
 	return refreshToken, err
 }
 

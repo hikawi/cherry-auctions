@@ -17,24 +17,41 @@ type UserRepository struct {
 
 // GetUserByID retrieves a single user using an ID.
 func (repo *UserRepository) GetUserByID(ctx context.Context, id uint) (models.User, error) {
-	return gorm.G[models.User](repo.DB).Where("id = ?", id).Preload("Roles", nil).Preload("Subscriptions", func(db gorm.PreloadBuilder) error {
-		db.Where("expired_at > ?", time.Now()).Limit(1)
-		return nil
-	}).First(ctx)
+	return gorm.G[models.User](repo.DB).
+		Where("id = ?", id).
+		Preload("Roles", nil).
+		Preload("Subscriptions", func(db gorm.PreloadBuilder) error {
+			db.Where("expired_at > ?", time.Now()).Limit(1)
+			return nil
+		}).
+		First(ctx)
 }
 
 // GetUserByEmail returns a user with the email, if it found.
 // An error is returned if the user can not be found.
 // Email is insensitive.
 func (repo *UserRepository) GetUserByEmail(ctx context.Context, email string) (models.User, error) {
-	return gorm.G[models.User](repo.DB).Preload("Roles", nil).Where("email ILIKE ?", strings.ToLower(email)).First(ctx)
+	return gorm.G[models.User](repo.DB).
+		Preload("Roles", nil).
+		Preload("Subscriptions", func(db gorm.PreloadBuilder) error {
+			db.Where("expired_at > ?", time.Now()).Limit(1)
+			return nil
+		}).
+		Where("email ILIKE ?", strings.ToLower(email)).
+		First(ctx)
 }
 
 func (repo *UserRepository) GetUsers(ctx context.Context, limit int, offset int) ([]models.User, error) {
-	return gorm.G[models.User](repo.DB).Preload("Roles", nil).Preload("Subscriptions", func(db gorm.PreloadBuilder) error {
-		db.Where("expired_at > ?", time.Now()).Limit(1)
-		return nil
-	}).Order("id").Limit(limit).Offset(offset).Find(ctx)
+	return gorm.G[models.User](repo.DB).
+		Preload("Roles", nil).
+		Preload("Subscriptions", func(db gorm.PreloadBuilder) error {
+			db.Where("expired_at > ?", time.Now()).Limit(1)
+			return nil
+		}).
+		Order("id").
+		Limit(limit).
+		Offset(offset).
+		Find(ctx)
 }
 
 // RegisterNewUser registers a new user with a default role.

@@ -160,7 +160,8 @@
     "similar_products": "この商品をチェックした人はこんな商品もチェックしています",
     "bids": "すべての入札",
     "bid_list": "{name}さんが{price}で{at}に入札しました",
-    "cant_bid": "入札することができません"
+    "cant_bid": "入札することができません",
+    "description": "商品説明"
   },
   "profile": {
     "profile": "プロフィール",

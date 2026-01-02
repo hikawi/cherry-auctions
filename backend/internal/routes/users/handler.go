@@ -155,7 +155,6 @@ func (h *UsersHandler) PostAvatar(g *gin.Context) {
 	// govips can load directly from an io.Reader, which is memory efficient
 	img, err := vips.NewImageFromReader(file)
 	if err != nil {
-		fmt.Println("what")
 		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": err.Error(), "status": http.StatusBadRequest})
 		g.AbortWithStatusJSON(http.StatusBadRequest, shared.ErrorResponse{Error: "invalid image format"})
 		return

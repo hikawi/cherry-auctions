@@ -10,6 +10,7 @@ truncate table products_categories restart identity cascade;
 truncate table users restart identity cascade;
 truncate table bids restart identity cascade;
 truncate table questions restart identity cascade;
+truncate table refresh_tokens restart identity cascade;
 
 CREATE INDEX IF NOT EXISTS idx_products_name_trgm ON products USING gin (name gin_trgm_ops);
 
@@ -38,68 +39,68 @@ INSERT INTO user_roles VALUES (4, 'user');
 -- Seeding for categories.
 
 -- 2. PARENT CATEGORIES
-INSERT INTO categories (id, name, created_at, updated_at) VALUES 
-(1, 'Electronics', now(), now()),
-(2, 'Fashion', now(), now()),
-(3, 'Home & Garden', now(), now()),
-(4, 'Collectibles', now(), now()),
-(5, 'Sports & Outdoors', now(), now());
+INSERT INTO categories (name, created_at, updated_at) VALUES 
+('Electronics', now(), now()),
+('Fashion', now(), now()),
+('Home & Garden', now(), now()),
+('Collectibles', now(), now()),
+('Sports & Outdoors', now(), now());
 
 -- 3. SUB-CATEGORIES (2-level hierarchy)
-INSERT INTO categories (id, name, parent_id, created_at, updated_at) VALUES 
-(6, 'Laptops', 1, now(), now()),
-(7, 'Mobile Devices', 1, now(), now()),
-(8, 'Men''s Wear', 2, now(), now()),
-(9, 'Watches', 2, now(), now()),
-(10, 'Small Appliances', 3, now(), now()),
-(11, 'Kitchenware', 3, now(), now()),
-(12, 'Trading Cards', 4, now(), now()),
-(13, 'Vintage Toys', 4, now(), now()),
-(14, 'Camping Gear', 5, now(), now());
+INSERT INTO categories (name, parent_id, created_at, updated_at) VALUES 
+('Laptops', 1, now(), now()),
+('Mobile Devices', 1, now(), now()),
+('Men''s Wear', 2, now(), now()),
+('Watches', 2, now(), now()),
+('Small Appliances', 3, now(), now()),
+('Kitchenware', 3, now(), now()),
+('Trading Cards', 4, now(), now()),
+('Vintage Toys', 4, now(), now()),
+('Camping Gear', 5, now(), now());
 
 -- 4. PRODUCTS (Meaningful descriptions and pricing)
 -- Prices follow a logic: starting_bid is ~10-20% of bin_price.
 
 -- Electronics: Laptops
-INSERT INTO products (id, starting_bid, step_bid_type, step_bid_value, bin_price, allows_unrated_buyers, auto_extends_time, expired_at, seller_id, thumbnail_url, name, description, created_at, updated_at) VALUES 
-(1, 150.00, 'fixed', 10.00, 850.00, false, true, now() + interval '5 days', 2, 'https://placehold.co/400x400?text=Macbook', 'MacBook Air M1 - 8GB RAM, 256GB SSD, Space Gray', 'Excellent condition with original charger.', now(), now()),
-(2, 200.00, 'percentage', 5.0, 1200.00, false, true, now() + interval '3 days', 2, 'https://placehold.co/400x400?text=Dell+XPS', 'Dell XPS 13 9310 - Intel i7, 16GB RAM, 512GB SSD', 'Perfect for developers and professionals.', now(), now());
+INSERT INTO products (starting_bid, step_bid_type, step_bid_value, bin_price, allows_unrated_buyers, auto_extends_time, expired_at, seller_id, thumbnail_url, name, description, created_at, updated_at) VALUES 
+(150.00, 'fixed', 10.00, 850.00, false, true, now() + interval '5 days', 2, 'https://placehold.co/400x400?text=Macbook', 'MacBook Air M1 - 8GB RAM, 256GB SSD, Space Gray', 'Excellent condition with original charger.', now(), now()),
+(200.00, 'percentage', 5.0, 1200.00, false, true, now() + interval '3 days', 2, 'https://placehold.co/400x400?text=Dell+XPS', 'Dell XPS 13 9310 - Intel i7, 16GB RAM, 512GB SSD', 'Perfect for developers and professionals.', now(), now());
 
 -- Electronics: Mobile
-INSERT INTO products (id, starting_bid, step_bid_type, step_bid_value, bin_price, allows_unrated_buyers, auto_extends_time, expired_at, seller_id, thumbnail_url, name, description, created_at, updated_at) VALUES 
-(3, 100.00, 'fixed', 5.00, 600.00, true, true, now() + interval '2 days', 3, 'https://placehold.co/400x400?text=iPhone+12', 'iPhone 12 128GB - Blue', 'Unlocked. No scratches on screen, battery health at 88%.', now(), now()),
-(4, 80.00, 'fixed', 5.00, 450.00, true, false, now() + interval '4 days', 1, 'https://placehold.co/400x400?text=Pixel+6', 'Google Pixel 6 - Stormy Black', 'Amazing camera quality with Google Tensor chip.', now(), now());
+INSERT INTO products (starting_bid, step_bid_type, step_bid_value, bin_price, allows_unrated_buyers, auto_extends_time, expired_at, seller_id, thumbnail_url, name, description, created_at, updated_at) VALUES 
+(100.00, 'fixed', 5.00, 600.00, true, true, now() + interval '2 days', 3, 'https://placehold.co/400x400?text=iPhone+12', 'iPhone 12 128GB - Blue', 'Unlocked. No scratches on screen, battery health at 88%.', now(), now()),
+(80.00, 'fixed', 5.00, 450.00, true, false, now() + interval '4 days', 1, 'https://placehold.co/400x400?text=Pixel+6', 'Google Pixel 6 - Stormy Black', 'Amazing camera quality with Google Tensor chip.', now(), now());
 
 -- Fashion: Men's Wear & Watches
-INSERT INTO products (id, starting_bid, step_bid_type, step_bid_value, bin_price, allows_unrated_buyers, auto_extends_time, expired_at, seller_id, thumbnail_url, name, description, created_at, updated_at) VALUES 
-(5, 45.00, 'fixed', 2.00, 150.00, true, false, now() + interval '6 days', 4, 'https://placehold.co/400x400?text=Leather+Jacket', 'Genuine Lambskin Leather Jacket - Size M', 'Classic biker style, worn only once.', now(), now()),
-(6, 120.00, 'percentage', 2.0, 550.00, false, true, now() + interval '24 hours', 4, 'https://placehold.co/400x400?text=Seiko+Watch', 'Seiko Prospex "Turtle" Automatic Diver', 'Water resistant 200m. Original box included.', now(), now());
+INSERT INTO products (starting_bid, step_bid_type, step_bid_value, bin_price, allows_unrated_buyers, auto_extends_time, expired_at, seller_id, thumbnail_url, name, description, created_at, updated_at) VALUES 
+(45.00, 'fixed', 2.00, 150.00, true, false, now() + interval '6 days', 4, 'https://placehold.co/400x400?text=Leather+Jacket', 'Genuine Lambskin Leather Jacket - Size M', 'Classic biker style, worn only once.', now(), now()),
+(120.00, 'percentage', 2.0, 550.00, false, true, now() + interval '24 hours', 4, 'https://placehold.co/400x400?text=Seiko+Watch', 'Seiko Prospex "Turtle" Automatic Diver', 'Water resistant 200m. Original box included.', now(), now());
 
 -- Home & Garden: Appliances
-INSERT INTO products (id, starting_bid, step_bid_type, step_bid_value, bin_price, allows_unrated_buyers, auto_extends_time, expired_at, seller_id, thumbnail_url, name, description, created_at, updated_at) VALUES 
-(7, 30.00, 'fixed', 5.00, 180.00, true, true, now() + interval '5 days', 1, 'https://placehold.co/400x400?text=Air+Fryer', 'Ninja Foodi Air Fryer - 4-Quart capacity', 'Great for healthy cooking with little to no oil.', now(), now()),
-(8, 25.00, 'fixed', 2.00, 120.00, true, false, now() + interval '7 days', 3, 'https://placehold.co/400x400?text=Espresso+Maker', 'De''Longhi Espresso Machine', 'Manual milk frother included. Perfect for home baristas.', now(), now());
+INSERT INTO products (starting_bid, step_bid_type, step_bid_value, bin_price, allows_unrated_buyers, auto_extends_time, expired_at, seller_id, thumbnail_url, name, description, created_at, updated_at) VALUES 
+(30.00, 'fixed', 5.00, 180.00, true, true, now() + interval '5 days', 1, 'https://placehold.co/400x400?text=Air+Fryer', 'Ninja Foodi Air Fryer - 4-Quart capacity', 'Great for healthy cooking with little to no oil.', now(), now()),
+(25.00, 'fixed', 2.00, 120.00, true, false, now() + interval '7 days', 3, 'https://placehold.co/400x400?text=Espresso+Maker', 'De''Longhi Espresso Machine', 'Manual milk frother included. Perfect for home baristas.', now(), now());
 
 -- Collectibles: Trading Cards & Toys
-INSERT INTO products (id, starting_bid, step_bid_type, step_bid_value, bin_price, allows_unrated_buyers, auto_extends_time, expired_at, seller_id, thumbnail_url, name, description, created_at, updated_at) VALUES 
-(9, 50.00, 'percentage', 10.0, 500.00, false, true, now() + interval '12 hours', 2, 'https://placehold.co/400x400?text=Charizard', 'Base Set Shadowless Charizard - PSA 6', 'A rare centerpiece for any Pokemon collection.', now(), now()),
-(10, 15.00, 'fixed', 1.00, 75.00, true, false, now() + interval '3 days', 4, 'https://placehold.co/400x400?text=Vintage+Car', '1960s Matchbox Diecast Car - Red Ferrari', 'Minor paint wear, but rolls perfectly.', now(), now());
+INSERT INTO products (starting_bid, step_bid_type, step_bid_value, bin_price, allows_unrated_buyers, auto_extends_time, expired_at, seller_id, thumbnail_url, name, description, created_at, updated_at) VALUES 
+(50.00, 'percentage', 10.0, 500.00, false, true, now() + interval '12 hours', 2, 'https://placehold.co/400x400?text=Charizard', 'Base Set Shadowless Charizard - PSA 6', 'A rare centerpiece for any Pokemon collection.', now(), now()),
+(15.00, 'fixed', 1.00, 75.00, true, false, now() + interval '3 days', 4, 'https://placehold.co/400x400?text=Vintage+Car', '1960s Matchbox Diecast Car - Red Ferrari', 'Minor paint wear, but rolls perfectly.', now(), now());
 
 -- Sports & Outdoors: Camping
-INSERT INTO products (id, starting_bid, step_bid_type, step_bid_value, bin_price, allows_unrated_buyers, auto_extends_time, expired_at, seller_id, thumbnail_url, name, description, created_at, updated_at) VALUES 
-(11, 40.00, 'fixed', 5.00, 220.00, true, true, now() + interval '4 days', 1, 'https://placehold.co/400x400?text=Tent', 'Coleman 4-Person Instant Cabin Tent', 'Sets up in 60 seconds. Weatherproof technology.', now(), now()),
-(12, 20.00, 'fixed', 2.00, 95.00, true, false, now() + interval '5 days', 2, 'https://placehold.co/400x400?text=Sleeping+Bag', 'Mummy Style Sleeping Bag - Rated for 0°F', 'Lightweight and compact for hiking.', now(), now());
+INSERT INTO products (starting_bid, step_bid_type, step_bid_value, bin_price, allows_unrated_buyers, auto_extends_time, expired_at, seller_id, thumbnail_url, name, description, created_at, updated_at) VALUES 
+(40.00, 'fixed', 5.00, 220.00, true, true, now() + interval '4 days', 1, 'https://placehold.co/400x400?text=Tent', 'Coleman 4-Person Instant Cabin Tent', 'Sets up in 60 seconds. Weatherproof technology.', now(), now()),
+(20.00, 'fixed', 2.00, 95.00, true, false, now() + interval '5 days', 2, 'https://placehold.co/400x400?text=Sleeping+Bag', 'Mummy Style Sleeping Bag - Rated for 0°F', 'Lightweight and compact for hiking.', now(), now());
 
 -- Additional Mixed Products to reach 20
-INSERT INTO products (id, starting_bid, step_bid_type, step_bid_value, bin_price, allows_unrated_buyers, auto_extends_time, expired_at, seller_id, thumbnail_url, name, description, created_at, updated_at) VALUES 
-(13, 299.00, 'percentage', 5.0, 1500.00, false, true, now() + interval '2 days', 2, 'https://placehold.co/400x400?text=Camera', 'Sony A7 III Camera Body', 'Full-frame mirrorless camera. Low shutter count, pristine condition.', now(), now()),
-(14, 25.00, 'fixed', 5.00, 110.00, true, true, now() + interval '6 days', 3, 'https://placehold.co/400x400?text=Cast+Iron', 'Cast Iron Skillet Set', 'Pre-seasoned 3-piece set (8, 10, 12 inch). Durable and heat-retentive.', now(), now()),
-(15, 10.00, 'fixed', 1.00, 45.00, true, false, now() + interval '2 days', 4, 'https://placehold.co/400x400?text=Keyboard', 'Mechanical Gaming Keyboard', 'RGB Backlit with Blue Switches. Tactile and clicky for typing enthusiasts.', now(), now()),
-(16, 60.00, 'percentage', 2.0, 300.00, false, true, now() + interval '4 days', 1, 'https://placehold.co/400x400?text=Wayfarer', 'Ray-Ban Wayfarer Classic', 'Polarized lenses with black frame. Includes original leather case.', now(), now()),
-(17, 35.00, 'fixed', 5.00, 130.00, true, false, now() + interval '7 days', 3, 'https://placehold.co/400x400?text=Grill', 'Portable Propane Grill', 'Tabletop design for tailgating and camping. 12,000 BTU burner.', now(), now()),
-(18, 5.00, 'fixed', 0.50, 25.00, true, true, now() + interval '3 days', 4, 'https://placehold.co/400x400?text=Water', 'Stainless Steel Water Bottle', 'Double-wall vacuum insulated. Keeps drinks cold for 24 hours.', now(), now()),
-(19, 12.00, 'fixed', 1.00, 60.00, true, false, now() + interval '5 days', 1, 'https://placehold.co/400x400?text=Bulb', 'Smart LED Light Bulb Pack', '4-pack of RGB bulbs compatible with Alexa and Google Home.', now(), now()),
-(20, 85.00, 'percentage', 5.0, 400.00, false, true, now() + interval '10 days', 2, 'https://placehold.co/400x400?text=Desk', 'Electric Standing Desk', 'Height adjustable frame only. Heavy-duty dual motor system.', now(), now());
+INSERT INTO products (starting_bid, step_bid_type, step_bid_value, bin_price, allows_unrated_buyers, auto_extends_time, expired_at, seller_id, thumbnail_url, name, description, created_at, updated_at) VALUES 
+(299.00, 'percentage', 5.0, 1500.00, false, true, now() + interval '2 days', 2, 'https://placehold.co/400x400?text=Camera', 'Sony A7 III Camera Body', 'Full-frame mirrorless camera. Low shutter count, pristine condition.', now(), now()),
+(25.00, 'fixed', 5.00, 110.00, true, true, now() + interval '6 days', 3, 'https://placehold.co/400x400?text=Cast+Iron', 'Cast Iron Skillet Set', 'Pre-seasoned 3-piece set (8, 10, 12 inch). Durable and heat-retentive.', now(), now()),
+(10.00, 'fixed', 1.00, 45.00, true, false, now() + interval '2 days', 4, 'https://placehold.co/400x400?text=Keyboard', 'Mechanical Gaming Keyboard', 'RGB Backlit with Blue Switches. Tactile and clicky for typing enthusiasts.', now(), now()),
+(60.00, 'percentage', 2.0, 300.00, false, true, now() + interval '4 days', 1, 'https://placehold.co/400x400?text=Wayfarer', 'Ray-Ban Wayfarer Classic', 'Polarized lenses with black frame. Includes original leather case.', now(), now()),
+(35.00, 'fixed', 5.00, 130.00, true, false, now() + interval '7 days', 3, 'https://placehold.co/400x400?text=Grill', 'Portable Propane Grill', 'Tabletop design for tailgating and camping. 12,000 BTU burner.', now(), now()),
+(5.00, 'fixed', 0.50, 25.00, true, true, now() + interval '3 days', 4, 'https://placehold.co/400x400?text=Water', 'Stainless Steel Water Bottle', 'Double-wall vacuum insulated. Keeps drinks cold for 24 hours.', now(), now()),
+(12.00, 'fixed', 1.00, 60.00, true, false, now() + interval '5 days', 1, 'https://placehold.co/400x400?text=Bulb', 'Smart LED Light Bulb Pack', '4-pack of RGB bulbs compatible with Alexa and Google Home.', now(), now()),
+(85.00, 'percentage', 5.0, 400.00, false, true, now() + interval '10 days', 2, 'https://placehold.co/400x400?text=Desk', 'Electric Standing Desk', 'Height adjustable frame only. Heavy-duty dual motor system.', now(), now());
 
 -- 5. MAPPING PRODUCTS TO CATEGORIES
 INSERT INTO products_categories (product_id, category_id) VALUES 

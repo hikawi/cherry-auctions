@@ -192,3 +192,8 @@ func (r *ProductRepository) AttachFavoriteStatus(ctx context.Context, userID uin
 		p.IsFavorite = favMap[p.ID]
 	}
 }
+
+// CreateProduct creates a new product.
+func (r *ProductRepository) CreateProduct(ctx context.Context, product *models.Product) error {
+	return gorm.G[models.Product](r.DB).Create(ctx, product)
+}
