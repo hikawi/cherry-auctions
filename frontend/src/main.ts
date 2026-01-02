@@ -14,6 +14,7 @@ import jaJP from "@/i18n/ja-JP.json";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import localizedFormat from "dayjs/plugin/localizedFormat";
+import "@vueup/vue-quill/dist/vue-quill.snow.css";
 
 // Import core locales your app starts with
 import "dayjs/locale/en";

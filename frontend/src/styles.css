@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+:deep(.ql-editor) {
+  font-family: --var(--font-chiron);
+}
+
+:deep(.ql-toolbar) {
+  font-family: --var(--font-chiron);
+}
+
 @theme {
   --color-claret-50: oklch(0.967 0.015 7.61);
   --color-claret-100: oklch(0.927 0.035 9);
