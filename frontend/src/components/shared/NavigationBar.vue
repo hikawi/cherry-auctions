@@ -9,6 +9,7 @@ import {
   LucidePackageSearch,
   LucideRocket,
   LucideStar,
+  LucideStore,
   LucideUser,
 } from "lucide-vue-next";
 import { ref } from "vue";
@@ -36,6 +37,11 @@ const links = [
   {
     name: "separator",
     href: "separator",
+  },
+  {
+    name: "navigation.my_products",
+    href: "/auctions",
+    icon: LucideStore,
   },
   {
     name: "navigation.my_bids",

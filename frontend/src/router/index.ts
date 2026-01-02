@@ -23,6 +23,14 @@ const router = createRouter({
       component: () => import("../pages/ProductDetailsPage.vue"),
     },
     {
+      name: "auctions",
+      path: "/auctions",
+      component: () => import("../pages/AuctionsPage.vue"),
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
       name: "profile",
       path: "/profile",
       component: () => import("../pages/ProfilePage.vue"),
