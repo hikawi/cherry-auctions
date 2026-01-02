@@ -77,12 +77,12 @@ func (r *ProductRepository) GetHighestBiddedProducts(ctx context.Context) ([]mod
 	var products []models.Product
 
 	err := r.DB.WithContext(ctx).
-		Joins("LEFT JOIN bids ON products.current_highest_bid_id = bids.id").
+		Joins("INNER JOIN bids ON products.current_highest_bid_id = bids.id").
 		Preload("Seller").
 		Preload("Categories").
 		Preload("CurrentHighestBid").
-		Where("expired_at > ?", time.Now()).
-		Order("bids.price DESC, expired_at ASC").
+		Where("products.expired_at > ?", time.Now()).
+		Order("bids.price DESC").
 		Limit(5).
 		Find(&products).
 		Error
