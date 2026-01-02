@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { Product } from "@/types";
+import { LucideReply } from "lucide-vue-next";
+import AvatarCircle from "../shared/AvatarCircle.vue";
 
 defineProps<{
   data: Product & { similar_products?: Product[]; categories: { id: number; name: string }[] };

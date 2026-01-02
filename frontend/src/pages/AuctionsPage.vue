@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import CreateAuctionDialog from "@/components/auctions/CreateAuctionDialog.vue";
-import ProductCard from "@/components/index/ProductCard.vue";
 import NavigationBar from "@/components/shared/NavigationBar.vue";
 import OverlayScreen from "@/components/shared/OverlayScreen.vue";
 import WhiteContainer from "@/components/shared/WhiteContainer.vue";
@@ -8,11 +7,11 @@ import { LucidePackage } from "lucide-vue-next";
 import { ref } from "vue";
 
 const createDialogShown = ref(false);
-const page = ref(0);
 
 function onCreate(status: number) {
   createDialogShown.value = false;
   if (status != 201) {
+    console.log("uh oh");
   }
 }
 </script>

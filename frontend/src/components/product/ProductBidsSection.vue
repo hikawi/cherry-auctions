@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Product } from "@/types";
 import dayjs from "dayjs";
+import { LucideCircle } from "lucide-vue-next";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
