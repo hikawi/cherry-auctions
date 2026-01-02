@@ -69,11 +69,11 @@ parent: Other Specifications
 
 ### 3. Seller
 
-- [ ] **Product Posting**
-  - [ ] Required: Name, 3+ photos, start bid, step, description.
-  - [ ] Optional: Buy-it-now price.
-  - [ ] WYSIWYG text input for descriptions.
-  - [ ] Option to enable auto-extend (last 5 minutes).
+- [x] **Product Posting**
+  - [x] Required: Name, 3+ photos, start bid, step, description.
+  - [x] Optional: Buy-it-now price.
+  - [x] WYSIWYG text input for descriptions.
+  - [x] Option to enable auto-extend (last 5 minutes).
 - [ ] **Product Management**
   - [ ] Edit: Append P.S. remarks to existing description.
   - [ ] Deny Bidder: Transfer bid from denied user to second highest.
@@ -127,6 +127,6 @@ parent: Other Specifications
 
 ## 📊 Phase 4: Data & Testing
 
-- [ ] **Data Fakers**
-  - [ ] 20+ products across 4-5 categories.
-  - [ ] Full descriptions, images, and bidding history (5+ per product).
+- [x] **Data Fakers**
+  - [x] 20+ products across 4-5 categories.
+  - [x] Full descriptions, images, and bidding history (5+ per product).

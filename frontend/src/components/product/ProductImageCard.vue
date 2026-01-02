@@ -3,7 +3,8 @@ import { endpoints } from "@/consts";
 import { useAuthFetch } from "@/hooks/use-auth-fetch";
 import { useProfileStore } from "@/stores/profile";
 import type { Product } from "@/types";
-import { LucideHeart } from "lucide-vue-next";
+import { LucideChevronLeft, LucideChevronRight, LucideHeart } from "lucide-vue-next";
+import { ref } from "vue";
 
 const profile = useProfileStore();
 const { authFetch } = useAuthFetch();
@@ -15,6 +16,9 @@ const props = defineProps<{
 const emits = defineEmits<{
   toggleFavorite: [];
 }>();
+
+const currentImage = ref(0);
+const images = ref([props.data.thumbnail_url, ...props.data.product_images.map((img) => img.url)]);
 
 async function toggleFavorite() {
   if (!props.data) {
@@ -34,7 +38,7 @@ async function toggleFavorite() {
 <template>
   <div class="relative flex w-full flex-col items-center justify-start gap-4">
     <img
-      :src="data.thumbnail_url"
+      :src="images[currentImage]"
       :alt="data.name"
       width="400"
       height="400"
@@ -54,5 +58,37 @@ async function toggleFavorite() {
         }"
       />
     </button>
+
+    <div class="flex w-full flex-row items-center justify-between">
+      <button
+        class="min-w-fit cursor-pointer rounded-full p-2 duration-200 hover:bg-zinc-200"
+        :disabled="currentImage == 0"
+        @click="currentImage = Math.max(currentImage - 1, 0)"
+      >
+        <LucideChevronLeft />
+      </button>
+
+      <div class="flex w-fit flex-row items-center justify-center gap-2">
+        <img
+          v-for="(img, idx) in images"
+          :key="img"
+          :src="img"
+          class="relative size-12 cursor-pointer rounded-lg object-cover object-center"
+          @click="currentImage = idx"
+          :class="{
+            'ring-claret-600 ring-2': idx == currentImage,
+            'hover:ring-claret-600/50 duration-200 hover:ring-2': idx != currentImage,
+          }"
+        />
+      </div>
+
+      <button
+        class="min-w-fit cursor-pointer rounded-full p-2 duration-200 hover:bg-zinc-200"
+        :disabled="currentImage == images.length - 1"
+        @click="currentImage = Math.min(currentImage + 1, images.length - 1)"
+      >
+        <LucideChevronRight />
+      </button>
+    </div>
   </div>
 </template>
