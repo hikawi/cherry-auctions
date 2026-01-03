@@ -33,6 +33,7 @@ export type Category = {
 };
 
 export interface SmallUser {
+  id: number;
   name?: string;
   email?: string;
   avatar_url?: string;
@@ -56,6 +57,12 @@ export interface Bid {
   updated_at: string;
 }
 
+export interface DescriptionChanges {
+  id: number;
+  changes: string;
+  created_at: string;
+}
+
 export type StepBidType = "percentage" | "fixed";
 
 export interface Product {
@@ -77,5 +84,6 @@ export interface Product {
   questions: Question[];
   bids: Bid[];
   product_images: ProductImage[];
+  description_changes: DescriptionChanges[];
   is_favorite?: boolean;
 }

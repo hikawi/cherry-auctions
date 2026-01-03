@@ -40,8 +40,8 @@ const shouldBeRelative = computed(() => {
 });
 const isNew = computed(() => {
   const diffMs = dayjs(props.product.created_at).diff(now.value);
-  const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
-  return Math.abs(diffMs) <= THREE_DAYS_MS;
+  const ONE_HOUR_MS = 60 * 60 * 1000;
+  return Math.abs(diffMs) <= ONE_HOUR_MS;
 });
 
 async function toggleFavorite() {

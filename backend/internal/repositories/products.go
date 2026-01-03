@@ -99,6 +99,7 @@ func (r *ProductRepository) GetProductByID(ctx context.Context, id int) (models.
 		Preload("Questions.User", nil).
 		Preload("Categories", nil).
 		Preload("ProductImages", nil).
+		Preload("DescriptionChanges", nil).
 		Where("id = ?", id).
 		First(ctx)
 }
@@ -193,7 +194,34 @@ func (r *ProductRepository) AttachFavoriteStatus(ctx context.Context, userID uin
 	}
 }
 
+// GetRunningUserProducts returns a list of products for a user, paged.
+func (r *ProductRepository) GetRunningUserProducts(ctx context.Context, userID uint, limit int, offset int) ([]models.Product, error) {
+	return gorm.G[models.Product](r.DB).
+		Preload("Seller", nil).
+		Preload("Categories", nil).
+		Preload("CurrentHighestBid", nil).
+		Where("seller_id = ? AND expired_at > ?", userID, time.Now()).
+		Order("expired_at").
+		Limit(limit).
+		Offset(offset).
+		Find(ctx)
+}
+
+func (r *ProductRepository) CountRunningUserProducts(ctx context.Context, userID uint) (int64, error) {
+	return gorm.G[models.Product](r.DB).
+		Where("seller_id = ? AND expired_at > ?", userID, time.Now()).
+		Count(ctx, "id")
+}
+
 // CreateProduct creates a new product.
 func (r *ProductRepository) CreateProduct(ctx context.Context, product *models.Product) error {
 	return gorm.G[models.Product](r.DB).Create(ctx, product)
+}
+
+// CreateDescriptionChange makes a new change to the description.
+func (r *ProductRepository) CreateDescriptionChange(ctx context.Context, productID uint, productDescription string) error {
+	return r.DB.WithContext(ctx).
+		Model(&models.Product{Model: gorm.Model{ID: productID}}).
+		Association("DescriptionChanges").
+		Append(&models.DescriptionChange{Changes: productDescription, ProductID: productID})
 }

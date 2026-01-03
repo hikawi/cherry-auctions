@@ -105,6 +105,15 @@ definitions:
       parent_id:
         type: integer
     type: object
+  products.DescriptionChangeDTO:
+    properties:
+      changes:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+    type: object
   products.GetProductDetailsResponse:
     properties:
       allows_unrated_buyers:
@@ -129,6 +138,10 @@ definitions:
         $ref: '#/definitions/products.BidDTO'
       description:
         type: string
+      description_changes:
+        items:
+          $ref: '#/definitions/products.DescriptionChangeDTO'
+        type: array
       expired_at:
         type: string
       id:
@@ -210,6 +223,10 @@ definitions:
         $ref: '#/definitions/products.BidDTO'
       description:
         type: string
+      description_changes:
+        items:
+          $ref: '#/definitions/products.DescriptionChangeDTO'
+        type: array
       expired_at:
         type: string
       id:
@@ -649,6 +666,42 @@ paths:
       summary: Queries products using fuzzy matchers and full-text matchers.
       tags:
       - products
+    post:
+      consumes:
+      - multipart/form-data
+      description: Posts a new product up for auctions.
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successfully created an auction
+          schema:
+            $ref: '#/definitions/shared.MessageResponse'
+        "400":
+          description: When the multipart data is invalid
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "401":
+          description: When the user is unauthorized
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "403":
+          description: When the user isn't subscribed
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "404":
+          description: The server couldn't find the requested product
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: The server could not make the request
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Posts a new product.
+      tags:
+      - products
   /products/{id}:
     get:
       description: Queries everything about a single product, with full joins.
@@ -674,6 +727,41 @@ paths:
           schema:
             $ref: '#/definitions/shared.ErrorResponse'
       summary: Retrieves details on a single product.
+      tags:
+      - products
+  /products/description:
+    post:
+      consumes:
+      - application/json
+      description: The description can't be changed entirely, but there will be a
+        post-script remark added to it.
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successfully added a postscript remark
+          schema:
+            $ref: '#/definitions/shared.MessageResponse'
+        "400":
+          description: When the request is invalid
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "401":
+          description: When the user is unauthenticated
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "403":
+          description: When the user can't edit a product or the product does not
+            exist
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: The server could not make the request
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Posts a new product's description change.
       tags:
       - products
   /products/favorite:
@@ -737,6 +825,42 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Toggle a product as favorite.
+      tags:
+      - products
+  /products/me:
+    get:
+      description: Retrieves my products, paginated.
+      parameters:
+      - description: Page Number
+        in: query
+        name: page
+        type: integer
+      - description: Items per Page
+        in: query
+        name: per_page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved
+          schema:
+            $ref: '#/definitions/products.GetProductsResponse'
+        "400":
+          description: When the request is invalid
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "401":
+          description: When the user is unauthenticated
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: The server could not make the request
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Retrieves my products
       tags:
       - products
   /products/top:

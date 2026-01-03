@@ -360,16 +360,16 @@ func (h *ProductsHandler) uploadImages(ctx context.Context, body PostProductBody
 //	@summary		Posts a new product.
 //	@description	Posts a new product up for auctions.
 //	@tags			products
-//	@security ApiKeyAuth
-//	@accept multipart/form-data
+//	@security		ApiKeyAuth
+//	@accept			multipart/form-data
 //	@produce		json
-//	@success		201	{object}	shared.MessageResponse "Successfully created an auction"
-//	@failure 400 {object} shared.ErrorResponse "When the multipart data is invalid"
-//	@failure 401 {object} shared.ErrorResponse "When the user is unauthorized"
-//	@failure 403 {object} shared.ErrorResponse "When the user isn't subscribed"
+//	@success		201	{object}	shared.MessageResponse	"Successfully created an auction"
+//	@failure		400	{object}	shared.ErrorResponse	"When the multipart data is invalid"
+//	@failure		401	{object}	shared.ErrorResponse	"When the user is unauthorized"
+//	@failure		403	{object}	shared.ErrorResponse	"When the user isn't subscribed"
 //	@failure		404	{object}	shared.ErrorResponse	"The server couldn't find the requested product"
 //	@failure		500	{object}	shared.ErrorResponse	"The server could not make the request"
-//	@router			/products/{id} [get]
+//	@router			/products [post]
 func (h *ProductsHandler) PostProduct(g *gin.Context) {
 	ctx := g.Request.Context()
 	claimsAny, _ := g.Get("claims")
@@ -436,4 +436,104 @@ func (h *ProductsHandler) PostProduct(g *gin.Context) {
 
 	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusCreated, "body": body, "response": product})
 	g.JSON(http.StatusCreated, product)
+}
+
+// PostProductDescription godoc
+//
+//	@summary		Posts a new product's description change.
+//	@description	The description can't be changed entirely, but there will be a post-script remark added to it.
+//	@tags			products
+//	@security		ApiKeyAuth
+//	@accept			json
+//	@produce		json
+//	@success		201	{object}	shared.MessageResponse	"Successfully added a postscript remark"
+//	@failure		400	{object}	shared.ErrorResponse	"When the request is invalid"
+//	@failure		401	{object}	shared.ErrorResponse	"When the user is unauthenticated"
+//	@failure		403	{object}	shared.ErrorResponse	"When the user can't edit a product or the product does not exist"
+//	@failure		500	{object}	shared.ErrorResponse	"The server could not make the request"
+//	@router			/products/description [post]
+func (h *ProductsHandler) PostProductDescription(g *gin.Context) {
+	ctx := g.Request.Context()
+	claimsAny, _ := g.Get("claims")
+	claims := claimsAny.(*services.JWTSubject)
+
+	var body PostProductDescriptionBody
+	if err := g.ShouldBind(&body); err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusBadRequest, "error": err.Error()})
+		g.AbortWithStatusJSON(http.StatusBadRequest, shared.ErrorResponse{Error: "bad request"})
+		return
+	}
+
+	product, err := h.ProductRepo.GetProductByID(ctx, int(body.ID))
+	if err != nil || product.SellerID != claims.UserID {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusForbidden, "error": err.Error(), "body": body})
+		g.AbortWithStatusJSON(http.StatusForbidden, shared.ErrorResponse{Error: "can't change this product's description"})
+		return
+	}
+
+	err = h.ProductRepo.CreateDescriptionChange(ctx, product.ID, body.Description)
+	fmt.Println(product.ID)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusInternalServerError, "error": err.Error(), "body": body})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "couldn't add a description change"})
+		return
+	}
+
+	response := shared.MessageResponse{Message: "created a description change"}
+	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusCreated, "body": body, "response": response})
+	g.JSON(http.StatusCreated, response)
+}
+
+// GetMyProducts godoc
+//
+//	@summary		Retrieves my products
+//	@description	Retrieves my products, paginated.
+//	@tags			products
+//	@security		ApiKeyAuth
+//	@param			page		query	int	false	"Page Number"
+//	@param			per_page	query	int	false	"Items per Page"
+//	@produce		json
+//	@success		200	{object}	products.GetProductsResponse	"Successfully retrieved"
+//	@failure		400	{object}	shared.ErrorResponse			"When the request is invalid"
+//	@failure		401	{object}	shared.ErrorResponse			"When the user is unauthenticated"
+//	@failure		500	{object}	shared.ErrorResponse			"The server could not make the request"
+//	@router			/products/me [get]
+func (h *ProductsHandler) GetMyProducts(g *gin.Context) {
+	ctx := g.Request.Context()
+	claimsAny, _ := g.Get("claims")
+	claims := claimsAny.(*services.JWTSubject)
+	query := GetProductsQuery{
+		Page:    1,
+		PerPage: 20,
+	}
+
+	if err := g.ShouldBindQuery(&query); err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusBadRequest, "error": err.Error(), "query": query})
+		g.AbortWithStatusJSON(http.StatusBadRequest, shared.ErrorResponse{Error: "invalid query"})
+		return
+	}
+
+	products, err := h.ProductRepo.GetRunningUserProducts(ctx, claims.UserID, query.PerPage, (query.Page-1)*query.PerPage)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusInternalServerError, "error": err.Error(), "query": query})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "couldn't query for user products"})
+		return
+	}
+
+	count, err := h.ProductRepo.CountRunningUserProducts(ctx, claims.UserID)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": err.Error(), "query": query})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "unable to count products"})
+		return
+	}
+
+	response := GetProductsResponse{
+		Data:       ranges.EachAddress(products, ToProductDTO),
+		Total:      count,
+		TotalPages: int(math.Ceil(float64(count) / float64(query.PerPage))),
+		Page:       query.Page,
+		PerPage:    query.PerPage,
+	}
+	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusOK, "query": query, "response": response})
+	g.JSON(http.StatusOK, response)
 }

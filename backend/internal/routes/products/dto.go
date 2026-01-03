@@ -14,6 +14,7 @@ type ProductImageDTO struct {
 }
 
 type ProfileDTO struct {
+	ID        uint    `json:"id"`
 	Name      *string `json:"name"`
 	Email     *string `json:"email"`
 	AvatarURL *string `json:"avatar_url"`
@@ -34,24 +35,32 @@ type BidDTO struct {
 	UpdatedAt time.Time  `json:"updated_at"`
 }
 
+type DescriptionChangeDTO struct {
+	ID        uint      `json:"id"`
+	Changes   string    `json:"changes"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
 type ProductDTO struct {
-	ID                  uint          `json:"id"`
-	Name                string        `json:"name"`
-	StartingBid         float64       `json:"starting_bid"`
-	StepBidType         string        `json:"step_bid_type"`
-	StepBidValue        float64       `json:"step_bid_value"`
-	BINPrice            *float64      `json:"bin_price"`
-	Description         string        `json:"description"`
-	ThumbnailURL        string        `json:"thumbnail_url"`
-	AllowsUnratedBuyers bool          `json:"allows_unrated_buyers"`
-	AutoExtendsTime     bool          `json:"auto_extends_time"`
-	CreatedAt           time.Time     `json:"created_at"`
-	ExpiredAt           time.Time     `json:"expired_at"`
-	Seller              ProfileDTO    `json:"seller"`
-	CurrentHighestBid   *BidDTO       `json:"current_highest_bid"`
-	Categories          []CategoryDTO `json:"categories"`
-	BidsCount           int           `json:"bids_count"`
-	IsFavorite          bool          `json:"is_favorite"`
+	ID                  uint                   `json:"id"`
+	Name                string                 `json:"name"`
+	StartingBid         float64                `json:"starting_bid"`
+	StepBidType         string                 `json:"step_bid_type"`
+	StepBidValue        float64                `json:"step_bid_value"`
+	BINPrice            *float64               `json:"bin_price"`
+	Description         string                 `json:"description"`
+	ThumbnailURL        string                 `json:"thumbnail_url"`
+	AllowsUnratedBuyers bool                   `json:"allows_unrated_buyers"`
+	AutoExtendsTime     bool                   `json:"auto_extends_time"`
+	CreatedAt           time.Time              `json:"created_at"`
+	ExpiredAt           time.Time              `json:"expired_at"`
+	Seller              ProfileDTO             `json:"seller"`
+	CurrentHighestBid   *BidDTO                `json:"current_highest_bid"`
+	Categories          []CategoryDTO          `json:"categories"`
+	DescriptionChanges  []DescriptionChangeDTO `json:"description_changes"`
+
+	BidsCount  int  `json:"bids_count"`
+	IsFavorite bool `json:"is_favorite"`
 }
 
 type QuestionDTO struct {
@@ -65,6 +74,7 @@ type QuestionDTO struct {
 
 func ToProfileDTO(m models.User) ProfileDTO {
 	return ProfileDTO{
+		ID:        m.ID,
 		Name:      m.Name,
 		Email:     m.Email,
 		AvatarURL: m.AvatarURL,
@@ -161,7 +171,14 @@ func ToProductDTO(m *models.Product) ProductDTO {
 		CurrentHighestBid:   highestBid,
 		BidsCount:           m.BidsCount,
 		Categories:          ranges.Each(m.Categories, ToCategoryDTO),
-		IsFavorite:          m.IsFavorite,
+		DescriptionChanges: ranges.Each(m.DescriptionChanges, func(m models.DescriptionChange) DescriptionChangeDTO {
+			return DescriptionChangeDTO{
+				ID:        m.ID,
+				Changes:   m.Changes,
+				CreatedAt: m.CreatedAt,
+			}
+		}),
+		IsFavorite: m.IsFavorite,
 	}
 }
 
@@ -216,4 +233,14 @@ type PostProductBody struct {
 	AllowsUnrated bool                    `form:"allows_unrated" json:"allows_unrated"`
 	AutoExtends   bool                    `form:"auto_extends" json:"auto_extends"`
 	ExpiredAt     time.Time               `form:"expired_at" binding:"required,gt" json:"expired_at"`
+}
+
+type PostProductDescriptionBody struct {
+	ID          uint   `json:"id" form:"id" binding:"required,gt=0,number"`
+	Description string `json:"description" form:"description" binding:"required,min=50"`
+}
+
+type GetMyProductsQuery struct {
+	Page    int `form:"page" binding:"number,gt=0,omitempty" json:"page"`
+	PerPage int `form:"per_page" binding:"number,gt=0,omitempty" json:"per_page"`
 }

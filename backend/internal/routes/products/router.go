@@ -23,5 +23,7 @@ func (h *ProductsHandler) SetupRouter(g *gin.RouterGroup) {
 	r.GET("/favorite", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.GetFavoriteProducts)
 	r.POST("/favorite", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.PostFavoriteProduct)
 	r.POST("", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.PostProduct)
+	r.POST("/description", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.PostProductDescription)
 	r.GET("/:id", h.MiddlewareService.SoftAuthorizedRoute, h.GetProductID)
+	r.GET("/me", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.GetMyProducts)
 }

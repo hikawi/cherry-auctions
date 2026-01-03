@@ -1,12 +1,25 @@
 <script setup lang="ts">
-import CreateAuctionDialog from "@/components/auctions/CreateAuctionDialog.vue";
+import ProductCard from "@/components/index/ProductCard.vue";
+import CreateAuctionDialog from "@/components/product/CreateAuctionDialog.vue";
 import NavigationBar from "@/components/shared/NavigationBar.vue";
 import OverlayScreen from "@/components/shared/OverlayScreen.vue";
 import WhiteContainer from "@/components/shared/WhiteContainer.vue";
+import { endpoints } from "@/consts";
+import { useAuthFetch } from "@/hooks/use-auth-fetch";
+import type { Product } from "@/types";
 import { LucidePackage } from "lucide-vue-next";
-import { ref } from "vue";
+import { onMounted, ref, watch } from "vue";
+
+const { authFetch } = useAuthFetch();
 
 const createDialogShown = ref(false);
+const data = ref<Product[]>();
+const page = ref(1);
+const maxPages = ref(1);
+const loading = ref(false);
+
+watch(maxPages, (val) => (page.value = Math.min(page.value, val)));
+watch(page, fetchMyAuctions);
 
 function onCreate(status: number) {
   createDialogShown.value = false;
@@ -14,6 +27,27 @@ function onCreate(status: number) {
     console.log("uh oh");
   }
 }
+
+async function fetchMyAuctions() {
+  loading.value = true;
+
+  const url = new URL(endpoints.products.me);
+  url.searchParams.append("page", page.value.toString());
+  url.searchParams.append("per_page", "12");
+
+  try {
+    const res = await authFetch(url);
+    if (res.ok) {
+      const json = await res.json();
+      data.value = json.data;
+      maxPages.value = Math.max(json.total_pages, 1);
+    }
+  } finally {
+    loading.value = false;
+  }
+}
+
+onMounted(fetchMyAuctions);
 </script>
 
 <template>
@@ -37,17 +71,17 @@ function onCreate(status: number) {
         </button>
       </div>
 
-      <!-- <div -->
-      <!--   class="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3" -->
-      <!--   v-if="data && data.length > 0" -->
-      <!-- > -->
-      <!--   <template v-for="product in data" :key="product.id"> -->
-      <!--     <ProductCard :product @favoriteToggle="fetchFavorites" /> -->
-      <!--   </template> -->
-      <!-- </div> -->
-      <!-- <p class="w-full py-6 text-center text-xl font-semibold" v-else> -->
-      <!--   {{ $t("profile.no_favorites") }} -->
-      <!-- </p> -->
+      <div
+        class="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3"
+        v-if="data && data.length > 0"
+      >
+        <template v-for="product in data" :key="product.id">
+          <ProductCard :product />
+        </template>
+      </div>
+      <p class="w-full py-6 text-center text-xl font-semibold" v-else>
+        {{ $t("profile.no_favorites") }}
+      </p>
     </section>
   </WhiteContainer>
 </template>

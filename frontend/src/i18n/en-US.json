@@ -162,7 +162,12 @@
     "similar_products": "You may also like",
     "bid_list": "{name} bidded {price} at {at}",
     "cant_bid": "You can't bid on this product",
-    "description": "Product Description"
+    "description": "Product Description",
+    "add_remark": "Add description remark",
+    "change_description": "Change Description",
+    "cant_bid_logged_out": "You must be logged in to bid",
+    "cant_bid_self": "You can't bid on your own product",
+    "cant_bid_no_rating": "You must have a rating score of 0.8"
   },
   "profile": {
     "profile": "Profile",
@@ -198,6 +203,10 @@
     "404": {
       "title": "404 Not Found",
       "description": "The page you requested does not exist."
+    },
+    "500": {
+      "title": "500 Internal Server Error",
+      "description": "The server has an issue that I couldn't do anything for you."
     }
   }
 }

@@ -3,130 +3,247 @@ title: To-do Checklist
 parent: Other Specifications
 ---
 
-# 🍒 Cherry Auctions: Official Project Checklist
+# CherryAuctions: Official SRS Checklist
 
-## 🛠️ Phase 1: Technical & System Requirements
+## 1. Guest Role
 
-- [x] **DevOps & Source Management**
-  - [x] GitHub repository with frequent, meaningful commits (No bulk uploads).
-  - [x] RESTful API implementation for backend endpoints.
-  - [x] Swagger Documentation for all API endpoints.
-  - [x] Logging and monitoring setup (Grafana, ELK, or similar).
-- [ ] **Security & Authentication**
-  - [x] JWT Implementation: AccessToken and RefreshTokens.
-  - [x] Password Hashing: No plain text storage.
-  - [x] reCaptcha integration for registration.
-  - [x] OTP Verification system for registration and forgot password.
-  - [ ] OAuth2 Options (Encouraged): Google, Facebook, X, GitHub.
-- [x] **Frontend Standards**
-  - [x] SPA Architecture with a dedicated Router service.
-  - [x] Form processing and validation (e.g., Angular Forms).
-  - [x] Consistent Design System across all screens.
+### 1.1. Menu System
 
----
+- [ ] Display all categories
+- [x] Categories have at least 2 levels
 
-## 👥 Phase 2: Role-Based Functionality
+### 1.2. Home Page
 
-### 1. Guest (Public)
+- [x] Top 5 ending soon products
+- [x] Top 5 products with most bids
+- [x] Top 5 products with highest bids
 
-- [ ] **Menu System**
-  - [x] At least two levels of categories (e.g., Electronics -> Laptops).
-- [x] **Home Page Displays**
-  - [x] "Top 5 Ending Soon Auctions".
-  - [x] "Top 5 Auctions (most number of bids)".
-  - [x] "Top 5 Highest Auctions".
-- [ ] **Product Catalog & Search**
-  - [ ] Paginated catalog view with category filters.
-  - [x] Fuzzy search with full-text search.
-  - [ ] Paginated search results with sorting (Price Asc/Desc, Ending Time).
-  - [x] Eye-catching display for recently posted products.
-- [x] **Product Views**
-  - [x] Catalog Attributes: Thumbnails, names, current bid, highest bidder, BIN price, posted date, remaining time, bids count.
-  - [x] Product Details: Hero/extra photos, seller/bidder info & reviews, timestamps, description.
-  - [x] Relative time display (if ending in ≤ 3 days).
-  - [x] Questions & Answers section.
-  - [x] 5 Similar products in the same category.
-- [x] **Registration**
-  - [x] Fields: Full name, address, email.
+### 1.3. Products Catalog
 
-### 2. Bidder
+- [x] Pagination
+- [ ] From categories
 
-- [x] **Watch List**
-  - [x] Save items from catalog or detail page.
-  - [x] View "My favorites" in profile.
-- [ ] **Bidding System**
-  - [ ] Bid restriction: Minimum 80% rating check (Likes/Total).
-  - [ ] New account bidding permission (if seller allowed).
-  - [ ] Minimum bid "step up" logic (Current + Step).
-  - [ ] Confirmation dialog for bids.
-- [ ] **History & Profile**
-  - [x] Masked bid history (Timestamp, Name, Price) in card or tabular view.
-  - [x] Profile management: Change email, name, address, password.
-  - [ ] View personal rating details/comments from others.
-  - [ ] Lists: "My current bids" and "My won bids" (with seller review/comment).
-- [x] **Permissions**
-  - [x] Request selling privileges after 7 days of usage.
+### 1.4. Products Searching
 
-### 3. Seller
+- [x] Full-text Search
+- [x] Search by name
+- [ ] Search by category
+- [x] Paginated results
+- [ ] Ordered results
+  - [ ] Ending time
+  - [ ] Price
+- [x] New products (within some minutes) have emphasis
+- [ ] Product Display on Catalog
+  - [x] Thumbnail
+  - [x] Name
+  - [x] Current Price
+  - [ ] Current Highest Bid
+  - [x] BIN price
+  - [x] Posted date
+  - [x] Remaining time
+  - [x] Number of bids
 
-- [x] **Product Posting**
-  - [x] Required: Name, 3+ photos, start bid, step, description.
-  - [x] Optional: Buy-it-now price.
-  - [x] WYSIWYG text input for descriptions.
-  - [x] Option to enable auto-extend (last 5 minutes).
-- [ ] **Product Management**
-  - [ ] Edit: Append P.S. remarks to existing description.
-  - [ ] Deny Bidder: Transfer bid from denied user to second highest.
-  - [ ] Answer questions in QnA section.
-- [ ] **Sales & Reviews**
-  - [ ] View current and won products.
-  - [ ] Review winner (+1/-1 and comment).
-  - [ ] Stop transaction (Auto -1 to bidder with "The Top Bid did not follow through").
+### 1.5. Products Details
 
-### 4. Administrator
+- [ ] All content of the product
+  - [x] Thumbnail
+  - [x] Other images
+  - [x] Product name
+  - [x] Current price
+  - [x] BIN price
+  - [ ] Seller info & rating
+  - [ ] Highest bidder info & rating
+  - [x] Posted date
+  - [x] Expired at
+  - [x] Relative expired in if less than 3 days
+  - [x] Description
+- [x] Questions and Answers
+- [x] Similar products
 
-- [ ] **Management (List, Details, Add, Delete, Update)**
-  - [x] Category Management: Block delete if products exist in category.
-  - [ ] Product Management: Remove any product.
-  - [x] User Management: Approve/Reject seller upgrade requests.
-- [ ] **Global Controls**
-  - [ ] Configure global auto-extend settings (When and how much).
-- [ ] **Dashboard**
-  - [ ] Analytics/Charts: User count, selling requests, financials, bids count.
+### 1.6. Registration
 
----
+- [x] reCaptcha
+- [x] Passwords are hashed
+- [ ] Information
+  - [ ] OTP
+  - [x] Email
+  - [x] Name
+  - [x] Address
 
-## ⚙️ Phase 3: Core Systems
+## 2. Bidder Role
 
-### 1. Mailing System (Email Notifications)
+### 2.1. Watch List
 
-- [ ] Successful bid: To bidder, seller, and previous top bidder.
-- [ ] Rejected bid: To the bidder.
-- [ ] Expired auction (no bidders): To the seller.
-- [ ] Ended auction: To the seller and winner.
-- [ ] Question asked: To the seller.
-- [ ] Question answered: To asker and all bidders.
+- [x] Can add/remove from catalog
+- [x] Can add/remove at details page
 
-### 2. Auto-Bidding System
+### 2.2. Bid
 
-- [ ] Seller sets maximum price.
-- [ ] Optimization: Check max prices and bid once (avoid back-and-forth).
-- [ ] Tie-break: Earliest bidder wins if max prices are identical.
-- [ ] Only one bidding type implemented (Manual OR Auto).
+- [ ] At details page
+- [ ] Allowed only if product allows it, or rating is 80% or greater.
+- [ ] System enforces a reasonable bid (current bid + bid step at least)
+- [ ] Confirmation dialog for bidding
 
-### 3. Payment & Transaction Flow
+### 2.3. Bidding History
 
-- [ ] Post-auction visibility: "Complete Transaction" for Winner/Seller; "Auction Ended" for others.
-- [ ] Payment Integration: Stripe, PayPal, Cards, or Bank.
-- [ ] Logistics: Winner sends address; Seller confirms with invoice/parcel proof.
-- [ ] Completion: Winner confirms delivery; Mark as "Done" to unlock reviews.
-- [ ] Cancellation: Seller cancels for non-payment (24hr window) results in -1 for winner.
-- [ ] Communication: Direct chat between seller and winner.
+- [x] All bids are masked
+- [x] Needs to show price and time, and a masked name
 
----
+### 2.4. Question
 
-## 📊 Phase 4: Data & Testing
+- [ ] At details page
+- [ ] Seller receives email when someone asks a question
 
-- [x] **Data Fakers**
-  - [x] 20+ products across 4-5 categories.
-  - [x] Full descriptions, images, and bidding history (5+ per product).
+### 2.5. Profile Management
+
+- [x] Change email, name
+- [ ] Change password (requires old password)
+- [ ] View total rating and all ratings
+- [x] View favorites / watch list
+- [ ] View current bids
+- [ ] View won auctions
+  - [ ] Rate the product's seller (+1) or (-1), with a feedback
+
+### 2.6. Request Seller privileges
+
+- [x] Bidder can request to be a seller
+- [x] Admin can approve or reject
+
+## 3. Seller Role
+
+### 3.1. Post an Auction
+
+- [x] Product name
+- [x] At least 3 images
+- [x] Starting bid
+- [x] Bid step
+- [x] BIN price (optional)
+- [x] Description
+  - [x] WYSIWYG
+- [x] Auto extends
+
+### 3.2. Editing a Description
+
+- [x] Modify the description of a posted product
+- [x] New changes are appended to the old description, but can't replace them
+
+### 3.3. Deny a Bidder
+
+- [ ] At details page
+- [ ] A denied bidder can no longer bid on a product
+- [ ] If the bidder gets denied, the highest bid is moved to the second highest
+
+### 3.4. Answer a User
+
+- [ ] At details page
+
+### 3.5. Profile Management
+
+- [x] View my auctions
+- [ ] View expired auctions
+  - [ ] Can rate or feedback on the highest bidder
+  - [ ] Can cancel the auction and automatically mark as -1 with a description
+        "Bidder did not follow through"
+
+## 4. Admin Role
+
+### 4.1. Categories
+
+- [ ] Can't delete a category with a product
+- [x] View all
+- [x] View details
+- [x] Add
+- [x] Delete
+- [x] Edit
+
+### 4.2. Products
+
+- [ ] Can remove an auction
+
+### 4.3. Users
+
+- [ ] Basic management tools
+- [x] View bidders requesting privileges
+- [x] Can approve
+
+### 4.4. Dashboard
+
+- [ ] Charts on auctions, pricing, new users, new sellers
+
+## 5. General Role
+
+### 5.1. Login
+
+- [x] Login
+- [ ] (Optional) add Oauth
+
+### 5.2. Update Profile
+
+- [x] Name
+- [x] Email
+
+### 5.3. Change password
+
+- [ ] Both passwords are hashed with bcrypt or scrypt or similar
+
+### 5.4. Forgot password
+
+- [ ] OTP code
+
+## 6. System
+
+### 6.1. Mailing System
+
+- [ ] New bid, to seller, to bidder, to previous bidder
+- [ ] When bidder is denied the bid to bidder
+- [ ] Auction expired to seller
+- [ ] Auction ended to seller and winner
+- [ ] User questions, to the bidder
+- [ ] Seller answers, to the questioner, and all current bidders, or questioned
+
+### 6.2. Automated bidding (Optional)
+
+- [ ] Bidder sets a maximum price
+- [ ] The product will kept getting bidded on if possible
+- [ ] If 2 bidders have the same price, then the one who bidded first wins.
+
+### 6.3. Payment System
+
+- [ ] When auction ends, the detail page can lead to the "checkout"
+- [ ] Other bidders just see: Auction ended
+- [ ] Checkout flow:
+  - [ ] Through Stripe
+  - [ ] Winner sends the address
+  - [ ] Seller confirms delivery
+  - [ ] Winner confirms received
+  - [ ] Transaction over, and the two rate each other
+- [ ] The seller can cancel, and automatically mark the winner as -1.
+- [ ] Chat interface for completing the product
+
+## 7. Others
+
+These requirements are non-negotiable.
+
+### 7.1. Technical
+
+- [x] Web App with Client-side rendering
+- [x] Backend is RESTful
+- [x] Backend Requirements
+  - [x] Swagger
+  - [x] Validation on all routes
+  - [x] Logging and monitoring (ELK stack or similar)
+  - [x] Security with JWT key pair
+- [x] Frontend
+  - [x] Client-side router
+  - [x] Form processing and Validation
+  - [x] State management
+  - [x] Same design system for entire website
+
+### 7.2. Data
+
+- [x] At least 20 products, with descriptions and images
+- [x] Products need at least some bids
+
+### 7.3. Source Management
+
+- [x] Github (non-negotiable, course fail if not checked)

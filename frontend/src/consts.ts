@@ -10,6 +10,8 @@ export const endpoints = {
     details: (id: unknown) => `${api}/v1/products/${id}`,
     favorite: `${api}/v1/products/favorite`,
     top: `${api}/v1/products/top`,
+    me: `${api}/v1/products/me`,
+    description: `${api}/v1/products/description`,
   },
   categories: {
     get: `${api}/v1/categories`,
