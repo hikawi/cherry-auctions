@@ -92,7 +92,13 @@ func (h *QuestionsHandler) PutQuestion(g *gin.Context) {
 	}
 
 	product, err := h.productRepo.GetProductByID(ctx, int(id))
-	if err != nil || product.SellerID != claims.UserID {
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusInternalServerError, "error": err.Error(), "body": body})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "can't get product by id"})
+		return
+	}
+
+	if product.SellerID != claims.UserID {
 		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusForbidden, "error": "can't answer a product you don't sell", "body": body})
 		g.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "can't answer a product you don't sell"})
 		return

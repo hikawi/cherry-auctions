@@ -15,7 +15,7 @@ RUN go build -o ./app .
 FROM alpine:3.22 AS prod
 
 # Same random ass things
-RUN apk add --no-cache vips pkgconf
+RUN apk add --no-cache vips pkgconf curl
 
 WORKDIR /app
 COPY --from=builder ./app/app ./app
