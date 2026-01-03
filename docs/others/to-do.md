@@ -91,8 +91,8 @@ parent: Other Specifications
 
 ### 2.4. Question
 
-- [ ] At details page
-- [ ] Seller receives email when someone asks a question
+- [x] At details page
+- [x] Seller receives email when someone asks a question
 
 ### 2.5. Profile Management
 
@@ -198,7 +198,7 @@ parent: Other Specifications
 - [ ] When bidder is denied the bid to bidder
 - [ ] Auction expired to seller
 - [ ] Auction ended to seller and winner
-- [ ] User questions, to the bidder
+- [x] User questions, to the bidder
 - [x] Seller answers, to the questioner, and all current bidders, or questioned
 
 ### 6.2. Automated bidding (Optional)

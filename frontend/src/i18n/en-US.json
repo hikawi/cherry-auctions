@@ -166,6 +166,8 @@
     "add_remark": "Add description remark",
     "change_description": "Change Description",
     "answer_question": "Answer the question",
+    "ask_a_question": "Ask a question",
+    "ask": "Ask",
     "cant_bid_logged_out": "You must be logged in to bid",
     "cant_bid_self": "You can't bid on your own product",
     "cant_bid_no_rating": "You must have a rating score of 0.8"
