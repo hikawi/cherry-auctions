@@ -2,6 +2,7 @@
 import ProductCard from "@/components/index/ProductCard.vue";
 import ProductBidsSection from "@/components/product/ProductBidsSection.vue";
 import ProductDataCard from "@/components/product/ProductDataCard.vue";
+import ProductDescriptionSection from "@/components/product/ProductDescriptionSection.vue";
 import ProductImageCard from "@/components/product/ProductImageCard.vue";
 import ProductQuestionsSection from "@/components/product/ProductQuestionsSection.vue";
 import LoadingSpinner from "@/components/shared/LoadingSpinner.vue";
@@ -109,11 +110,7 @@ onMounted(() => {
       </div>
 
       <!-- Product Description -->
-      <section class="flex w-full flex-col gap-4">
-        <h2 class="text-xl font-bold">{{ $t("products.description") }}</h2>
-
-        <div class="w-full text-justify" v-html="data.description"></div>
-      </section>
+      <ProductDescriptionSection :data @reload="fetchProduct" />
 
       <!-- Bids Section -->
       <ProductBidsSection :data />

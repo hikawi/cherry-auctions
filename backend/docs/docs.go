@@ -485,6 +485,114 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Posts a new product up for auctions.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Posts a new product.",
+                "responses": {
+                    "201": {
+                        "description": "Successfully created an auction",
+                        "schema": {
+                            "$ref": "#/definitions/shared.MessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "When the multipart data is invalid",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "When the user is unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "When the user isn't subscribed",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "The server couldn't find the requested product",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "The server could not make the request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/products/description": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "The description can't be changed entirely, but there will be a post-script remark added to it.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Posts a new product's description change.",
+                "responses": {
+                    "201": {
+                        "description": "Successfully added a postscript remark",
+                        "schema": {
+                            "$ref": "#/definitions/shared.MessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "When the request is invalid",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "When the user is unauthenticated",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "When the user can't edit a product or the product does not exist",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "The server could not make the request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
             }
         },
         "/products/favorite": {
@@ -572,6 +680,63 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Product could not be found",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "The server could not make the request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/products/me": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieves my products, paginated.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Retrieves my products",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page Number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Items per Page",
+                        "name": "per_page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved",
+                        "schema": {
+                            "$ref": "#/definitions/products.GetProductsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "When the request is invalid",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "When the user is unauthenticated",
                         "schema": {
                             "$ref": "#/definitions/shared.ErrorResponse"
                         }
@@ -1085,6 +1250,20 @@ const docTemplate = `{
                 }
             }
         },
+        "products.DescriptionChangeDTO": {
+            "type": "object",
+            "properties": {
+                "changes": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
         "products.GetProductDetailsResponse": {
             "type": "object",
             "properties": {
@@ -1120,6 +1299,12 @@ const docTemplate = `{
                 },
                 "description": {
                     "type": "string"
+                },
+                "description_changes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/products.DescriptionChangeDTO"
+                    }
                 },
                 "expired_at": {
                     "type": "string"
@@ -1243,6 +1428,12 @@ const docTemplate = `{
                 },
                 "description": {
                     "type": "string"
+                },
+                "description_changes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/products.DescriptionChangeDTO"
+                    }
                 },
                 "expired_at": {
                     "type": "string"

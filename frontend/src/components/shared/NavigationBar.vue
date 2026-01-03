@@ -39,7 +39,7 @@ const links = [
     href: "separator",
   },
   {
-    name: "navigation.my_products",
+    name: "navigation.my_auctions",
     href: "/auctions",
     icon: LucideStore,
   },

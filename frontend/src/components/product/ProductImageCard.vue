@@ -18,7 +18,10 @@ const emits = defineEmits<{
 }>();
 
 const currentImage = ref(0);
-const images = ref([props.data.thumbnail_url, ...props.data.product_images.map((img) => img.url)]);
+const images = ref([
+  props.data.thumbnail_url,
+  ...(props.data.product_images || []).map((img) => img.url),
+]);
 
 async function toggleFavorite() {
   if (!props.data) {

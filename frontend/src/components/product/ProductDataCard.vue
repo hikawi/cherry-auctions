@@ -13,6 +13,28 @@ const props = defineProps<{
   data: Product & { similar_products?: Product[]; categories: { id: number; name: string }[] };
 }>();
 
+const cantBidReason = computed(() => {
+  if (!props.data) {
+    return undefined;
+  }
+
+  if (!profile.profile) {
+    return "products.cant_bid_logged_out";
+  }
+
+  if (props.data.seller.id == profile.profile.id) {
+    return "products.cant_bid_self";
+  }
+
+  if (!props.data.allows_unrated_buyers && profile.profile.average_rating < 0.8) {
+    return "products.cant_bid_no_rating";
+  }
+
+  // TODO:
+  // Add the flow to check if the user is denied.
+
+  return undefined;
+});
 const expiresAtDisplay = computed(() => {
   return props.data != null
     ? dayjs(props.data.expired_at).locale(locale.value).format("lll")
@@ -22,6 +44,22 @@ const createdAtDisplay = computed(() => {
   return props.data != null
     ? dayjs(props.data.created_at).locale(locale.value).format("lll")
     : "N/A";
+});
+const nextBidValue = computed(() => {
+  if (!props.data) {
+    return undefined;
+  }
+
+  if (!props.data.current_highest_bid) {
+    return props.data.starting_bid;
+  }
+
+  const highestBid = props.data.current_highest_bid.price;
+  if (props.data.step_bid_type == "percentage") {
+    return highestBid * (1 + props.data.step_bid_value);
+  }
+
+  return highestBid + props.data.step_bid_value;
 });
 </script>
 
@@ -65,25 +103,22 @@ const createdAtDisplay = computed(() => {
     <div class="grid grid-cols-1 gap-2 md:grid-cols-2">
       <span
         class="text-claret-600 w-full text-center font-semibold md:col-span-2"
-        v-if="
-          !profile.profile || profile.profile.average_rating < 0.8 || !data.allows_unrated_buyers
-        "
+        v-if="cantBidReason"
       >
-        {{ $t("products.cant_bid") }}
+        {{ $t(cantBidReason) }}
       </span>
 
       <button
         class="bg-claret-600 enabled:hover:text-claret-600 border-claret-600 flex cursor-pointer flex-col items-center justify-center gap-0 rounded-xl border-2 px-4 py-2 text-white duration-200 enabled:hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
-        :disabled="
-          !profile.profile || profile.profile.average_rating < 0.8 || !data.allows_unrated_buyers
-        "
+        :disabled="cantBidReason != undefined"
       >
         <span class="text-lg font-semibold">{{ $t("products.bid") }}</span>
-        <span class="text-sm">${{ data.current_highest_bid?.price || data.starting_bid }}</span>
+        <span class="text-sm">${{ nextBidValue }}</span>
       </button>
 
       <button
-        class="flex cursor-pointer flex-col items-center justify-center gap-0 rounded-xl border-2 border-black bg-black px-4 py-2 text-white duration-200 hover:bg-white hover:text-black"
+        class="flex cursor-pointer flex-col items-center justify-center gap-0 rounded-xl border-2 border-black bg-black px-4 py-2 text-white duration-200 enabled:hover:bg-white enabled:hover:text-black disabled:cursor-not-allowed disabled:opacity-50"
+        :disabled="cantBidReason != undefined"
         v-if="data.bin_price"
       >
         <span class="text-lg font-semibold">{{ $t("products.bin") }}</span>

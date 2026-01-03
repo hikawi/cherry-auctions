@@ -1,11 +1,21 @@
 @import "tailwindcss";
 
-:deep(.ql-editor) {
-  font-family: --var(--font-chiron);
+.ql-editor {
+  font-family: var(--font-chiron) !important;
 }
 
-:deep(.ql-toolbar) {
-  font-family: --var(--font-chiron);
+.ql-toolbar {
+  font-family: var(--font-chiron) !important;
+}
+
+.prose {
+  ul li {
+    @apply list-inside list-disc;
+  }
+
+  ol li {
+    @apply list-inside list-decimal;
+  }
 }
 
 @theme {

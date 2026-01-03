@@ -11,3 +11,11 @@ func Each[T any, R any](input []T, mapper func(T) R) []R {
 	}
 	return result
 }
+
+func EachAddress[T any, R any](input []T, mapper func(*T) R) []R {
+	var result []R
+	for _, val := range input {
+		result = append(result, mapper(&val))
+	}
+	return result
+}

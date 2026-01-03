@@ -108,6 +108,11 @@ const router = createRouter({
       component: () => import("../pages/403Page.vue"),
     },
     {
+      name: "500",
+      path: "/500",
+      component: () => import("../pages/500Page.vue"),
+    },
+    {
       path: "/:pathMatch(.*)*",
       component: () => import("../pages/404Page.vue"),
     },

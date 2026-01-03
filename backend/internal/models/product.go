@@ -19,22 +19,25 @@ type Product struct {
 	AutoExtendsTime     bool      `gorm:"not null;default:true"`
 	ExpiredAt           time.Time `gorm:"not null"`
 
-	ProductImages       []ProductImage `gorm:"foreignKey:ProductID"`
-	Categories          []Category     `gorm:"many2many:products_categories"`
-	Questions           []Question
-	Bids                []Bid
-	SellerID            uint `gorm:"not null"`
-	Seller              User
+	ProductImages      []ProductImage `gorm:"foreignKey:ProductID"`
+	Categories         []Category     `gorm:"many2many:products_categories"`
+	Questions          []Question
+	Bids               []Bid
+	DescriptionChanges []DescriptionChange `gorm:"foreignKey:ProductID"`
+
+	SellerID uint `gorm:"not null"`
+	Seller   User
+
 	CurrentHighestBid   *Bid
 	CurrentHighestBidID *uint `gorm:"default:null"`
-	BidsCount           int   `gorm:"default:0;not null"`
 
+	BidsCount    int    `gorm:"default:0;not null"`
 	SearchVector string `gorm:"type:tsvector;index:,type:gin"`
 	IsFavorite   bool   `gorm:"-"`
 }
 
 // Courtesy of AI.
-func (p *Product) BeforeSave(tx *gorm.DB) (err error) {
+func (p *Product) AfterSave(tx *gorm.DB) (err error) {
 	// We concatenate Name and Description into the SearchVector.
 	// to_tsvector transforms the text into searchable tokens.
 	// 'simple' dictionary is used to avoid aggressive stemming in multi-language setups.

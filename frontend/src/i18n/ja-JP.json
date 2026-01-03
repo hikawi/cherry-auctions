@@ -79,6 +79,7 @@
     "home": "ホーム",
     "all_products": "商品一覧",
     "acknowledgements": "謝辞",
+    "my_auctions": "マイオークション",
     "my_bids": "入札履歴",
     "my_reviews": "レビュー管理",
     "my_products": "商品一覧",
@@ -147,8 +148,8 @@
     "bids_count_plural": "{count}件の入札",
     "bids_count_singular": "{count}件の入札",
     "expires_in": "残り{in}",
-    "expires_at": "{at}まで",
-    "created_at": "出品日時　{at}",
+    "expires_at": "終了日時 {at}",
+    "created_at": "出品日時 {at}",
     "new": "NEW",
     "bid": "入札",
     "bin": "即決購入",
@@ -161,7 +162,12 @@
     "bids": "すべての入札",
     "bid_list": "{name}さんが{price}で{at}に入札しました",
     "cant_bid": "入札することができません",
-    "description": "商品説明"
+    "description": "商品説明",
+    "add_remark": "説明を追伸",
+    "change_description": "追伸追加",
+    "cant_bid_logged_out": "入札したい際、ログインしてください",
+    "cant_bid_self": "自分のオークションを入札できません",
+    "cant_bid_no_rating": "お客様の評価は0.8以下ため、入札できません"
   },
   "profile": {
     "profile": "プロフィール",
@@ -197,6 +203,10 @@
     "404": {
       "title": "404 見つかりません",
       "description": "お探しのページは存在しないか、移動した可能性があります"
+    },
+    "500": {
+      "title": "500 サーバーエラー",
+      "description": "サーバー側にエラーが発生してしまったため、今は利用できません"
     }
   }
 }
