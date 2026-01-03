@@ -20,7 +20,7 @@ func NewQuestionRepository(db *gorm.DB) *QuestionRepository {
 func (r *QuestionRepository) GetQuestionByID(ctx context.Context, id uint) (models.Question, error) {
 	return gorm.G[models.Question](r.db).
 		Preload("User", nil).
-		Preload("Product.Bids", nil).
+		Preload("Product.Bids.User", nil).
 		Where("id = ?", id).
 		First(ctx)
 }

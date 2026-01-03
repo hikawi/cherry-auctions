@@ -199,7 +199,7 @@ parent: Other Specifications
 - [ ] Auction expired to seller
 - [ ] Auction ended to seller and winner
 - [ ] User questions, to the bidder
-- [ ] Seller answers, to the questioner, and all current bidders, or questioned
+- [x] Seller answers, to the questioner, and all current bidders, or questioned
 
 ### 6.2. Automated bidding (Optional)
 

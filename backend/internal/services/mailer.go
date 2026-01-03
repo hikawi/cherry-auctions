@@ -7,11 +7,13 @@ import (
 	"time"
 
 	"gopkg.in/gomail.v2"
+	"luny.dev/cherryauctions/internal/config"
 	"luny.dev/cherryauctions/internal/models"
 	"luny.dev/cherryauctions/internal/repositories"
 )
 
 type MailerService struct {
+	cfg          *config.Config
 	mailer       *gomail.Dialer
 	productRepo  *repositories.ProductRepository
 	questionRepo *repositories.QuestionRepository
@@ -32,6 +34,8 @@ const (
   <p>
     For product "%s", there's a question related.
   </p>
+
+	<a href="%s">Link to product</a>
 
   <hr />
 
@@ -68,6 +72,8 @@ const answerEmailTemplate = `
 
   <hr />
 
+	<a href="%s">Link to product</a>
+
   <p>
     <strong>Q:</strong><br />
     <span style="white-space: pre-wrap;">%s</span>
@@ -88,11 +94,12 @@ const answerEmailTemplate = `
 `
 
 func NewMailerService(
+	config *config.Config,
 	mailer *gomail.Dialer,
 	productRepo *repositories.ProductRepository,
 	questionRepo *repositories.QuestionRepository,
 ) *MailerService {
-	return &MailerService{mailer: mailer, productRepo: productRepo, questionRepo: questionRepo}
+	return &MailerService{cfg: config, mailer: mailer, productRepo: productRepo, questionRepo: questionRepo}
 }
 
 func (s *MailerService) SendQuestionEmail(product *models.Product, question string, user string) {
@@ -109,9 +116,12 @@ func (s *MailerService) SendQuestionEmail(product *models.Product, question stri
 		)
 		message.SetHeader("Subject", "CherryAuctions - New Question")
 
+		url := fmt.Sprintf("%s/products/%d", s.cfg.CORS.Origins, product.ID)
+
 		body := fmt.Sprintf(
 			questionEmailTemplate,
 			product.Name,
+			url,
 			question,
 			user,
 		)
@@ -146,19 +156,23 @@ func (s *MailerService) SendAnswerEmail(questionID uint) {
 		}
 
 		if len(bidderEmails) == 0 {
+			fmt.Println("oh no no emails to send, what the hell!")
 			return
 		}
 
+		url := fmt.Sprintf("%s/products/%d", s.cfg.CORS.Origins, question.Product.ID)
 		message := gomail.NewMessage()
 		message.SetHeader("From", fromHeader)
 
-		if question.Product.Seller.Email != nil {
+		if question.User.Email != nil {
 			message.SetAddressHeader(
 				"To",
-				*question.Product.Seller.Email,
-				*question.Product.Seller.Name,
+				*question.User.Email,
+				*question.User.Name,
 			)
 		}
+
+		fmt.Println("wee4")
 
 		message.SetHeader("Bcc", bidderEmails...)
 		message.SetHeader("Subject", "CherryAuctions - Question Answered")
@@ -166,6 +180,7 @@ func (s *MailerService) SendAnswerEmail(questionID uint) {
 		body := fmt.Sprintf(
 			answerEmailTemplate,
 			question.Product.Name,
+			url,
 			question.Content,
 			question.Answer.String,
 		)

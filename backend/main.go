@@ -54,7 +54,7 @@ func main() {
 	captchaService := &services.CaptchaService{RecaptchaSecret: cfg.RecaptchaSecret}
 	middlewareService := &services.MiddlewareService{JWTService: jwtService}
 	s3Service := services.NewS3Service(cfg.AWS.BucketName, s3Client)
-	mailerService := services.NewMailerService(mailDialer, productRepo, questionRepo)
+	mailerService := services.NewMailerService(cfg, mailDialer, productRepo, questionRepo)
 
 	// Weird to do this even in production.
 	infra.MigrateModels(db)
