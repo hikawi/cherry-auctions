@@ -500,6 +500,17 @@
                     "products"
                 ],
                 "summary": "Posts a new product.",
+                "parameters": [
+                    {
+                        "description": "New product body",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/products.PostProductBody"
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "Successfully created an auction",
@@ -558,6 +569,17 @@
                     "products"
                 ],
                 "summary": "Posts a new product's description change.",
+                "parameters": [
+                    {
+                        "description": "New product description body",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/products.PostProductDescriptionBody"
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "Successfully added a postscript remark",
@@ -801,6 +823,139 @@
                     },
                     "404": {
                         "description": "The server couldn't find the requested product",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "The server could not make the request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/questions": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Creates a new question to a product.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "questions"
+                ],
+                "summary": "Posts a question to a product.",
+                "parameters": [
+                    {
+                        "description": "New question body",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/questions.PostQuestionBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Added a new question",
+                        "schema": {
+                            "$ref": "#/definitions/shared.MessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "When the request is invalid",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "When the user is unauthenticated",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "When the user is the seller",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "The server could not make the request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/questions/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Answers a question to the product.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "questions"
+                ],
+                "summary": "Answers a question.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Question ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Question Body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/questions.PutQuestionBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Added an answer",
+                        "schema": {
+                            "$ref": "#/definitions/shared.MessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "When the request is invalid",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "When the user is unauthenticated",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "When the user isn't the seller",
                         "schema": {
                             "$ref": "#/definitions/shared.ErrorResponse"
                         }
@@ -1396,6 +1551,25 @@
                 }
             }
         },
+        "products.PostProductBody": {
+            "type": "object"
+        },
+        "products.PostProductDescriptionBody": {
+            "type": "object",
+            "required": [
+                "description",
+                "id"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "minLength": 50
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
         "products.ProductDTO": {
             "type": "object",
             "properties": {
@@ -1481,6 +1655,9 @@
                 "email": {
                     "type": "string"
                 },
+                "id": {
+                    "type": "integer"
+                },
                 "name": {
                     "type": "string"
                 }
@@ -1506,6 +1683,25 @@
                 },
                 "user": {
                     "$ref": "#/definitions/products.ProfileDTO"
+                }
+            }
+        },
+        "questions.PostQuestionBody": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "product_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "questions.PutQuestionBody": {
+            "type": "object",
+            "properties": {
+                "answer": {
+                    "type": "string"
                 }
             }
         },

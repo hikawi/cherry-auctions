@@ -45,6 +45,7 @@ func main() {
 	userRepo := &repositories.UserRepository{DB: db, RoleRepository: roleRepo}
 	refreshTokenRepo := &repositories.RefreshTokenRepository{DB: db}
 	productRepo := &repositories.ProductRepository{DB: db}
+	questionRepo := repositories.NewQuestionRepository(db)
 
 	// Setup services here
 	jwtService := &services.JWTService{JWTDomain: cfg.Domain, JWTAudience: cfg.JWT.Audience, JWTSecretKey: cfg.JWT.Secret, JWTExpiry: cfg.JWT.Expiry}
@@ -53,6 +54,7 @@ func main() {
 	captchaService := &services.CaptchaService{RecaptchaSecret: cfg.RecaptchaSecret}
 	middlewareService := &services.MiddlewareService{JWTService: jwtService}
 	s3Service := services.NewS3Service(cfg.AWS.BucketName, s3Client)
+	mailerService := services.NewMailerService(mailDialer, productRepo, questionRepo)
 
 	// Weird to do this even in production.
 	infra.MigrateModels(db)
@@ -73,6 +75,7 @@ func main() {
 			CaptchaService:    captchaService,
 			MiddlewareService: middlewareService,
 			S3Service:         s3Service,
+			MailerService:     mailerService,
 		},
 		Repositories: repositories.RepositoryRegistry{
 			CategoryRepository:     categoryRepo,
@@ -80,6 +83,7 @@ func main() {
 			RoleRepository:         roleRepo,
 			RefreshTokenRepository: refreshTokenRepo,
 			ProductRepository:      productRepo,
+			QuestionRepository:     questionRepo,
 		},
 	})
 

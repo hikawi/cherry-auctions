@@ -135,7 +135,7 @@ parent: Other Specifications
 
 ### 3.4. Answer a User
 
-- [ ] At details page
+- [x] At details page
 
 ### 3.5. Profile Management
 

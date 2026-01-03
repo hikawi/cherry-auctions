@@ -6,4 +6,5 @@ type RepositoryRegistry struct {
 	RoleRepository         *RoleRepository
 	RefreshTokenRepository *RefreshTokenRepository
 	ProductRepository      *ProductRepository
+	QuestionRepository     *QuestionRepository
 }

@@ -13,9 +13,9 @@ import (
 	"luny.dev/cherryauctions/internal/routes/shared"
 )
 
-func (h *AuthHandler) assignJWTKeyPair(g *gin.Context, loggingBody any, id uint, email, roles string, subscription *time.Time) {
+func (h *AuthHandler) assignJWTKeyPair(g *gin.Context, loggingBody any, id uint, name, email, roles string, subscription *time.Time) {
 	// Generate a JWT key pair.
-	accessToken, err := h.JWTService.SignJWT(id, email, roles, subscription)
+	accessToken, err := h.JWTService.SignJWT(id, name, email, roles, subscription)
 	if err != nil {
 		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusInternalServerError, "error": "server can't sign jwt", "body": loggingBody})
 		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "server can't sign jwt"})

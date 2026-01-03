@@ -74,7 +74,7 @@ func (h *AuthHandler) PostLogin(g *gin.Context) {
 		subscription = &user.Subscriptions[0].ExpiredAt
 	}
 	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusOK, "message": "user successfully logged in", "body": loggingBody})
-	h.assignJWTKeyPair(g, loggingBody, user.ID, *user.Email, h.toRoleString(user.Roles), subscription)
+	h.assignJWTKeyPair(g, loggingBody, user.ID, *user.Name, *user.Email, h.toRoleString(user.Roles), subscription)
 }
 
 // PostRegister POST /auth/register
@@ -196,7 +196,7 @@ func (h *AuthHandler) PostRefresh(g *gin.Context) {
 	if len(token.User.Subscriptions) > 0 {
 		subscription = &token.User.Subscriptions[0].ExpiredAt
 	}
-	accessToken, err := h.JWTService.SignJWT(token.User.ID, *token.User.Email, h.toRoleString(token.User.Roles), subscription)
+	accessToken, err := h.JWTService.SignJWT(token.User.ID, *token.User.Name, *token.User.Email, h.toRoleString(token.User.Roles), subscription)
 	if err != nil {
 		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusInternalServerError, "error": err.Error()})
 		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "server can't sign jwt"})

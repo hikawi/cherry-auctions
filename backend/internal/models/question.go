@@ -12,6 +12,7 @@ type Question struct {
 	Answer  sql.NullString
 
 	ProductID uint
+	Product   Product
 	UserID    uint
 	User      User // Who asked
 }

@@ -223,5 +223,5 @@ func (r *ProductRepository) CreateDescriptionChange(ctx context.Context, product
 	return r.DB.WithContext(ctx).
 		Model(&models.Product{Model: gorm.Model{ID: productID}}).
 		Association("DescriptionChanges").
-		Append(&models.DescriptionChange{Changes: productDescription, ProductID: productID})
+		Append(&models.DescriptionChange{Changes: productDescription})
 }

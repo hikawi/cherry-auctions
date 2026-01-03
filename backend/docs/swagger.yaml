@@ -203,6 +203,19 @@ definitions:
           $ref: '#/definitions/products.ProductDTO'
         type: array
     type: object
+  products.PostProductBody:
+    type: object
+  products.PostProductDescriptionBody:
+    properties:
+      description:
+        minLength: 50
+        type: string
+      id:
+        type: integer
+    required:
+    - description
+    - id
+    type: object
   products.ProductDTO:
     properties:
       allows_unrated_buyers:
@@ -259,6 +272,8 @@ definitions:
         type: string
       email:
         type: string
+      id:
+        type: integer
       name:
         type: string
     type: object
@@ -276,6 +291,18 @@ definitions:
         type: string
       user:
         $ref: '#/definitions/products.ProfileDTO'
+    type: object
+  questions.PostQuestionBody:
+    properties:
+      content:
+        type: string
+      product_id:
+        type: integer
+    type: object
+  questions.PutQuestionBody:
+    properties:
+      answer:
+        type: string
     type: object
   shared.ErrorResponse:
     properties:
@@ -670,6 +697,13 @@ paths:
       consumes:
       - multipart/form-data
       description: Posts a new product up for auctions.
+      parameters:
+      - description: New product body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/products.PostProductBody'
       produces:
       - application/json
       responses:
@@ -735,6 +769,13 @@ paths:
       - application/json
       description: The description can't be changed entirely, but there will be a
         post-script remark added to it.
+      parameters:
+      - description: New product description body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/products.PostProductDescriptionBody'
       produces:
       - application/json
       responses:
@@ -881,6 +922,91 @@ paths:
       summary: Retrieves a list of products of top-categories.
       tags:
       - products
+  /questions:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new question to a product.
+      parameters:
+      - description: New question body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/questions.PostQuestionBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Added a new question
+          schema:
+            $ref: '#/definitions/shared.MessageResponse'
+        "400":
+          description: When the request is invalid
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "401":
+          description: When the user is unauthenticated
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "403":
+          description: When the user is the seller
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: The server could not make the request
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Posts a question to a product.
+      tags:
+      - questions
+  /questions/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Answers a question to the product.
+      parameters:
+      - description: Question ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Question Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/questions.PutQuestionBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Added an answer
+          schema:
+            $ref: '#/definitions/shared.MessageResponse'
+        "400":
+          description: When the request is invalid
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "401":
+          description: When the user is unauthenticated
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "403":
+          description: When the user isn't the seller
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: The server could not make the request
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Answers a question.
+      tags:
+      - questions
   /users:
     get:
       description: Retrieves all users.

@@ -7,4 +7,5 @@ type ServiceRegistry struct {
 	PasswordService   *PasswordService
 	MiddlewareService *MiddlewareService
 	S3Service         *S3Service
+	MailerService     *MailerService
 }
