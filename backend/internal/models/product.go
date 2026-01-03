@@ -37,13 +37,11 @@ type Product struct {
 }
 
 // Courtesy of AI.
-func (p *Product) AfterSave(tx *gorm.DB) (err error) {
-	// We concatenate Name and Description into the SearchVector.
-	// to_tsvector transforms the text into searchable tokens.
-	// 'simple' dictionary is used to avoid aggressive stemming in multi-language setups.
+func (p *Product) BeforeSave(tx *gorm.DB) (err error) {
 	content := p.Name + " " + p.Description
 
-	tx.Statement.SetColumn("SearchVector",
+	tx.Statement.SetColumn(
+		"SearchVector",
 		gorm.Expr("to_tsvector('simple', ?)", content),
 	)
 
