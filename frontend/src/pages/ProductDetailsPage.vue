@@ -116,7 +116,7 @@ onMounted(() => {
       <ProductBidsSection :data />
 
       <!-- Questions Section -->
-      <ProductQuestionsSection :data />
+      <ProductQuestionsSection :data @refresh="fetchProduct" />
 
       <!-- Similar products Section -->
       <section class="flex w-full flex-col gap-4" v-if="data.similar_products">

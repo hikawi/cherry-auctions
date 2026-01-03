@@ -18,6 +18,7 @@ import (
 	"luny.dev/cherryauctions/internal/routes/auth"
 	"luny.dev/cherryauctions/internal/routes/categories"
 	"luny.dev/cherryauctions/internal/routes/products"
+	"luny.dev/cherryauctions/internal/routes/questions"
 	"luny.dev/cherryauctions/internal/routes/users"
 	"luny.dev/cherryauctions/internal/services"
 	"luny.dev/cherryauctions/pkg/env"
@@ -88,6 +89,14 @@ func SetupRoutes(server *gin.Engine, deps ServerDependency) {
 		S3PermURL:         deps.Config.AWS.S3PermURL,
 	}
 	productsHandler.SetupRouter(versionedGroup)
+
+	questionsHandler := questions.NewQuestionsHandler(
+		deps.Services.MailerService,
+		deps.Services.MiddlewareService,
+		deps.Repositories.QuestionRepository,
+		deps.Repositories.ProductRepository,
+	)
+	questionsHandler.SetupRouter(versionedGroup)
 
 	versionedGroup.GET("/health", GetHealth)
 

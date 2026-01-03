@@ -363,12 +363,13 @@ func (h *ProductsHandler) uploadImages(ctx context.Context, body PostProductBody
 //	@security		ApiKeyAuth
 //	@accept			multipart/form-data
 //	@produce		json
-//	@success		201	{object}	shared.MessageResponse	"Successfully created an auction"
-//	@failure		400	{object}	shared.ErrorResponse	"When the multipart data is invalid"
-//	@failure		401	{object}	shared.ErrorResponse	"When the user is unauthorized"
-//	@failure		403	{object}	shared.ErrorResponse	"When the user isn't subscribed"
-//	@failure		404	{object}	shared.ErrorResponse	"The server couldn't find the requested product"
-//	@failure		500	{object}	shared.ErrorResponse	"The server could not make the request"
+//	@param			data	body		products.PostProductBody	true	"New product body"
+//	@success		201		{object}	shared.MessageResponse		"Successfully created an auction"
+//	@failure		400		{object}	shared.ErrorResponse		"When the multipart data is invalid"
+//	@failure		401		{object}	shared.ErrorResponse		"When the user is unauthorized"
+//	@failure		403		{object}	shared.ErrorResponse		"When the user isn't subscribed"
+//	@failure		404		{object}	shared.ErrorResponse		"The server couldn't find the requested product"
+//	@failure		500		{object}	shared.ErrorResponse		"The server could not make the request"
 //	@router			/products [post]
 func (h *ProductsHandler) PostProduct(g *gin.Context) {
 	ctx := g.Request.Context()
@@ -446,11 +447,12 @@ func (h *ProductsHandler) PostProduct(g *gin.Context) {
 //	@security		ApiKeyAuth
 //	@accept			json
 //	@produce		json
-//	@success		201	{object}	shared.MessageResponse	"Successfully added a postscript remark"
-//	@failure		400	{object}	shared.ErrorResponse	"When the request is invalid"
-//	@failure		401	{object}	shared.ErrorResponse	"When the user is unauthenticated"
-//	@failure		403	{object}	shared.ErrorResponse	"When the user can't edit a product or the product does not exist"
-//	@failure		500	{object}	shared.ErrorResponse	"The server could not make the request"
+//	@param			data	body		products.PostProductDescriptionBody	true	"New product description body"
+//	@success		201		{object}	shared.MessageResponse				"Successfully added a postscript remark"
+//	@failure		400		{object}	shared.ErrorResponse				"When the request is invalid"
+//	@failure		401		{object}	shared.ErrorResponse				"When the user is unauthenticated"
+//	@failure		403		{object}	shared.ErrorResponse				"When the user can't edit a product or the product does not exist"
+//	@failure		500		{object}	shared.ErrorResponse				"The server could not make the request"
 //	@router			/products/description [post]
 func (h *ProductsHandler) PostProductDescription(g *gin.Context) {
 	ctx := g.Request.Context()

@@ -27,4 +27,8 @@ export const endpoints = {
     avatar: `${api}/v1/users/avatar`,
     profile: `${api}/v1/users/profile`,
   },
+  questions: {
+    index: `${api}/v1/questions`,
+    id: (id: unknown) => `${api}/v1/questions/${id}`,
+  },
 };

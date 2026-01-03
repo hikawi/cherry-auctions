@@ -1,10 +1,18 @@
 <script setup lang="ts">
+import { useProfileStore } from "@/stores/profile";
 import type { Product } from "@/types";
 import { LucideReply } from "lucide-vue-next";
 import AvatarCircle from "../shared/AvatarCircle.vue";
+import ProductAnswerBlock from "./ProductAnswerBlock.vue";
+
+const profile = useProfileStore();
 
 defineProps<{
   data: Product & { similar_products?: Product[]; categories: { id: number; name: string }[] };
+}>();
+
+defineEmits<{
+  refresh: [];
 }>();
 </script>
 
@@ -38,10 +46,19 @@ defineProps<{
 
           <p>{{ question.answer }}</p>
         </div>
+
+        <ProductAnswerBlock
+          v-if="!question.answer && profile.profile?.id == data.seller.id"
+          :question
+          @refresh="$emit('refresh')"
+        />
       </div>
     </div>
     <p v-else class="w-full px-4 py-6 text-center">
       {{ $t("products.no_questions") }}
     </p>
+
+    <!-- Part to ask a question -->
+    <div class="flex w-full" v-if="data.seller.id != profile.profile?.id"></div>
   </section>
 </template>
