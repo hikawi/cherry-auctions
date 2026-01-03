@@ -14,6 +14,26 @@ truncate table refresh_tokens restart identity cascade;
 
 CREATE INDEX IF NOT EXISTS idx_products_name_trgm ON products USING gin (name gin_trgm_ops);
 
+--- Add a trigger to update search vector
+
+CREATE OR REPLACE FUNCTION update_product_search_vector()
+RETURNS trigger AS $$
+BEGIN
+  NEW.search_vector :=
+    to_tsvector(
+      'simple',
+      coalesce(NEW.name, '') || ' ' || coalesce(NEW.description, '')
+    );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER product_search_vector_trigger
+BEFORE INSERT OR UPDATE
+ON products
+FOR EACH ROW
+EXECUTE FUNCTION update_product_search_vector();
+
 -- Main User
 
 INSERT INTO users (name, email, password, oauth_type, created_at, updated_at) VALUES ('Admin', 'admin@example.com', '$argon2id$v=19$m=65536,t=2,p=4$y7rT7dfnqb4NJOeqhVHEoA$UIaO/jNFwRH/Oz1qXcTOjzMpOSM+il1p835bbliZ6IM', 'none', now(), now());
