@@ -10,7 +10,6 @@ const name = ref("");
 const email = ref("");
 const password = ref("");
 const confirmPassword = ref("");
-const acceptPolicy = ref(false);
 
 const loading = ref(false);
 const error = ref("");
@@ -26,12 +25,6 @@ useScript({
 async function register() {
   loading.value = true;
   error.value = "";
-
-  if (!acceptPolicy.value) {
-    loading.value = false;
-    error.value = "register.accept_privacy_required";
-    return;
-  }
 
   // Setup recaptcha
   const captchaPromise = await grecaptcha.execute(import.meta.env.VITE_SITE_KEY, {
@@ -131,14 +124,6 @@ async function register() {
           class="hover:ring-claret-200 focus:ring-claret-600 w-full rounded-lg border border-zinc-300 px-4 py-2 duration-200 outline-none hover:ring-2 focus:ring-2"
         />
       </label>
-
-      <label class="flex items-center gap-2">
-        <input type="checkbox" v-model="acceptPolicy" class="h-4 w-4 rounded border-zinc-300" />
-        <span class="text-sm">
-          {{ t("register.accept_privacy") }}
-          <a href="/privacy" class="ml-1 underline">{{ t("register.privacy_policy") }}</a>
-        </span>
-      </label>
     </div>
 
     <p
@@ -152,14 +137,14 @@ async function register() {
 
     <button
       @click="register"
-      :disabled="loading || !acceptPolicy"
+      :disabled="loading"
       class="bg-claret-600 disabled:bg-claret-700 border-claret-600 enabled:hover:text-claret-600 disabled:border-claret-700 w-full cursor-pointer rounded-xl border-2 p-2 py-3 text-white transition-all duration-200 hover:shadow-md enabled:hover:bg-transparent disabled:cursor-progress disabled:opacity-50"
     >
       {{ loading ? t("register.loading") : t("register.action") }}
     </button>
-        <div class="w-full flex justify-center text-sm text-zinc-600">
+    <div class="flex w-full justify-center text-sm text-zinc-600">
       <span>{{ t("register.already_user") }}</span>
-      <router-link to="/login" class="ml-2 underline text-claret-600">
+      <router-link to="/login" class="text-claret-600 ml-2 underline">
         {{ t("register.login") }}
       </router-link>
     </div>

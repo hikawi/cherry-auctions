@@ -1,19 +1,42 @@
 <script setup lang="ts">
+import { useAuthFetch } from "@/hooks/use-auth-fetch";
 import { useProfileStore } from "@/stores/profile";
 import type { Product } from "@/types";
 import { LucideReply } from "lucide-vue-next";
+import { ref } from "vue";
 import AvatarCircle from "../shared/AvatarCircle.vue";
 import ProductAnswerBlock from "./ProductAnswerBlock.vue";
+import { endpoints } from "@/consts";
 
 const profile = useProfileStore();
+const { authFetch } = useAuthFetch();
 
-defineProps<{
+const props = defineProps<{
   data: Product & { similar_products?: Product[]; categories: { id: number; name: string }[] };
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   refresh: [];
 }>();
+
+const question = ref<string>();
+const loading = ref(false);
+
+async function ask() {
+  loading.value = true;
+
+  try {
+    const res = await authFetch(endpoints.questions.index, {
+      method: "POST",
+      body: JSON.stringify({ product_id: props.data.id, content: question.value }),
+    });
+    if (res.ok) {
+      emit("refresh");
+    }
+  } finally {
+    loading.value = false;
+  }
+}
 </script>
 
 <template>
@@ -59,6 +82,29 @@ defineEmits<{
     </p>
 
     <!-- Part to ask a question -->
-    <div class="flex w-full" v-if="data.seller.id != profile.profile?.id"></div>
+    <div
+      class="flex w-full flex-col items-center justify-center gap-2 sm:flex-row"
+      v-if="profile.profile && data.seller.id != profile.profile.id"
+    >
+      <div class="flex w-full flex-row items-center gap-2">
+        <AvatarCircle :name="profile.profile.name" :avatar_url="profile.profile.avatar_url" />
+
+        <input
+          type="text"
+          required
+          v-model="question"
+          :placeholder="$t('products.ask_a_question')"
+          class="focus:ring-claret-600 h-full w-full rounded-xl border border-zinc-300 px-4 py-2 duration-200 outline-none hover:border-zinc-500 focus:ring-2"
+        />
+      </div>
+
+      <button
+        class="bg-claret-600 enabled:hover:text-claret-600 border-claret-600 h-full w-full cursor-pointer rounded-xl border-2 px-4 py-2 font-semibold text-white duration-200 enabled:hover:bg-white disabled:cursor-not-allowed disabled:opacity-50 sm:w-fit"
+        :disabled="loading"
+        @click="ask"
+      >
+        {{ loading ? $t("products.asking") : $t("products.ask") }}
+      </button>
+    </div>
   </section>
 </template>

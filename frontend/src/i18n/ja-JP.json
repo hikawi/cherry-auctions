@@ -165,6 +165,9 @@
     "description": "商品説明",
     "add_remark": "説明を追伸",
     "change_description": "追伸追加",
+    "answer_question": "返信",
+    "ask_a_question": "出品者に質問",
+    "ask": "通信",
     "cant_bid_logged_out": "入札したい際、ログインしてください",
     "cant_bid_self": "自分のオークションを入札できません",
     "cant_bid_no_rating": "お客様の評価は0.8以下ため、入札できません"
