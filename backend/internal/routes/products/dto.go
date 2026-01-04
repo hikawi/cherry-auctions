@@ -226,6 +226,7 @@ type PostProductBody struct {
 	Name          string                  `form:"name" binding:"required,min=2" json:"name"`
 	Description   string                  `form:"description" binding:"required,min=50" json:"description"`
 	StartingBid   float64                 `form:"starting_bid" binding:"required,number,gt=0" json:"starting_bid"`
+	Categories    []uint                  `form:"categories" binding:"required,min=1" json:"categories"`
 	ProductImages []*multipart.FileHeader `form:"product_images" binding:"required" json:"product_images"`
 	StepBidValue  float64                 `form:"step_bid_value" binding:"required,number,gt=0" json:"step_bid_value"`
 	StepBidType   string                  `form:"step_bid_type" binding:"required,oneof=percentage fixed" json:"step_bid_type"`

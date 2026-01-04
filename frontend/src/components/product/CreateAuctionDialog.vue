@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { LucideX } from "lucide-vue-next";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import WYSIWYGInput from "../shared/inputs/WYSIWYGInput.vue";
 import z from "zod";
 import MultiImageInput from "../shared/inputs/MultiImageInput.vue";
@@ -9,12 +9,27 @@ import CheckboxInput from "../shared/inputs/CheckboxInput.vue";
 import TextInput from "../shared/inputs/TextInput.vue";
 import { useAuthFetch } from "@/hooks/use-auth-fetch";
 import { endpoints } from "@/consts";
+import type { Category } from "@/types";
+import SelectInput from "../shared/inputs/SelectInput.vue";
 
 const { authFetch } = useAuthFetch({ json: false });
+
+const props = defineProps<{
+  loading?: boolean;
+  categories?: Category[];
+}>();
+
+const emits = defineEmits<{
+  close: [];
+  status: [code: number];
+}>();
+
+const allowedFileTypes = ["image/png", "image/jpeg", "image/webp"];
 
 const name = ref<string>();
 const description = ref<string>();
 const productImages = ref<File[]>([]);
+const categoriesSelected = ref<string[]>([]);
 const startingBid = ref<string>();
 const stepBidType = ref<"percentage" | "fixed">("fixed");
 const stepBidValue = ref<string>();
@@ -24,17 +39,21 @@ const autoExtends = ref<boolean>(true);
 const expiredAt = ref<string>();
 
 const error = ref<string>();
+const categoryOptions = computed(() => {
+  const options: { value: string; label: string }[] = [];
 
-const allowedFileTypes = ["image/png", "image/jpeg", "image/webp"];
+  function traverse(categories: Category[]) {
+    for (const cat of categories) {
+      options.push({ value: cat.id.toString(), label: cat.name });
+      traverse(cat.subcategories);
+    }
+  }
 
-defineProps<{
-  loading?: boolean;
-}>();
-
-const emits = defineEmits<{
-  close: [];
-  status: [code: number];
-}>();
+  if (props.categories) {
+    traverse(props.categories);
+  }
+  return options;
+});
 
 async function confirm() {
   error.value = "";
@@ -43,6 +62,7 @@ async function confirm() {
     name: z.string(),
     description: z.string().min(50),
     product_images: z.array(z.file().refine((file) => allowedFileTypes.includes(file.type))).min(3),
+    categories: z.array(z.coerce.number()).min(1),
     starting_bid: z.coerce.number().min(0),
     step_bid_value:
       stepBidType.value == "percentage"
@@ -59,6 +79,7 @@ async function confirm() {
     name: name.value,
     description: description.value,
     product_images: productImages.value,
+    categories: categoriesSelected.value,
     starting_bid: startingBid.value,
     step_bid_value: stepBidValue.value,
     step_bid_type: stepBidType.value,
@@ -79,6 +100,7 @@ async function confirm() {
   data.data.product_images.forEach((file) => {
     formData.append("product_images", file);
   });
+  data.data.categories.forEach((cat) => formData.append("categories", cat.toString()));
   formData.append("starting_bid", data.data.starting_bid.toString());
   formData.append("step_bid_value", data.data.step_bid_value.toString());
   formData.append("step_bid_type", data.data.step_bid_type.toString());
@@ -115,6 +137,13 @@ async function confirm() {
         <WYSIWYGInput :label="$t('auctions.product_description')" required v-model="description" />
 
         <MultiImageInput :label="$t('auctions.product_images')" required v-model="productImages" />
+
+        <SelectInput
+          :options="categoryOptions"
+          :label="$t('auctions.categories')"
+          @add="(id) => (categoriesSelected = [...categoriesSelected, id])"
+          @remove="(id) => (categoriesSelected = categoriesSelected.filter((val) => val != id))"
+        />
 
         <TextInput
           :label="$t('auctions.starting_bid')"
