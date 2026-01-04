@@ -36,10 +36,9 @@ async function createDescriptionChange() {
   editError.value = undefined;
 
   try {
-    const res = await authFetch(endpoints.products.description, {
+    const res = await authFetch(endpoints.products.description(props.data.id), {
       method: "POST",
       body: JSON.stringify({
-        id: props.data.id,
         description: descriptionChange.value,
       }),
     });

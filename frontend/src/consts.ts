@@ -11,7 +11,7 @@ export const endpoints = {
     favorite: `${api}/v1/products/favorite`,
     top: `${api}/v1/products/top`,
     me: `${api}/v1/products/me`,
-    description: `${api}/v1/products/description`,
+    description: (id: unknown) => `${api}/v1/products/${id}/description`,
   },
   categories: {
     get: `${api}/v1/categories`,

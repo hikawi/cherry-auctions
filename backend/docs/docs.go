@@ -554,69 +554,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/products/description": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "The description can't be changed entirely, but there will be a post-script remark added to it.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "products"
-                ],
-                "summary": "Posts a new product's description change.",
-                "parameters": [
-                    {
-                        "description": "New product description body",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/products.PostProductDescriptionBody"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Successfully added a postscript remark",
-                        "schema": {
-                            "$ref": "#/definitions/shared.MessageResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "When the request is invalid",
-                        "schema": {
-                            "$ref": "#/definitions/shared.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "When the user is unauthenticated",
-                        "schema": {
-                            "$ref": "#/definitions/shared.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "When the user can't edit a product or the product does not exist",
-                        "schema": {
-                            "$ref": "#/definitions/shared.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "The server could not make the request",
-                        "schema": {
-                            "$ref": "#/definitions/shared.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/products/favorite": {
             "get": {
                 "security": [
@@ -826,6 +763,76 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "The server couldn't find the requested product",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "The server could not make the request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/products/{id}/description": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "The description can't be changed entirely, but there will be a post-script remark added to it.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Posts a new product's description change.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Product ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "New product description body",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/products.PostProductDescriptionBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Successfully added a postscript remark",
+                        "schema": {
+                            "$ref": "#/definitions/shared.MessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "When the request is invalid",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "When the user is unauthenticated",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "When the user can't edit a product or the product does not exist",
                         "schema": {
                             "$ref": "#/definitions/shared.ErrorResponse"
                         }
@@ -1560,16 +1567,12 @@ const docTemplate = `{
         "products.PostProductDescriptionBody": {
             "type": "object",
             "required": [
-                "description",
-                "id"
+                "description"
             ],
             "properties": {
                 "description": {
                     "type": "string",
                     "minLength": 50
-                },
-                "id": {
-                    "type": "integer"
                 }
             }
         },
@@ -1691,9 +1694,14 @@ const docTemplate = `{
         },
         "questions.PostQuestionBody": {
             "type": "object",
+            "required": [
+                "content",
+                "product_id"
+            ],
             "properties": {
                 "content": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 2
                 },
                 "product_id": {
                     "type": "integer"
@@ -1702,9 +1710,13 @@ const docTemplate = `{
         },
         "questions.PutQuestionBody": {
             "type": "object",
+            "required": [
+                "answer"
+            ],
             "properties": {
                 "answer": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 2
                 }
             }
         },

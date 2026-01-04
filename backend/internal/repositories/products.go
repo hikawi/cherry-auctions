@@ -100,6 +100,7 @@ func (r *ProductRepository) GetProductByID(ctx context.Context, id int) (models.
 		Preload("Categories", nil).
 		Preload("ProductImages", nil).
 		Preload("DescriptionChanges", nil).
+		Preload("DeniedBidders.User", nil).
 		Where("id = ?", id).
 		First(ctx)
 }

@@ -23,6 +23,7 @@ type Product struct {
 	Categories         []Category     `gorm:"many2many:products_categories"`
 	Questions          []Question
 	Bids               []Bid
+	DeniedBidders      []DeniedBidder
 	DescriptionChanges []DescriptionChange `gorm:"foreignKey:ProductID"`
 
 	SellerID uint `gorm:"not null"`
