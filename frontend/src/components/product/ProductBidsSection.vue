@@ -48,7 +48,7 @@ function createAbsoluteTime(time: string): string {
             {{
               $t("products.bid_list", {
                 name: truncate(bid.bidder.name || ""),
-                price: $n(bid.price, "currency"),
+                price: $n(bid.price / 100, "currency"),
                 at: createAbsoluteTime(bid.created_at),
               })
             }}

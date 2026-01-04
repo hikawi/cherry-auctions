@@ -102,21 +102,21 @@ async function toggleFavorite() {
     <div class="flex w-full flex-col gap-0">
       <div class="flex flex-row items-center justify-between" v-if="product.current_highest_bid">
         <span>{{ $t("products.current_bid") }}</span>
-        <span class="text-claret-600 text-xl font-semibold"
-          >${{ product.current_highest_bid.price.toLocaleString() }}</span
-        >
+        <span class="text-claret-600 text-xl font-semibold">{{
+          $n(product.current_highest_bid.price / 100, "currency")
+        }}</span>
       </div>
       <div class="flex flex-row items-center justify-between" v-else>
         <span>{{ $t("products.starting_bid") }}</span>
-        <span class="text-claret-600 text-xl font-semibold"
-          >${{ product.starting_bid.toLocaleString() }}</span
-        >
+        <span class="text-claret-600 text-xl font-semibold">{{
+          $n(product.starting_bid / 100, "currency")
+        }}</span>
       </div>
       <div class="flex flex-row items-center justify-between" v-if="product.bin_price">
         <span>{{ $t("products.bin_price") }}</span>
-        <span class="text-claret-600 text-xl font-semibold"
-          >${{ product.bin_price.toLocaleString() }}</span
-        >
+        <span class="text-claret-600 text-xl font-semibold">{{
+          $n(product.bin_price / 100, "currency")
+        }}</span>
       </div>
     </div>
 

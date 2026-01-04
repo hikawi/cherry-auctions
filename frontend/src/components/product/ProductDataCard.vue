@@ -47,7 +47,7 @@ const createdAtDisplay = computed(() => {
 });
 const nextBidValue = computed(() => {
   if (!props.data) {
-    return undefined;
+    return 0;
   }
 
   if (!props.data.current_highest_bid) {
@@ -55,10 +55,6 @@ const nextBidValue = computed(() => {
   }
 
   const highestBid = props.data.current_highest_bid.price;
-  if (props.data.step_bid_type == "percentage") {
-    return highestBid * (1 + props.data.step_bid_value);
-  }
-
   return highestBid + props.data.step_bid_value;
 });
 </script>
@@ -113,7 +109,7 @@ const nextBidValue = computed(() => {
         :disabled="cantBidReason != undefined"
       >
         <span class="text-lg font-semibold">{{ $t("products.bid") }}</span>
-        <span class="text-sm">${{ nextBidValue }}</span>
+        <span class="text-sm">{{ $n(nextBidValue / 100, "currency") }}</span>
       </button>
 
       <button
@@ -122,7 +118,7 @@ const nextBidValue = computed(() => {
         v-if="data.bin_price"
       >
         <span class="text-lg font-semibold">{{ $t("products.bin") }}</span>
-        <span class="text-sm">${{ data.bin_price }}</span>
+        <span class="text-sm">{{ $n(data.bin_price / 100, "currency") }}</span>
       </button>
     </div>
   </div>

@@ -3,9 +3,6 @@ package products
 import (
 	"mime/multipart"
 	"time"
-
-	"luny.dev/cherryauctions/internal/models"
-	"luny.dev/cherryauctions/pkg/ranges"
 )
 
 type ProductImageDTO struct {
@@ -29,7 +26,7 @@ type CategoryDTO struct {
 
 type BidDTO struct {
 	ID        uint       `json:"id"`
-	Price     float64    `json:"price"`
+	Price     int64      `json:"price"`
 	Automated bool       `json:"automated"`
 	Bidder    ProfileDTO `json:"bidder"`
 	CreatedAt time.Time  `json:"created_at"`
@@ -45,10 +42,9 @@ type DescriptionChangeDTO struct {
 type ProductDTO struct {
 	ID                  uint                   `json:"id"`
 	Name                string                 `json:"name"`
-	StartingBid         float64                `json:"starting_bid"`
-	StepBidType         string                 `json:"step_bid_type"`
-	StepBidValue        float64                `json:"step_bid_value"`
-	BINPrice            *float64               `json:"bin_price"`
+	StartingBid         int64                  `json:"starting_bid"`
+	StepBidValue        int64                  `json:"step_bid_value"`
+	BINPrice            *int64                 `json:"bin_price"`
 	Description         string                 `json:"description"`
 	ThumbnailURL        string                 `json:"thumbnail_url"`
 	AllowsUnratedBuyers bool                   `json:"allows_unrated_buyers"`
@@ -71,125 +67,6 @@ type QuestionDTO struct {
 	User      ProfileDTO `json:"user"`
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
-}
-
-func ToProfileDTO(m models.User) ProfileDTO {
-	return ProfileDTO{
-		ID:            m.ID,
-		Name:          m.Name,
-		Email:         m.Email,
-		AvatarURL:     m.AvatarURL,
-		AverageRating: m.AverageRating,
-	}
-}
-
-func ToCategoryDTO(m models.Category) CategoryDTO {
-	return CategoryDTO{
-		ID:       m.ID,
-		Name:     m.Name,
-		ParentID: m.ParentID,
-	}
-}
-
-func ToQuestionDTO(m models.Question) QuestionDTO {
-	var answer *string = nil
-	if m.Answer.Valid {
-		answer = &m.Answer.String
-	}
-
-	return QuestionDTO{
-		ID:        m.ID,
-		Content:   m.Content,
-		Answer:    answer,
-		User:      ToProfileDTO(m.User),
-		CreatedAt: m.CreatedAt,
-		UpdatedAt: m.UpdatedAt,
-	}
-}
-
-func ToQuestionDTOs(questions []models.Question) []QuestionDTO {
-	var dtos []QuestionDTO
-	for _, question := range questions {
-		dtos = append(dtos, ToQuestionDTO(question))
-	}
-	return dtos
-}
-
-func ToBidDTO(m models.Bid) BidDTO {
-	return BidDTO{
-		ID:        m.ID,
-		Price:     m.Price,
-		Automated: m.Automated,
-		Bidder:    ToProfileDTO(m.User),
-		CreatedAt: m.CreatedAt,
-		UpdatedAt: m.UpdatedAt,
-	}
-}
-
-func ToBidDTOs(bids []models.Bid) []BidDTO {
-	var dtos []BidDTO
-	for _, bid := range bids {
-		dtos = append(dtos, ToBidDTO(bid))
-	}
-	return dtos
-}
-
-func ToProductImageDTO(m models.ProductImage) ProductImageDTO {
-	return ProductImageDTO{
-		URL:     m.URL,
-		AltText: m.AltText,
-	}
-}
-
-func ToProductImageDTOs(images []models.ProductImage) []ProductImageDTO {
-	var dtos []ProductImageDTO
-	for _, img := range images {
-		dtos = append(dtos, ToProductImageDTO(img))
-	}
-	return dtos
-}
-
-func ToProductDTO(m *models.Product) ProductDTO {
-	var highestBid *BidDTO = nil
-	if m.CurrentHighestBid != nil {
-		dto := ToBidDTO(*m.CurrentHighestBid)
-		highestBid = &dto
-	}
-
-	return ProductDTO{
-		ID:                  m.ID,
-		Name:                m.Name,
-		StartingBid:         m.StartingBid,
-		StepBidType:         m.StepBidType,
-		StepBidValue:        m.StepBidValue,
-		BINPrice:            m.BINPrice,
-		Description:         m.Description,
-		ThumbnailURL:        m.ThumbnailURL,
-		AllowsUnratedBuyers: m.AllowsUnratedBuyers,
-		AutoExtendsTime:     m.AutoExtendsTime,
-		CreatedAt:           m.CreatedAt,
-		ExpiredAt:           m.ExpiredAt,
-		Seller:              ToProfileDTO(m.Seller),
-		CurrentHighestBid:   highestBid,
-		BidsCount:           m.BidsCount,
-		Categories:          ranges.Each(m.Categories, ToCategoryDTO),
-		DescriptionChanges: ranges.Each(m.DescriptionChanges, func(m models.DescriptionChange) DescriptionChangeDTO {
-			return DescriptionChangeDTO{
-				ID:        m.ID,
-				Changes:   m.Changes,
-				CreatedAt: m.CreatedAt,
-			}
-		}),
-		IsFavorite: m.IsFavorite,
-	}
-}
-
-func ToProductDTOs(products []*models.Product) []ProductDTO {
-	var dtos []ProductDTO
-	for _, product := range products {
-		dtos = append(dtos, ToProductDTO(product))
-	}
-	return dtos
 }
 
 type GetProductsQuery struct {
@@ -227,12 +104,11 @@ type GetProductDetailsResponse struct {
 type PostProductBody struct {
 	Name          string                  `form:"name" binding:"required,min=2" json:"name"`
 	Description   string                  `form:"description" binding:"required,min=50" json:"description"`
-	StartingBid   float64                 `form:"starting_bid" binding:"required,number,gt=0" json:"starting_bid"`
+	StartingBid   int64                   `form:"starting_bid" binding:"required,number,gt=0" json:"starting_bid"`
 	Categories    []uint                  `form:"categories" binding:"required,min=1" json:"categories"`
 	ProductImages []*multipart.FileHeader `form:"product_images" binding:"required" json:"product_images"`
-	StepBidValue  float64                 `form:"step_bid_value" binding:"required,number,gt=0" json:"step_bid_value"`
-	StepBidType   string                  `form:"step_bid_type" binding:"required,oneof=percentage fixed" json:"step_bid_type"`
-	BINPrice      *float64                `form:"bin_price" binding:"omitempty,number,gt=0" json:"bin_price"`
+	StepBidValue  int64                   `form:"step_bid_value" binding:"required,number,gt=0" json:"step_bid_value"`
+	BINPrice      *int64                  `form:"bin_price" binding:"omitempty,number,gt=0" json:"bin_price"`
 	AllowsUnrated bool                    `form:"allows_unrated" json:"allows_unrated"`
 	AutoExtends   bool                    `form:"auto_extends" json:"auto_extends"`
 	ExpiredAt     time.Time               `form:"expired_at" binding:"required,gt" json:"expired_at"`
@@ -245,4 +121,8 @@ type PostProductDescriptionBody struct {
 type GetMyProductsQuery struct {
 	Page    int `form:"page" binding:"number,gt=0,omitempty" json:"page"`
 	PerPage int `form:"per_page" binding:"number,gt=0,omitempty" json:"per_page"`
+}
+
+type PostBidBody struct {
+	BidAmount int64 `form:"bid" json:"bid" binding:"number,gt=0,required"`
 }

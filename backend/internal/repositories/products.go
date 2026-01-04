@@ -2,9 +2,12 @@ package repositories
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"luny.dev/cherryauctions/internal/models"
 )
 
@@ -225,4 +228,42 @@ func (r *ProductRepository) CreateDescriptionChange(ctx context.Context, product
 		Model(&models.Product{Model: gorm.Model{ID: productID}}).
 		Association("DescriptionChanges").
 		Append(&models.DescriptionChange{Changes: productDescription})
+}
+
+func (r *ProductRepository) CreateBid(ctx context.Context, productID uint, userID uint, bidAmount int64) error {
+	return r.DB.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		// Retrieve the product about to update
+		product := models.Product{}
+		err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
+			Model(&models.Product{}).
+			Preload("CurrentHighestBid").
+			Where("id = ?", productID).
+			First(&product).
+			Error
+		if err != nil {
+			return err
+		}
+
+		// Check if it is the highest price.
+		// Whether it makes sense (based on step bid is on the service, not this I think)
+		if (product.CurrentHighestBid != nil && product.CurrentHighestBid.Price > bidAmount) || bidAmount < product.StartingBid {
+			return fmt.Errorf("bid is not high enough")
+		}
+
+		// Now try to insert into the bids table I guess.
+		bid := models.Bid{Price: bidAmount, UserID: userID, ProductID: product.ID}
+		err = tx.Model(&bid).Create(&bid).Error
+		if err != nil {
+			return err
+		}
+
+		// Now mark the bids as counted.
+		return tx.Model(&models.Product{Model: gorm.Model{ID: productID}}).
+			Where("id = ?", productID).
+			UpdateColumns(gin.H{
+				"CurrentHighestBidID": bid.ID,
+				"BidsCount":           gorm.Expr("bids_count + 1"),
+			}).
+			Error
+	})
 }
