@@ -210,11 +210,8 @@ definitions:
       description:
         minLength: 50
         type: string
-      id:
-        type: integer
     required:
     - description
-    - id
     type: object
   products.ProductDTO:
     properties:
@@ -295,14 +292,21 @@ definitions:
   questions.PostQuestionBody:
     properties:
       content:
+        minLength: 2
         type: string
       product_id:
         type: integer
+    required:
+    - content
+    - product_id
     type: object
   questions.PutQuestionBody:
     properties:
       answer:
+        minLength: 2
         type: string
+    required:
+    - answer
     type: object
   shared.ErrorResponse:
     properties:
@@ -763,13 +767,18 @@ paths:
       summary: Retrieves details on a single product.
       tags:
       - products
-  /products/description:
+  /products/{id}/description:
     post:
       consumes:
       - application/json
       description: The description can't be changed entirely, but there will be a
         post-script remark added to it.
       parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
       - description: New product description body
         in: body
         name: data

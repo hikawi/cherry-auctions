@@ -451,17 +451,26 @@ func (h *ProductsHandler) PostProduct(g *gin.Context) {
 //	@security		ApiKeyAuth
 //	@accept			json
 //	@produce		json
+//	@param			id		path		int									true	"Product ID"
 //	@param			data	body		products.PostProductDescriptionBody	true	"New product description body"
 //	@success		201		{object}	shared.MessageResponse				"Successfully added a postscript remark"
 //	@failure		400		{object}	shared.ErrorResponse				"When the request is invalid"
 //	@failure		401		{object}	shared.ErrorResponse				"When the user is unauthenticated"
 //	@failure		403		{object}	shared.ErrorResponse				"When the user can't edit a product or the product does not exist"
 //	@failure		500		{object}	shared.ErrorResponse				"The server could not make the request"
-//	@router			/products/description [post]
+//	@router			/products/{id}/description [post]
 func (h *ProductsHandler) PostProductDescription(g *gin.Context) {
 	ctx := g.Request.Context()
 	claimsAny, _ := g.Get("claims")
 	claims := claimsAny.(*services.JWTSubject)
+
+	paramId := g.Param("id")
+	id, err := strconv.ParseInt(paramId, 10, 0)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusBadRequest, "error": err.Error(), "id": paramId})
+		g.AbortWithStatusJSON(http.StatusBadRequest, shared.ErrorResponse{Error: "bad request"})
+		return
+	}
 
 	var body PostProductDescriptionBody
 	if err := g.ShouldBind(&body); err != nil {
@@ -470,7 +479,7 @@ func (h *ProductsHandler) PostProductDescription(g *gin.Context) {
 		return
 	}
 
-	product, err := h.ProductRepo.GetProductByID(ctx, int(body.ID))
+	product, err := h.ProductRepo.GetProductByID(ctx, int(id))
 	if err != nil || product.SellerID != claims.UserID {
 		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusForbidden, "error": err.Error(), "body": body})
 		g.AbortWithStatusJSON(http.StatusForbidden, shared.ErrorResponse{Error: "can't change this product's description"})

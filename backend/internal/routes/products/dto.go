@@ -14,10 +14,11 @@ type ProductImageDTO struct {
 }
 
 type ProfileDTO struct {
-	ID        uint    `json:"id"`
-	Name      *string `json:"name"`
-	Email     *string `json:"email"`
-	AvatarURL *string `json:"avatar_url"`
+	ID            uint    `json:"id"`
+	Name          *string `json:"name"`
+	Email         *string `json:"email"`
+	AvatarURL     *string `json:"avatar_url"`
+	AverageRating float64 `json:"average_rating"`
 }
 
 type CategoryDTO struct {
@@ -74,10 +75,11 @@ type QuestionDTO struct {
 
 func ToProfileDTO(m models.User) ProfileDTO {
 	return ProfileDTO{
-		ID:        m.ID,
-		Name:      m.Name,
-		Email:     m.Email,
-		AvatarURL: m.AvatarURL,
+		ID:            m.ID,
+		Name:          m.Name,
+		Email:         m.Email,
+		AvatarURL:     m.AvatarURL,
+		AverageRating: m.AverageRating,
 	}
 }
 
@@ -237,7 +239,6 @@ type PostProductBody struct {
 }
 
 type PostProductDescriptionBody struct {
-	ID          uint   `json:"id" form:"id" binding:"required,gt=0,number"`
 	Description string `json:"description" form:"description" binding:"required,min=50"`
 }
 
