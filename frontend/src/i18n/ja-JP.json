@@ -97,6 +97,8 @@
     "product_name": "商品名",
     "product_description": "商品説明",
     "product_images": "商品画像",
+    "categories": "カテゴリ",
+    "choose_category": "カテゴリを選択してください",
     "starting_bid": "開始価格",
     "step_bid_type": "入札単位種類",
     "step_bid_type_percentage": "パーセンテージ",

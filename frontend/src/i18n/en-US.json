@@ -97,6 +97,8 @@
     "product_name": "Product Name",
     "product_description": "Product Description",
     "product_images": "Product Images",
+    "categories": "Categories",
+    "choose_category": "Choose a category",
     "starting_bid": "Starting Bid",
     "step_bid_type": "Step Bid Type",
     "step_bid_type_percentage": "Percentage (%)",

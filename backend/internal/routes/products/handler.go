@@ -14,6 +14,7 @@ import (
 	"github.com/davidbyttow/govips/v2/vips"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/sync/errgroup"
+	"gorm.io/gorm"
 	"luny.dev/cherryauctions/internal/logging"
 	"luny.dev/cherryauctions/internal/models"
 	"luny.dev/cherryauctions/internal/routes/shared"
@@ -408,11 +409,14 @@ func (h *ProductsHandler) PostProduct(g *gin.Context) {
 	}
 
 	product := models.Product{
-		Name:                body.Name,
-		Description:         body.Description,
-		StartingBid:         body.StartingBid,
-		StepBidType:         body.StepBidType,
-		StepBidValue:        body.StepBidValue,
+		Name:         body.Name,
+		Description:  body.Description,
+		StartingBid:  body.StartingBid,
+		StepBidType:  body.StepBidType,
+		StepBidValue: body.StepBidValue,
+		Categories: ranges.Each(body.Categories, func(id uint) models.Category {
+			return models.Category{Model: gorm.Model{ID: id}}
+		}),
 		BINPrice:            body.BINPrice,
 		AllowsUnratedBuyers: body.AllowsUnrated,
 		AutoExtendsTime:     body.AutoExtends,
