@@ -38,12 +38,42 @@ const i18n = createI18n<[I18nSchema], "en-US" | "ja-JP">({
   },
   numberFormats: {
     "en-US": {
-      currency: { style: "currency", currency: "USD" },
-      decimal: { style: "decimal", minimumFractionDigits: 2 },
+      currency: {
+        style: "currency",
+        currency: "USD",
+        notation: "standard",
+        currencyDisplay: "symbol",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      },
+      decimal: {
+        style: "decimal",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+      },
+      percent: {
+        style: "percent",
+        useGrouping: false,
+      },
     },
     "ja-JP": {
-      currency: { style: "currency", currency: "USD" },
-      compact: { notation: "compact" }, // Turns 10,000 into 1万
+      currency: {
+        style: "currency",
+        currency: "USD",
+        notation: "standard",
+        currencyDisplay: "symbol",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      },
+      decimal: {
+        style: "decimal",
+        minimumSignificantDigits: 3,
+        maximumSignificantDigits: 5,
+      },
+      percent: {
+        style: "percent",
+        useGrouping: false,
+      },
     },
   },
 });

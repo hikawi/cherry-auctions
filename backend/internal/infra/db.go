@@ -45,6 +45,7 @@ func MigrateModels(db *gorm.DB) {
 		&models.DescriptionChange{},
 		&models.ChatSession{},
 		&models.ChatMessage{},
+		&models.DeniedBidder{},
 	)
 	if err != nil {
 		log.Fatalln("fatal: failed to auto migrate models. check them yourself")
