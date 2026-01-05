@@ -3,7 +3,7 @@ import { useProfileStore } from "@/stores/profile";
 import type { Product } from "@/types";
 import { LucidePencil, LucideX } from "lucide-vue-next";
 import OverlayScreen from "../shared/OverlayScreen.vue";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import WYSIWYGInput from "../shared/inputs/WYSIWYGInput.vue";
 import { useAuthFetch } from "@/hooks/use-auth-fetch";
 import { endpoints } from "@/consts";
@@ -26,6 +26,8 @@ const editDialogShown = ref(false);
 const editLoading = ref(false);
 const editError = ref<string>();
 const descriptionChange = ref<string>();
+
+const isExpired = computed(() => dayjs(props.data.expired_at).isBefore(dayjs()));
 
 function makeLocalTime(timeString: string) {
   return dayjs(timeString).locale(locale.value).format("lll");
@@ -77,7 +79,8 @@ async function createDescriptionChange() {
         <button
           type="submit"
           class="bg-claret-600 hover:bg-claret-700 cursor-pointer rounded-full px-4 py-1 text-white disabled:cursor-progress disabled:opacity-50"
-          :disabled="editLoading"
+          :disabled="editLoading && !isExpired"
+          v-if="!isExpired"
           @click.prevent="createDescriptionChange"
         >
           {{ editLoading ? $t("products.loading") : $t("products.change_description") }}

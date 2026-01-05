@@ -244,7 +244,7 @@ func (r *ProductRepository) CreateBid(
 		product := models.Product{}
 		err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
 			Model(&models.Product{}).
-			Preload("CurrentHighestBid.User").
+			Preload("CurrentHighestBid").
 			Preload("Seller").
 			Where("id = ?", productID).
 			First(&product).
@@ -253,9 +253,19 @@ func (r *ProductRepository) CreateBid(
 			return err
 		}
 
+		// TODO: Add this to config
+		extensionSeconds := 300
+		extensionDuration := time.Duration(extensionSeconds) * time.Second
+
+		expiredAt := product.ExpiredAt
+		expiryThreshold := 30 * time.Minute
+		if product.AutoExtendsTime && time.Until(expiredAt) <= expiryThreshold {
+			expiredAt = expiredAt.Add(extensionDuration)
+		}
+
 		// Check if it is the highest price.
 		// Whether it makes sense (based on step bid is on the service, not this I think)
-		if (product.CurrentHighestBid != nil && product.CurrentHighestBid.Price >= bidAmount) || bidAmount < product.StartingBid {
+		if (product.CurrentHighestBid != nil && product.CurrentHighestBid.Price+product.StepBidValue > bidAmount) || bidAmount < product.StartingBid {
 			return fmt.Errorf("bid is not high enough")
 		}
 
@@ -277,10 +287,14 @@ func (r *ProductRepository) CreateBid(
 		*currentProduct = product
 		*newBid = bid
 
-		// Now mark the bids as counted.
+		// Now mark the bids as counted, and extend it if it is needed.
 		return tx.Model(&models.Product{Model: gorm.Model{ID: productID}}).
-			Select("current_highest_bid_id", "bids_count").
-			Updates(map[string]any{"current_highest_bid_id": bid.ID, "bids_count": gorm.Expr("bids_count + 1")}).
+			Select("current_highest_bid_id", "bids_count", "expired_at").
+			Updates(map[string]any{
+				"current_highest_bid_id": bid.ID,
+				"bids_count":             gorm.Expr("bids_count + 1"),
+				"expired_at":             expiredAt,
+			}).
 			Error
 	})
 }
@@ -314,4 +328,24 @@ func (r *ProductRepository) CountMyBids(ctx context.Context, userID uint) (int64
 		Count(&count).
 		Error
 	return count, err
+}
+
+func (r *ProductRepository) SetProductSentEmail(ctx context.Context, productID uint) (int, error) {
+	return gorm.G[models.Product](r.DB).
+		Where("id = ?", productID).
+		Updates(ctx, models.Product{EmailSent: true})
+}
+
+// GetAllExpiredProducts retrieves all products that are expired,
+// but not have an email sent yet.
+func (r *ProductRepository) GetAllExpiredProducts(ctx context.Context) ([]models.Product, error) {
+	var products []models.Product
+	err := r.DB.WithContext(ctx).
+		Model(&models.Product{}).
+		Preload("CurrentHighestBid.User").
+		Preload("Seller").
+		Where("expired_at < now() AND not email_sent").
+		Find(&products).
+		Error
+	return products, err
 }

@@ -1,4 +1,3 @@
-import BidsPage from "@/pages/BidsPage.vue";
 import HomePage from "@/pages/HomePage.vue";
 import { useProfileStore } from "@/stores/profile";
 import { createRouter, createWebHistory } from "vue-router";
@@ -34,7 +33,7 @@ const router = createRouter({
     {
       name: "bids",
       path: "/bids",
-      component: BidsPage,
+      component: () => import("../pages/BidsPage.vue"),
       meta: {
         requiresAuth: true,
       },

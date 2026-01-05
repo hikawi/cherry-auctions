@@ -179,15 +179,17 @@
     "ask_a_question": "Ask a question",
     "ask": "Ask",
     "confirm_bid": "Confirm Bid",
-    "confirm_bid_description": "Are you sure you want to bid on \"{name}\" at the price of {price}? This action is irreversible.",
+    "confirm_bid_description": "Are you sure you want to bid on \"{name}\" at the price of {price}? This action is irrevocable.",
     "cant_bid_logged_out": "You must be logged in to bid",
     "cant_bid_self": "You can't bid on your own product",
     "cant_bid_no_rating": "You must have a rating score of 0.8",
     "cant_bid_denied": "You are denied from bidding on this product",
     "cant_bid_outbid_self": "You can't outbid yourself",
+    "cant_bid_ended": "This auction has ended",
     "failed_to_bid": "Failed to bid. Someone might have beaten you to it.",
     "highest_bid": "You hold the highest bid for this auction",
-    "outbidded": "You got outbidded on this auction"
+    "outbidded": "You got outbidded on this auction",
+    "expired": "This product has expired, and you can no longer bid on it"
   },
   "profile": {
     "profile": "Profile",

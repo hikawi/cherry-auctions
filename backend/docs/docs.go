@@ -907,7 +907,7 @@ const docTemplate = `{
                         }
                     },
                     "403": {
-                        "description": "When the user is the seller",
+                        "description": "When the user is the seller or the product is expired",
                         "schema": {
                             "$ref": "#/definitions/shared.ErrorResponse"
                         }
@@ -977,7 +977,7 @@ const docTemplate = `{
                         }
                     },
                     "403": {
-                        "description": "When the user isn't the seller",
+                        "description": "When the user isn't the seller or the product is expired",
                         "schema": {
                             "$ref": "#/definitions/shared.ErrorResponse"
                         }

@@ -25,6 +25,7 @@ const emits = defineEmits<{
 const confirmBidDialog = ref(false);
 const loading = ref(false);
 const error = ref<string>();
+const isExpired = computed(() => dayjs(props.data.expired_at).isBefore(dayjs()));
 const cantBidReason = computed(() => {
   if (!props.data) {
     return undefined;
@@ -32,6 +33,10 @@ const cantBidReason = computed(() => {
 
   if (!profile.profile) {
     return "products.cant_bid_logged_out";
+  }
+
+  if (dayjs(props.data.expired_at).isBefore(dayjs())) {
+    return "products.cant_bid_ended";
   }
 
   if (props.data.seller.id == profile.profile.id) {
@@ -58,6 +63,11 @@ const cantBidReason = computed(() => {
 const expiresAtDisplay = computed(() => {
   return props.data != null
     ? dayjs(props.data.expired_at).locale(locale.value).format("lll")
+    : "N/A";
+});
+const expiresInDisplay = computed(() => {
+  return props.data != null && !isExpired.value
+    ? dayjs(props.data.expired_at).locale(locale.value).fromNow(false)
     : "N/A";
 });
 const createdAtDisplay = computed(() => {
@@ -171,6 +181,7 @@ async function bid() {
       <div class="flex w-full flex-col gap-1">
         <span class="text-sm">{{ $t("products.created_at", { at: createdAtDisplay }) }}</span>
         <span class="text-sm">{{ $t("products.expires_at", { at: expiresAtDisplay }) }}</span>
+        <span class="text-sm">{{ $t("products.expires_in", { in: expiresInDisplay }) }}</span>
       </div>
     </div>
 

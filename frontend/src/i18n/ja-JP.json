@@ -178,16 +178,18 @@
     "answer_question": "返信",
     "ask_a_question": "出品者に質問",
     "ask": "通信",
-    "confirm_bid": "Confirm Bid",
-    "confirm_bid_description": "Are you sure you want to bid on {name} at the price of {price}? This action is irreversible.",
+    "confirm_bid": "入札確認",
+    "confirm_bid_description": "「{name}」のオークションに{price}で入札してもいいですか? この入札は撤回することができません。",
     "cant_bid_logged_out": "入札したい際、ログインしてください",
     "cant_bid_self": "自分のオークションを入札できません",
     "cant_bid_no_rating": "お客様の評価は0.8以下ため、入札できません",
     "cant_bid_denied": "拒否されたため、この商品に入札できません",
     "cant_bid_outbid_self": "自分を競り落とすことができません",
+    "cant_bid_ended": "このオークションはすでに終了しました",
     "failed_to_bid": "入札できませんでした。誰が先に入札したかもしれません。",
     "highest_bid": "最高入札額持ち済み",
-    "outbidded": "他人に競り落とされました"
+    "outbidded": "他人に競り落とされました",
+    "expired": "このオークションがすでに終了しましたから、インタラクトすることができません"
   },
   "profile": {
     "profile": "プロフィール",

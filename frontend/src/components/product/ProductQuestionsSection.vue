@@ -1,12 +1,13 @@
 <script setup lang="ts">
+import { endpoints } from "@/consts";
 import { useAuthFetch } from "@/hooks/use-auth-fetch";
 import { useProfileStore } from "@/stores/profile";
 import type { Product } from "@/types";
+import dayjs from "dayjs";
 import { LucideReply } from "lucide-vue-next";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import AvatarCircle from "../shared/AvatarCircle.vue";
 import ProductAnswerBlock from "./ProductAnswerBlock.vue";
-import { endpoints } from "@/consts";
 
 const profile = useProfileStore();
 const { authFetch } = useAuthFetch();
@@ -21,6 +22,7 @@ const emit = defineEmits<{
 
 const question = ref<string>();
 const loading = ref(false);
+const isExpired = computed(() => dayjs(props.data.expired_at).isBefore(dayjs()));
 
 async function ask() {
   loading.value = true;
@@ -71,7 +73,7 @@ async function ask() {
         </div>
 
         <ProductAnswerBlock
-          v-if="!question.answer && profile.profile?.id == data.seller.id"
+          v-if="!question.answer && profile.profile?.id == data.seller.id && !isExpired"
           :question
           @refresh="$emit('refresh')"
         />

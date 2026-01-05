@@ -11,8 +11,9 @@ import WhiteContainer from "@/components/shared/WhiteContainer.vue";
 import { endpoints } from "@/consts";
 import { useAuthFetch } from "@/hooks/use-auth-fetch";
 import type { Product } from "@/types";
+import dayjs from "dayjs";
 import { LucideChevronLeft } from "lucide-vue-next";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
@@ -22,6 +23,7 @@ const loading = ref(false);
 const data = ref<
   Product & { similar_products?: Product[]; categories: { id: number; name: string }[] }
 >();
+const isExpired = computed(() => dayjs(data.value?.expired_at).isBefore(dayjs()));
 
 async function fetchProduct() {
   loading.value = true;
@@ -96,6 +98,13 @@ onMounted(() => {
         <LucideChevronLeft class="size-4" />
         {{ $t("general.back") }}
       </button>
+
+      <div
+        v-if="isExpired"
+        class="rounded-xl border-2 border-amber-600 bg-amber-200/50 px-4 py-2 font-semibold text-amber-600"
+      >
+        {{ $t("products.expired") }}
+      </div>
 
       <!-- The product -->
       <div class="grid w-full max-w-4xl grid-cols-1 gap-8 lg:grid-cols-2">

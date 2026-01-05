@@ -148,5 +148,13 @@ async function toggleFavorite() {
     >
       {{ $t("products.outbidded") }}
     </p>
+    <p
+      v-else-if="
+        !product.allows_unrated_buyers && profile.profile && profile.profile.average_rating < 0.8
+      "
+      class="text-claret-600 font-semibold"
+    >
+      {{ $t("products.cant_bid_no_rating") }}
+    </p>
   </div>
 </template>

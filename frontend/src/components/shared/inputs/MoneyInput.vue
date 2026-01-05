@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { useI18n } from "vue-i18n";
-
-const { n } = useI18n();
 
 defineProps<{
   label: string;
@@ -25,34 +22,13 @@ watch(value, (nc) => {
 // Courtesy of AI
 function onChange(e: Event) {
   const input = e.target as HTMLInputElement;
-  let rawValue = input.value.replace(/[^0-9.]/g, ""); // Allow only digits and one dot
+  const digits = input.value.replace(/\D/g, "");
+  const amount = Number(digits) / 100;
+  const formatted = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
 
-  // Prevent multiple decimal points (e.g., 12.34.56 -> 12.3456)
-  const parts = rawValue.split(".");
-  if (parts.length > 2) {
-    rawValue = parts[0] + "." + parts.slice(1).join("");
-  }
-
-  const integerPart = parts[0];
-  const decimalPart = parts[1];
-
-  let formatted = "";
-
-  if (integerPart) {
-    // Format the integer part with commas
-    formatted = n(parseInt(integerPart, 10), "decimal");
-  } else if (rawValue.startsWith(".")) {
-    // Handle case where user types "." first
-    formatted = "0";
-  }
-
-  // If there is a dot, append it back manually
-  if (rawValue.includes(".")) {
-    // Limit to 2 decimal places for currency
-    formatted += "." + (decimalPart ? decimalPart.substring(0, 2) : "");
-  }
-
-  // Cursor Management
   value.value = formatted;
 }
 </script>

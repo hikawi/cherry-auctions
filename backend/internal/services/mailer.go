@@ -6,6 +6,7 @@ import (
 	"log"
 	"time"
 
+	"golang.org/x/sync/errgroup"
 	"gopkg.in/gomail.v2"
 	"luny.dev/cherryauctions/internal/config"
 	"luny.dev/cherryauctions/internal/models"
@@ -110,6 +111,62 @@ const (
   <p>
 		New bid at <strong>$%.2f</strong> placed by <strong>%s</strong>
   </p>
+
+  <hr />
+
+  <p style="color: #666; font-size: 12px;">
+	This mail is automated, do not reply.
+  </p>
+</body>
+</html>`
+	auctionEndedTemplate = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+</head>
+<body style="font-family: sans-serif;">
+  <h2>Auction has ended!</h2>
+
+  <p>
+		The product "<strong>%s</strong>" has ended with a winner!
+  </p>
+
+  <hr />
+
+	<a href="%s">Link to product</a>
+
+  <p>
+		Winner: <strong>%s</strong> (at <strong>$%.2f</strong>)
+  </p>
+
+	<p>
+		Seller: <strong>%s</strong>
+	</p>
+
+  <hr />
+
+  <p style="color: #666; font-size: 12px;">
+	This mail is automated, do not reply.
+  </p>
+</body>
+</html>`
+	auctionExpiredTemplate = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+</head>
+<body style="font-family: sans-serif;">
+  <h2>Auction has expired.</h2>
+
+  <p>
+		The product "<strong>%s</strong>" has expired with no winners.
+  </p>
+
+  <hr />
+
+	<a href="%s">Link to product</a>
 
   <hr />
 
@@ -297,6 +354,7 @@ func (s *MailerService) SendBidEmail(lastBid *models.Bid, newBid *models.Bid, pr
 	}()
 }
 
+// SendOTPEmail sends an email containing an OTP code.
 func (s *MailerService) SendOTPEmail(user *models.User, otp string) {
 	go func() {
 		_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -313,5 +371,92 @@ func (s *MailerService) SendOTPEmail(user *models.User, otp string) {
 		if err := s.mailer.DialAndSend(message); err != nil {
 			log.Printf("failed to send otp email: %v", err)
 		}
+	}()
+}
+
+func (s *MailerService) SendAuctionExpiredEmail(ctx context.Context, product *models.Product) {
+	fmt.Println("Sending expired for ", product.ID)
+	url := fmt.Sprintf("%s/products/%d", s.cfg.CORS.Origins, product.ID)
+	body := fmt.Sprintf(auctionExpiredTemplate, product.Name, url)
+
+	message := gomail.NewMessage()
+	message.SetHeader("From", fromHeader)
+	message.SetHeader("To", *product.Seller.Email)
+	message.SetHeader("Subject", "CherryAuctions - Auction Expired")
+	message.SetBody("text/html", body)
+
+	if err := s.mailer.DialAndSend(message); err != nil {
+		log.Printf("failed to send expired email: %v", err)
+	}
+
+	// Mail complete! Now we update the DB, hopefully
+	_, err := s.productRepo.SetProductSentEmail(ctx, product.ID)
+	if err != nil {
+		log.Printf("failed to mark email as sent: %v", err)
+	}
+}
+
+func (s *MailerService) SendAuctionEndedEmail(ctx context.Context, product *models.Product) {
+	fmt.Println("Sending ended for ", product.ID)
+	url := fmt.Sprintf("%s/products/%d", s.cfg.CORS.Origins, product.ID)
+	body := fmt.Sprintf(
+		auctionEndedTemplate,
+		product.Name,
+		url,
+		*product.CurrentHighestBid.User.Name,
+		float64(product.CurrentHighestBid.Price)/100,
+		*product.Seller.Name,
+	)
+
+	message := gomail.NewMessage()
+	message.SetHeader("From", fromHeader)
+	message.SetHeader("To", *product.CurrentHighestBid.User.Email)
+	message.SetHeader("Bcc", *product.Seller.Email)
+	message.SetHeader("Subject", "CherryAuctions - Auction Ended")
+	message.SetBody("text/html", body)
+
+	if err := s.mailer.DialAndSend(message); err != nil {
+		log.Printf("failed to send ended email: %v", err)
+	}
+
+	// Mail complete! Now we update the DB, hopefully
+	_, err := s.productRepo.SetProductSentEmail(ctx, product.ID)
+	if err != nil {
+		log.Printf("failed to mark email as sent: %v", err)
+	}
+}
+
+// SendEndedAuctionsEmail sends an email to all auctions ended without an email sent yet.
+func (s *MailerService) SendEndedAuctionsEmail() {
+	go func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+		fmt.Printf("Starting the sweep at %v!\n", time.Now())
+
+		// Send all emails
+		products, err := s.productRepo.GetAllExpiredProducts(ctx)
+		if err != nil {
+			fmt.Printf("Sweep had an error: %v\n", err)
+		}
+
+		group, gctx := errgroup.WithContext(ctx)
+		for _, product := range products {
+			p := product
+
+			group.Go(func() error {
+				if product.CurrentHighestBid != nil {
+					s.SendAuctionEndedEmail(gctx, &p)
+				} else {
+					s.SendAuctionExpiredEmail(gctx, &p)
+				}
+				return nil
+			})
+		}
+
+		if err := group.Wait(); err != nil {
+			fmt.Printf("Group finished with error: %v\n", err)
+		}
+
+		defer fmt.Printf("Finishing the sweep at %v!\n", time.Now())
 	}()
 }

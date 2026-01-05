@@ -3,6 +3,7 @@ package questions
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"luny.dev/cherryauctions/internal/logging"
@@ -28,7 +29,7 @@ func (h *QuestionsHandler) getJWTSubject(g *gin.Context) *services.JWTSubject {
 //	@success		201		{object}	shared.MessageResponse		"Added a new question"
 //	@failure		400		{object}	shared.ErrorResponse		"When the request is invalid"
 //	@failure		401		{object}	shared.ErrorResponse		"When the user is unauthenticated"
-//	@failure		403		{object}	shared.ErrorResponse		"When the user is the seller"
+//	@failure		403		{object}	shared.ErrorResponse		"When the user is the seller or the product is expired"
 //	@failure		500		{object}	shared.ErrorResponse		"The server could not make the request"
 //	@router			/questions [POST]
 func (h *QuestionsHandler) PostQuestion(g *gin.Context) {
@@ -43,9 +44,22 @@ func (h *QuestionsHandler) PostQuestion(g *gin.Context) {
 	}
 
 	product, err := h.productRepo.GetProductByID(ctx, int(body.ProductID))
-	if err != nil || product.SellerID == claims.UserID {
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusForbidden, "error": err.Error(), "body": body})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "error getting a product by id"})
+		return
+	}
+
+	if product.SellerID == claims.UserID {
 		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusForbidden, "error": "can't question a product you sell", "body": body})
 		g.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "can't question a product you sell"})
+		return
+	}
+
+	// Doesn't allow if the product is already expired.
+	if product.ExpiredAt.Before(time.Now()) {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusForbidden, "error": "product is expired"})
+		g.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "product is expired"})
 		return
 	}
 
@@ -76,7 +90,7 @@ func (h *QuestionsHandler) PostQuestion(g *gin.Context) {
 //	@success		200		{object}	shared.MessageResponse		"Added an answer"
 //	@failure		400		{object}	shared.ErrorResponse		"When the request is invalid"
 //	@failure		401		{object}	shared.ErrorResponse		"When the user is unauthenticated"
-//	@failure		403		{object}	shared.ErrorResponse		"When the user isn't the seller"
+//	@failure		403		{object}	shared.ErrorResponse		"When the user isn't the seller or the product is expired"
 //	@failure		500		{object}	shared.ErrorResponse		"The server could not make the request"
 //	@router			/questions/{id} [PUT]
 func (h *QuestionsHandler) PutQuestion(g *gin.Context) {
@@ -95,6 +109,13 @@ func (h *QuestionsHandler) PutQuestion(g *gin.Context) {
 	if err != nil {
 		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusInternalServerError, "error": err.Error(), "body": body})
 		g.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "can't get question by id"})
+		return
+	}
+
+	// Disallow if the product is expired
+	if question.Product.ExpiredAt.Before(time.Now()) {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusForbidden, "error": "product is expired"})
+		g.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "product is expired"})
 		return
 	}
 

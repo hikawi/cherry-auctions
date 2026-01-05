@@ -196,8 +196,8 @@ parent: Other Specifications
 
 - [x] New bid, to seller, to bidder, to previous bidder
 - [ ] When bidder is denied the bid to bidder
-- [ ] Auction expired to seller
-- [ ] Auction ended to seller and winner
+- [x] Auction expired to seller
+- [x] Auction ended to seller and winner
 - [x] User questions, to the bidder
 - [x] Seller answers, to the questioner, and all current bidders, or questioned
 
