@@ -26,7 +26,7 @@ function changeLanguage() {
 <template>
   <button
     @click="changeLanguage"
-    class="bg-claret-600 absolute right-3 cursor-pointer rounded-lg rounded-tl-none p-3 text-white"
+    class="bg-claret-600 absolute right-2 cursor-pointer rounded-lg rounded-tl-none p-2 text-white sm:right-3 sm:p-3"
   >
     {{ emoji }}
   </button>

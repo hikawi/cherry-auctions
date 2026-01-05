@@ -11,11 +11,11 @@ const profile = useProfileStore();
   <LanguageSelect />
 
   <main
-    class="bg-claret-600 font-chiron flex h-fit min-h-screen w-full items-stretch justify-stretch p-6"
+    class="bg-claret-600 font-chiron flex h-fit min-h-screen w-full items-stretch justify-stretch p-4 sm:p-6"
   >
     <WhiteContainer v-if="profile.isFetching">
       <LoadingSpinner />
     </WhiteContainer>
-    <router-view v-else></router-view>
+    <router-view></router-view>
   </main>
 </template>
