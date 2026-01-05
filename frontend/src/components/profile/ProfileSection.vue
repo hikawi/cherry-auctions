@@ -89,7 +89,7 @@ onUnmounted(() => {
     <!-- Image thing -->
     <div class="flex w-fit flex-col gap-2">
       <AvatarCircle
-        class="h-auto w-full max-w-64"
+        class="h-auto max-w-80 min-w-64"
         hover
         :name="profile.profile?.name"
         :avatar_url="profile.profile?.avatar_url"
@@ -104,7 +104,7 @@ onUnmounted(() => {
       <input ref="fileInput" type="file" class="hidden" accept="image/*" @change="onFileChange" />
 
       <button
-        class="w-full cursor-pointer rounded-xl border-2 border-zinc-500 px-4 py-2 text-black duration-200 hover:bg-zinc-200"
+        class="w-full min-w-fit cursor-pointer rounded-xl border-2 border-zinc-500 px-4 py-2 text-black duration-200 hover:bg-zinc-200"
         type="submit"
         @click.prevent="triggerPicker"
       >

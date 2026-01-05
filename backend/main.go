@@ -55,6 +55,7 @@ func main() {
 	middlewareService := &services.MiddlewareService{JWTService: jwtService}
 	s3Service := services.NewS3Service(cfg.AWS.BucketName, s3Client)
 	mailerService := services.NewMailerService(cfg, mailDialer, productRepo, questionRepo)
+	otpService := services.NewOTPService(mailerService, userRepo)
 
 	// Weird to do this even in production.
 	infra.MigrateModels(db)
@@ -76,6 +77,7 @@ func main() {
 			MiddlewareService: middlewareService,
 			S3Service:         s3Service,
 			MailerService:     mailerService,
+			OTPService:        otpService,
 		},
 		Repositories: repositories.RepositoryRegistry{
 			CategoryRepository:     categoryRepo,

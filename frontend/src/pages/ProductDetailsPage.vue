@@ -106,7 +106,7 @@ onMounted(() => {
         />
 
         <!-- The data card -->
-        <ProductDataCard :data />
+        <ProductDataCard :data @reload="fetchProduct" />
       </div>
 
       <!-- Product Description -->

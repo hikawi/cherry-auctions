@@ -92,7 +92,7 @@ definitions:
       id:
         type: integer
       price:
-        type: number
+        type: integer
       updated_at:
         type: string
     type: object
@@ -127,7 +127,7 @@ definitions:
       bids_count:
         type: integer
       bin_price:
-        type: number
+        type: integer
       categories:
         items:
           $ref: '#/definitions/products.CategoryDTO'
@@ -136,6 +136,10 @@ definitions:
         type: string
       current_highest_bid:
         $ref: '#/definitions/products.BidDTO'
+      denied_bidders:
+        items:
+          $ref: '#/definitions/products.ProfileDTO'
+        type: array
       description:
         type: string
       description_changes:
@@ -165,11 +169,9 @@ definitions:
           $ref: '#/definitions/products.ProductDTO'
         type: array
       starting_bid:
-        type: number
-      step_bid_type:
-        type: string
+        type: integer
       step_bid_value:
-        type: number
+        type: integer
       thumbnail_url:
         type: string
     type: object
@@ -203,6 +205,13 @@ definitions:
           $ref: '#/definitions/products.ProductDTO'
         type: array
     type: object
+  products.PostBidBody:
+    properties:
+      bid:
+        type: integer
+    required:
+    - bid
+    type: object
   products.PostProductBody:
     type: object
   products.PostProductDescriptionBody:
@@ -222,7 +231,7 @@ definitions:
       bids_count:
         type: integer
       bin_price:
-        type: number
+        type: integer
       categories:
         items:
           $ref: '#/definitions/products.CategoryDTO'
@@ -231,6 +240,10 @@ definitions:
         type: string
       current_highest_bid:
         $ref: '#/definitions/products.BidDTO'
+      denied_bidders:
+        items:
+          $ref: '#/definitions/products.ProfileDTO'
+        type: array
       description:
         type: string
       description_changes:
@@ -248,11 +261,9 @@ definitions:
       seller:
         $ref: '#/definitions/products.ProfileDTO'
       starting_bid:
-        type: number
-      step_bid_type:
-        type: string
+        type: integer
       step_bid_value:
-        type: number
+        type: integer
       thumbnail_url:
         type: string
     type: object
@@ -267,6 +278,8 @@ definitions:
     properties:
       avatar_url:
         type: string
+      average_rating:
+        type: number
       email:
         type: string
       id:
@@ -765,6 +778,50 @@ paths:
           schema:
             $ref: '#/definitions/shared.ErrorResponse'
       summary: Retrieves details on a single product.
+      tags:
+      - products
+  /products/{id}/bids:
+    post:
+      consumes:
+      - application/json
+      description: Bids on a product, hopefully with some race-condition management.
+      parameters:
+      - description: Bid body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/products.PostBidBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successful bid
+          schema:
+            $ref: '#/definitions/shared.MessageResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "401":
+          description: User is unauthenticated
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "403":
+          description: User can not bid for other reasons
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "409":
+          description: Race condition, and you lost
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: Server could not finish the request
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Creates a bid on a product
       tags:
       - products
   /products/{id}/description:

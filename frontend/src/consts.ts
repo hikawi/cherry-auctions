@@ -2,6 +2,9 @@ const api = import.meta.env.VITE_API;
 
 export const endpoints = {
   auth: {
+    login: `${api}/v1/auth/login`,
+    register: `${api}/v1/auth/register`,
+    forgot: `${api}/v1/auth/forgot`,
     refresh: `${api}/v1/auth/refresh`,
     logout: `${api}/v1/auth/logout`,
   },
@@ -11,6 +14,7 @@ export const endpoints = {
     favorite: `${api}/v1/products/favorite`,
     top: `${api}/v1/products/top`,
     me: `${api}/v1/products/me`,
+    bids: (id: unknown) => `${api}/v1/products/${id}/bids`,
     description: (id: unknown) => `${api}/v1/products/${id}/description`,
   },
   categories: {

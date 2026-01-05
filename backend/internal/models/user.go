@@ -29,6 +29,8 @@ type User struct {
 	Roles            []Role               `gorm:"many2many:user_roles"`
 	Subscriptions    []SellerSubscription `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	FavoriteProducts []Product            `gorm:"many2many:favorite_products"`
+	Ratings          []Rating             `gorm:"foreignKey:ReviewerID"`
+	RatedRatings     []Rating             `gorm:"foreignKey:RevieweeID"`
 }
 
 func (u *User) AfterCreate(tx *gorm.DB) error {

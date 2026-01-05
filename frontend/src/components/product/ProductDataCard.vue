@@ -1,18 +1,30 @@
 <script setup lang="ts">
+import { endpoints } from "@/consts";
+import { useAuthFetch } from "@/hooks/use-auth-fetch";
 import { useProfileStore } from "@/stores/profile";
 import type { Product } from "@/types";
 import dayjs from "dayjs";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import AvatarCircle from "../shared/AvatarCircle.vue";
+import ErrorDialog from "../shared/ErrorDialog.vue";
+import OverlayScreen from "../shared/OverlayScreen.vue";
 
 const profile = useProfileStore();
 const { locale } = useI18n();
+const { authFetch } = useAuthFetch();
 
 const props = defineProps<{
   data: Product & { similar_products?: Product[]; categories: { id: number; name: string }[] };
 }>();
 
+const emits = defineEmits<{
+  reload: [];
+}>();
+
+const confirmBidDialog = ref(false);
+const loading = ref(false);
+const error = ref<string>();
 const cantBidReason = computed(() => {
   if (!props.data) {
     return undefined;
@@ -30,8 +42,16 @@ const cantBidReason = computed(() => {
     return "products.cant_bid_no_rating";
   }
 
-  // TODO:
-  // Add the flow to check if the user is denied.
+  if (props.data.current_highest_bid?.bidder.id == profile.profile.id) {
+    return "products.cant_bid_outbid_self";
+  }
+
+  if (
+    props.data.denied_bidders &&
+    props.data.denied_bidders.some((bidder) => bidder.email == profile.profile?.email)
+  ) {
+    return "products.cant_bid_denied";
+  }
 
   return undefined;
 });
@@ -57,9 +77,67 @@ const nextBidValue = computed(() => {
   const highestBid = props.data.current_highest_bid.price;
   return highestBid + props.data.step_bid_value;
 });
+
+// Send a request to add a bid.
+async function bid() {
+  loading.value = true;
+  error.value = "";
+
+  try {
+    const res = await authFetch(endpoints.products.bids(props.data.id), {
+      method: "POST",
+      body: JSON.stringify({ bid: nextBidValue.value }),
+    });
+    confirmBidDialog.value = false;
+
+    if (res.ok) {
+      emits("reload");
+    } else {
+      error.value = "products.failed_to_bid";
+    }
+  } finally {
+    loading.value = false;
+  }
+}
 </script>
 
 <template>
+  <OverlayScreen shown v-if="confirmBidDialog" class="p-6">
+    <div class="flex w-full max-w-lg flex-col gap-4 rounded-2xl bg-white p-4 shadow-md sm:p-6">
+      <h2 class="text-center text-xl font-bold">{{ $t("products.confirm_bid") }}</h2>
+      <hr class="h-px w-full rounded-full border-zinc-300" />
+      <p class="text-center text-balance">
+        {{
+          $t("products.confirm_bid_description", {
+            name: data.name,
+            price: $n(nextBidValue / 100, "currency"),
+          })
+        }}
+      </p>
+
+      <div class="flex w-full flex-row items-center justify-center gap-2 font-semibold">
+        <button
+          class="cursor-pointer rounded-xl bg-zinc-200 px-4 py-1 duration-200 hover:bg-zinc-300"
+          @click="confirmBidDialog = false"
+        >
+          {{ $t("general.cancel") }}
+        </button>
+
+        <button
+          class="bg-claret-600 hover:bg-claret-700 cursor-pointer rounded-xl px-4 py-1 text-white duration-200 disabled:cursor-not-allowed disabled:opacity-50"
+          @click="bid"
+          :disabled="loading"
+        >
+          {{ loading ? $t("general.loading") : $t("general.lets_go") }}
+        </button>
+      </div>
+    </div>
+  </OverlayScreen>
+
+  <OverlayScreen shown v-if="error" class="p-6">
+    <ErrorDialog :title="$t('general.error')" :description="$t(error)" @close="error = undefined" />
+  </OverlayScreen>
+
   <div class="flex h-full w-full flex-col justify-between gap-4">
     <div class="flex w-full flex-col gap-4">
       <h1 class="text-2xl font-bold">{{ data.name }}</h1>
@@ -106,6 +184,7 @@ const nextBidValue = computed(() => {
 
       <button
         class="bg-claret-600 enabled:hover:text-claret-600 border-claret-600 flex cursor-pointer flex-col items-center justify-center gap-0 rounded-xl border-2 px-4 py-2 text-white duration-200 enabled:hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+        @click="confirmBidDialog = true"
         :disabled="cantBidReason != undefined"
       >
         <span class="text-lg font-semibold">{{ $t("products.bid") }}</span>

@@ -8,4 +8,5 @@ type ServiceRegistry struct {
 	MiddlewareService *MiddlewareService
 	S3Service         *S3Service
 	MailerService     *MailerService
+	OTPService        *OTPService
 }

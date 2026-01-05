@@ -99,7 +99,7 @@ async function ask() {
       </div>
 
       <button
-        class="bg-claret-600 enabled:hover:text-claret-600 border-claret-600 h-full w-full cursor-pointer rounded-xl border-2 px-4 py-2 font-semibold text-white duration-200 enabled:hover:bg-white disabled:cursor-not-allowed disabled:opacity-50 sm:w-fit"
+        class="bg-claret-600 enabled:hover:text-claret-600 border-claret-600 h-full w-full min-w-fit cursor-pointer rounded-xl border-2 px-4 py-2 font-semibold text-white duration-200 enabled:hover:bg-white disabled:cursor-not-allowed disabled:opacity-50 sm:w-fit"
         :disabled="loading"
         @click="ask"
       >

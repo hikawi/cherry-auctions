@@ -55,9 +55,7 @@ const (
 </body>
 </html>
 `
-)
-
-const answerEmailTemplate = `
+	answerEmailTemplate = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -92,6 +90,71 @@ const answerEmailTemplate = `
 </body>
 </html>
 `
+	newBidTemplate = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+</head>
+<body style="font-family: sans-serif;">
+  <h2>New bid has been placed!</h2>
+
+  <p>
+		On the product "<strong>%s</strong>"
+  </p>
+
+  <hr />
+
+	<a href="%s">Link to product</a>
+
+  <p>
+		New bid at <strong>$%.2f</strong> placed by <strong>%s</strong>
+  </p>
+
+  <hr />
+
+  <p style="color: #666; font-size: 12px;">
+	This mail is automated, do not reply.
+  </p>
+</body>
+</html>`
+	otpEmailTemplate = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+</head>
+<body style="font-family: sans-serif;">
+  <h2>One-Time Password Verification</h2>
+
+  <p>
+    You have requested to verify your identity.
+  </p>
+
+  <p>
+    Please use the following one-time password (OTP) to complete the verification:
+  </p>
+
+  <hr />
+
+  <p style="font-size: 20px; font-weight: bold; letter-spacing: 2px;">
+    %s
+  </p>
+
+  <hr />
+
+  <p>
+    This code is valid for <strong>%s minutes</strong>.
+    If you did not request this verification, please ignore this email.
+  </p>
+
+  <p style="color: #666; font-size: 12px;">
+    This mail is automated, do not reply.
+  </p>
+</body>
+</html>
+`
+)
 
 func NewMailerService(
 	config *config.Config,
@@ -172,8 +235,6 @@ func (s *MailerService) SendAnswerEmail(questionID uint) {
 			)
 		}
 
-		fmt.Println("wee4")
-
 		message.SetHeader("Bcc", bidderEmails...)
 		message.SetHeader("Subject", "CherryAuctions - Question Answered")
 
@@ -189,6 +250,68 @@ func (s *MailerService) SendAnswerEmail(questionID uint) {
 
 		if err := s.mailer.DialAndSend(message); err != nil {
 			log.Printf("failed to send answer email: %v", err)
+		}
+	}()
+}
+
+// SendBidEmail sends an email to all related bidders to a certain bid,
+// which includes the previous bidder, if there is.
+func (s *MailerService) SendBidEmail(lastBid *models.Bid, newBid *models.Bid, product *models.Product) {
+	go func() {
+		_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		var emails []string
+		if lastBid.User.Email != nil {
+			emails = append(emails, *lastBid.User.Email)
+		}
+		emails = append(emails, *newBid.User.Email)
+		emails = append(emails, *product.Seller.Email)
+
+		url := fmt.Sprintf("%s/products/%d", s.cfg.CORS.Origins, product.ID)
+		message := gomail.NewMessage()
+		message.SetHeader("From", fromHeader)
+
+		message.SetAddressHeader(
+			"To",
+			*newBid.User.Email,
+			*newBid.User.Name,
+		)
+
+		body := fmt.Sprintf(
+			newBidTemplate,
+			product.Name,
+			url,
+			float64(newBid.Price)/100,
+			*newBid.User.Name,
+		)
+
+		message.SetBody("text/html", body)
+
+		message.SetHeader("Bcc", emails...)
+		message.SetHeader("Subject", "CherryAuctions - New Bid")
+
+		if err := s.mailer.DialAndSend(message); err != nil {
+			log.Printf("failed to send bid email: %v", err)
+		}
+	}()
+}
+
+func (s *MailerService) SendOTPEmail(user *models.User, otp string) {
+	go func() {
+		_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		body := fmt.Sprintf(otpEmailTemplate, "", "15")
+
+		message := gomail.NewMessage()
+		message.SetHeader("From", fromHeader)
+		message.SetHeader("To", *user.Email, *user.Name)
+		message.SetBody("text/html", body)
+		message.SetHeader("Subject", "CherryAuctions - OTP Verification")
+
+		if err := s.mailer.DialAndSend(message); err != nil {
+			log.Printf("failed to send otp email: %v", err)
 		}
 	}()
 }

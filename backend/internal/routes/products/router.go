@@ -11,6 +11,7 @@ import (
 type ProductsHandler struct {
 	ProductRepo       *repositories.ProductRepository
 	MiddlewareService *services.MiddlewareService
+	MailerService     *services.MailerService
 	S3Service         *services.S3Service
 	S3PermURL         string
 }
