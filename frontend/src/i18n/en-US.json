@@ -149,7 +149,7 @@
     "starting_bid": "Starting bid",
     "bids_count_plural": "{count} bids",
     "bids_count_singular": "{count} bid",
-    "expires_in": "in {in}",
+    "expires_in": "{in}",
     "expires_at": "at {at}",
     "created_at": "Posted at {at}",
     "new": "NEW",
@@ -170,9 +170,14 @@
     "answer_question": "Answer the question",
     "ask_a_question": "Ask a question",
     "ask": "Ask",
+    "confirm_bid": "Confirm Bid",
+    "confirm_bid_description": "Are you sure you want to bid on \"{name}\" at the price of {price}? This action is irreversible.",
     "cant_bid_logged_out": "You must be logged in to bid",
     "cant_bid_self": "You can't bid on your own product",
-    "cant_bid_no_rating": "You must have a rating score of 0.8"
+    "cant_bid_no_rating": "You must have a rating score of 0.8",
+    "cant_bid_denied": "You are denied from bidding on this product",
+    "cant_bid_outbid_self": "You can't outbid yourself",
+    "failed_to_bid": "Failed to bid. Someone might have beaten you to it."
   },
   "profile": {
     "profile": "Profile",
@@ -198,7 +203,10 @@
     "clear": "Clear",
     "refresh": "Refresh",
     "refreshing": "Refreshing",
-    "loading": "Loading"
+    "loading": "Loading",
+    "lets_go": "Let's GO!",
+    "error": "Error",
+    "ok": "OK"
   },
   "others": {
     "403": {

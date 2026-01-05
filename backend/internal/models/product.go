@@ -17,6 +17,7 @@ type Product struct {
 	AllowsUnratedBuyers bool      `gorm:"not null;default:true"`
 	AutoExtendsTime     bool      `gorm:"not null;default:true"`
 	ExpiredAt           time.Time `gorm:"not null"`
+	EmailSent           bool      `gorm:"not null;default:false"`
 
 	ProductImages      []ProductImage `gorm:"foreignKey:ProductID"`
 	Categories         []Category     `gorm:"many2many:products_categories"`

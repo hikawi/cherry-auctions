@@ -79,10 +79,10 @@ parent: Other Specifications
 
 ### 2.2. Bid
 
-- [ ] At details page
-- [ ] Allowed only if product allows it, or rating is 80% or greater.
-- [ ] System enforces a reasonable bid (current bid + bid step at least)
-- [ ] Confirmation dialog for bidding
+- [x] At details page
+- [x] Allowed only if product allows it, or rating is 80% or greater.
+- [x] System enforces a reasonable bid (current bid + bid step at least)
+- [x] Confirmation dialog for bidding
 
 ### 2.3. Bidding History
 
@@ -194,7 +194,7 @@ parent: Other Specifications
 
 ### 6.1. Mailing System
 
-- [ ] New bid, to seller, to bidder, to previous bidder
+- [x] New bid, to seller, to bidder, to previous bidder
 - [ ] When bidder is denied the bid to bidder
 - [ ] Auction expired to seller
 - [ ] Auction ended to seller and winner

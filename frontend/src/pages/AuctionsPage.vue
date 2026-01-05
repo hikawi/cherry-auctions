@@ -26,6 +26,8 @@ function onCreate(status: number) {
   createDialogShown.value = false;
   if (status != 201) {
     console.log("uh oh");
+  } else {
+    fetchMyAuctions();
   }
 }
 

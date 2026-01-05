@@ -84,6 +84,7 @@ export interface Product {
   questions: Question[];
   bids: Bid[];
   product_images: ProductImage[];
+  denied_bidders: SmallUser[];
   description_changes: DescriptionChanges[];
   is_favorite?: boolean;
 }

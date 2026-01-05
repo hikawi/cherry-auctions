@@ -55,6 +55,7 @@ type ProductDTO struct {
 	CurrentHighestBid   *BidDTO                `json:"current_highest_bid"`
 	Categories          []CategoryDTO          `json:"categories"`
 	DescriptionChanges  []DescriptionChangeDTO `json:"description_changes"`
+	DeniedBidders       []ProfileDTO           `json:"denied_bidders"`
 
 	BidsCount  int  `json:"bids_count"`
 	IsFavorite bool `json:"is_favorite"`

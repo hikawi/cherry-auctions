@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import AvatarCircle from "@/components/shared/AvatarCircle.vue";
 import LoadingSpinner from "@/components/shared/LoadingSpinner.vue";
-import PlaceholderAvatar from "@/components/shared/PlaceholderAvatar.vue";
 import { endpoints } from "@/consts";
 import { useAuthFetch } from "@/hooks/use-auth-fetch";
 import dayjs from "dayjs";
@@ -44,7 +44,7 @@ async function approve(id: number) {
     body: JSON.stringify({ id }),
   });
   if (res.status == 204) {
-    console.log("wee");
+    loadUsers();
   }
 }
 
@@ -78,7 +78,7 @@ onMounted(loadUsers);
           class="flex flex-col gap-2 rounded-xl border border-zinc-300 p-4 duration-200 hover:border-zinc-500"
         >
           <div class="flex flex-row items-center gap-2 text-lg font-semibold">
-            <PlaceholderAvatar :name="user.name" />
+            <AvatarCircle :name="user.name" :avatar_url="user.avatar_url" />
             {{ user.name }}
           </div>
 

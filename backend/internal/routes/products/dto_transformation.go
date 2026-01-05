@@ -104,6 +104,9 @@ func ToProductDTO(m *models.Product) ProductDTO {
 		CurrentHighestBid:   highestBid,
 		BidsCount:           m.BidsCount,
 		Categories:          ranges.Each(m.Categories, ToCategoryDTO),
+		DeniedBidders: ranges.Each(m.DeniedBidders, func(bidder models.DeniedBidder) ProfileDTO {
+			return ToProfileDTO(bidder.User)
+		}),
 		DescriptionChanges: ranges.Each(m.DescriptionChanges, func(m models.DescriptionChange) DescriptionChangeDTO {
 			return DescriptionChangeDTO{
 				ID:        m.ID,

@@ -85,6 +85,7 @@ func SetupRoutes(server *gin.Engine, deps ServerDependency) {
 	productsHandler := products.ProductsHandler{
 		ProductRepo:       deps.Repositories.ProductRepository,
 		MiddlewareService: deps.Services.MiddlewareService,
+		MailerService:     deps.Services.MailerService,
 		S3Service:         deps.Services.S3Service,
 		S3PermURL:         deps.Config.AWS.S3PermURL,
 	}

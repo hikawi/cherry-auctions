@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"luny.dev/cherryauctions/internal/models"
@@ -230,13 +229,23 @@ func (r *ProductRepository) CreateDescriptionChange(ctx context.Context, product
 		Append(&models.DescriptionChange{Changes: productDescription})
 }
 
-func (r *ProductRepository) CreateBid(ctx context.Context, productID uint, userID uint, bidAmount int64) error {
+// CreateBid creates a bid and returns the corresponding results.
+func (r *ProductRepository) CreateBid(
+	ctx context.Context,
+	productID uint,
+	userID uint,
+	bidAmount int64,
+	lastBid *models.Bid,
+	newBid *models.Bid,
+	currentProduct *models.Product,
+) error {
 	return r.DB.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		// Retrieve the product about to update
 		product := models.Product{}
 		err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
 			Model(&models.Product{}).
-			Preload("CurrentHighestBid").
+			Preload("CurrentHighestBid.User").
+			Preload("Seller").
 			Where("id = ?", productID).
 			First(&product).
 			Error
@@ -246,8 +255,13 @@ func (r *ProductRepository) CreateBid(ctx context.Context, productID uint, userI
 
 		// Check if it is the highest price.
 		// Whether it makes sense (based on step bid is on the service, not this I think)
-		if (product.CurrentHighestBid != nil && product.CurrentHighestBid.Price > bidAmount) || bidAmount < product.StartingBid {
+		if (product.CurrentHighestBid != nil && product.CurrentHighestBid.Price >= bidAmount) || bidAmount < product.StartingBid {
 			return fmt.Errorf("bid is not high enough")
+		}
+
+		// Check if it's the same user.
+		if product.CurrentHighestBid != nil && product.CurrentHighestBid.UserID == userID {
+			return fmt.Errorf("you can't outbid yourself")
 		}
 
 		// Now try to insert into the bids table I guess.
@@ -257,13 +271,16 @@ func (r *ProductRepository) CreateBid(ctx context.Context, productID uint, userI
 			return err
 		}
 
+		if product.CurrentHighestBid != nil {
+			*lastBid = *product.CurrentHighestBid
+		}
+		*currentProduct = product
+		*newBid = bid
+
 		// Now mark the bids as counted.
 		return tx.Model(&models.Product{Model: gorm.Model{ID: productID}}).
-			Where("id = ?", productID).
-			UpdateColumns(gin.H{
-				"CurrentHighestBidID": bid.ID,
-				"BidsCount":           gorm.Expr("bids_count + 1"),
-			}).
+			Select("current_highest_bid_id", "bids_count").
+			Updates(map[string]any{"current_highest_bid_id": bid.ID, "bids_count": gorm.Expr("bids_count + 1")}).
 			Error
 	})
 }

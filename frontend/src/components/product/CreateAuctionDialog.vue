@@ -1,16 +1,16 @@
 <script setup lang="ts">
+import { endpoints } from "@/consts";
+import { useAuthFetch } from "@/hooks/use-auth-fetch";
+import type { Category } from "@/types";
 import { LucideX } from "lucide-vue-next";
 import { computed, ref } from "vue";
-import WYSIWYGInput from "../shared/inputs/WYSIWYGInput.vue";
 import z from "zod";
-import MultiImageInput from "../shared/inputs/MultiImageInput.vue";
-import RadioInput from "../shared/inputs/RadioInput.vue";
 import CheckboxInput from "../shared/inputs/CheckboxInput.vue";
-import TextInput from "../shared/inputs/TextInput.vue";
-import { useAuthFetch } from "@/hooks/use-auth-fetch";
-import { endpoints } from "@/consts";
-import type { Category } from "@/types";
+import MoneyInput from "../shared/inputs/MoneyInput.vue";
+import MultiImageInput from "../shared/inputs/MultiImageInput.vue";
 import SelectInput from "../shared/inputs/SelectInput.vue";
+import TextInput from "../shared/inputs/TextInput.vue";
+import WYSIWYGInput from "../shared/inputs/WYSIWYGInput.vue";
 
 const { authFetch } = useAuthFetch({ json: false });
 
@@ -30,10 +30,9 @@ const name = ref<string>();
 const description = ref<string>();
 const productImages = ref<File[]>([]);
 const categoriesSelected = ref<string[]>([]);
-const startingBid = ref<string>();
-const stepBidType = ref<"percentage" | "fixed">("fixed");
-const stepBidValue = ref<string>();
-const binPrice = ref<string>();
+const startingBid = ref<number>();
+const stepBidValue = ref<number>();
+const binPrice = ref<number>();
 const allowUnrated = ref<boolean>(true);
 const autoExtends = ref<boolean>(true);
 const expiredAt = ref<string>();
@@ -64,11 +63,7 @@ async function confirm() {
     product_images: z.array(z.file().refine((file) => allowedFileTypes.includes(file.type))).min(3),
     categories: z.array(z.coerce.number()).min(1),
     starting_bid: z.coerce.number().min(0),
-    step_bid_value:
-      stepBidType.value == "percentage"
-        ? z.coerce.number().min(0).max(1)
-        : z.coerce.number().min(0),
-    step_bid_type: z.literal("percentage").or(z.literal("fixed")),
+    step_bid_value: z.coerce.number().min(0),
     bin_price: z.coerce.number().min(0),
     allows_unrated: z.coerce.boolean().default(true),
     auto_extends: z.coerce.boolean().default(true),
@@ -82,7 +77,6 @@ async function confirm() {
     categories: categoriesSelected.value,
     starting_bid: startingBid.value,
     step_bid_value: stepBidValue.value,
-    step_bid_type: stepBidType.value,
     bin_price: binPrice.value,
     allows_unrated: allowUnrated.value,
     auto_extends: autoExtends.value,
@@ -103,7 +97,6 @@ async function confirm() {
   data.data.categories.forEach((cat) => formData.append("categories", cat.toString()));
   formData.append("starting_bid", data.data.starting_bid.toString());
   formData.append("step_bid_value", data.data.step_bid_value.toString());
-  formData.append("step_bid_type", data.data.step_bid_type.toString());
   formData.append("bin_price", data.data.bin_price.toString());
   formData.append("allows_unrated", data.data.allows_unrated.toString());
   formData.append("auto_extends", data.data.auto_extends.toString());
@@ -145,37 +138,26 @@ async function confirm() {
           @remove="(id) => (categoriesSelected = categoriesSelected.filter((val) => val != id))"
         />
 
-        <TextInput
+        <MoneyInput
           :label="$t('auctions.starting_bid')"
-          type="number"
+          placeholder="9.99"
           required
-          v-model="startingBid"
+          @change="(n) => (startingBid = n)"
         />
 
-        <RadioInput
-          :label="$t('auctions.step_bid_type')"
-          name="step_bid_type"
-          v-model="stepBidType"
-          :choices="[
-            {
-              label: $t('auctions.step_bid_type_percentage'),
-              value: 'percentage',
-            },
-            {
-              label: $t('auctions.step_bid_type_fixed'),
-              value: 'fixed',
-            },
-          ]"
-        />
-
-        <TextInput
+        <MoneyInput
           :label="$t('auctions.step_bid_value')"
-          type="number"
+          placeholder="2.0"
           required
-          v-model="stepBidValue"
+          @change="(n) => (stepBidValue = n)"
         />
 
-        <TextInput :label="$t('auctions.bin_price')" type="number" v-model="binPrice" />
+        <MoneyInput
+          :label="$t('auctions.bin_price')"
+          placeholder="100.0"
+          required
+          @change="(n) => (binPrice = n)"
+        />
 
         <CheckboxInput :label="$t('auctions.allows_unrated_buyers')" v-model="allowUnrated" />
         <CheckboxInput :label="$t('auctions.auto_extends')" v-model="autoExtends" />

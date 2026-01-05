@@ -776,6 +776,75 @@ const docTemplate = `{
                 }
             }
         },
+        "/products/{id}/bids": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Bids on a product, hopefully with some race-condition management.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Creates a bid on a product",
+                "parameters": [
+                    {
+                        "description": "Bid body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/products.PostBidBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Successful bid",
+                        "schema": {
+                            "$ref": "#/definitions/shared.MessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "User is unauthenticated",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "User can not bid for other reasons",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Race condition, and you lost",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Server could not finish the request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/products/{id}/description": {
             "post": {
                 "security": [
@@ -1391,7 +1460,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "price": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "updated_at": {
                     "type": "string"
@@ -1445,7 +1514,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "bin_price": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "categories": {
                     "type": "array",
@@ -1458,6 +1527,12 @@ const docTemplate = `{
                 },
                 "current_highest_bid": {
                     "$ref": "#/definitions/products.BidDTO"
+                },
+                "denied_bidders": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/products.ProfileDTO"
+                    }
                 },
                 "description": {
                     "type": "string"
@@ -1502,13 +1577,10 @@ const docTemplate = `{
                     }
                 },
                 "starting_bid": {
-                    "type": "number"
-                },
-                "step_bid_type": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "step_bid_value": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "thumbnail_url": {
                     "type": "string"
@@ -1561,6 +1633,17 @@ const docTemplate = `{
                 }
             }
         },
+        "products.PostBidBody": {
+            "type": "object",
+            "required": [
+                "bid"
+            ],
+            "properties": {
+                "bid": {
+                    "type": "integer"
+                }
+            }
+        },
         "products.PostProductBody": {
             "type": "object"
         },
@@ -1589,7 +1672,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "bin_price": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "categories": {
                     "type": "array",
@@ -1602,6 +1685,12 @@ const docTemplate = `{
                 },
                 "current_highest_bid": {
                     "$ref": "#/definitions/products.BidDTO"
+                },
+                "denied_bidders": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/products.ProfileDTO"
+                    }
                 },
                 "description": {
                     "type": "string"
@@ -1628,13 +1717,10 @@ const docTemplate = `{
                     "$ref": "#/definitions/products.ProfileDTO"
                 },
                 "starting_bid": {
-                    "type": "number"
-                },
-                "step_bid_type": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "step_bid_value": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "thumbnail_url": {
                     "type": "string"
@@ -1657,6 +1743,9 @@ const docTemplate = `{
             "properties": {
                 "avatar_url": {
                     "type": "string"
+                },
+                "average_rating": {
+                    "type": "number"
                 },
                 "email": {
                     "type": "string"
