@@ -134,7 +134,8 @@ const profileLinks: Link[] = [
           v-for="(link, idx) in guestLinks"
           :key="idx"
           :href="link.href"
-          class="underline-offset-4 hover:underline"
+          class="underline-offset-8 hover:underline"
+          :class="{ underline: route.path == link.href }"
         >
           {{ $t(link.name) }}
         </a>
@@ -166,6 +167,7 @@ const profileLinks: Link[] = [
               v-else-if="!link.admin || profile.isAdmin"
               :href="link.href"
               class="flex flex-row items-center gap-2 border-b border-zinc-300 bg-white px-4 py-2 whitespace-nowrap duration-200 first-of-type:rounded-t-xl last-of-type:rounded-b-xl last-of-type:border-0 hover:bg-zinc-200"
+              :class="{ 'bg-zinc-200': route.path == link.href }"
             >
               <component :is="link.icon" class="size-4 min-w-fit translate-y-0.5" />
               <span class="min-w-fit">
