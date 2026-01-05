@@ -1,45 +1,25 @@
 <script setup lang="ts">
 import ProductCard from "@/components/index/ProductCard.vue";
-import CreateAuctionDialog from "@/components/product/CreateAuctionDialog.vue";
 import NavigationBar from "@/components/shared/NavigationBar.vue";
-import OverlayScreen from "@/components/shared/OverlayScreen.vue";
 import WhiteContainer from "@/components/shared/WhiteContainer.vue";
 import { endpoints } from "@/consts";
 import { useAuthFetch } from "@/hooks/use-auth-fetch";
-import type { Category, Product } from "@/types";
-import { LucideChevronLeft, LucideChevronRight, LucidePackage } from "lucide-vue-next";
+import type { Product } from "@/types";
+import { LucideChevronLeft, LucideChevronRight, LucideRefreshCcw } from "lucide-vue-next";
 import { onMounted, ref, watch } from "vue";
 
 const { authFetch } = useAuthFetch();
 
-const createDialogShown = ref(false);
 const data = ref<Product[]>();
-const categories = ref<Category[]>();
 const page = ref(1);
 const maxPages = ref(1);
 const loading = ref(false);
 
 watch(maxPages, (val) => (page.value = Math.min(page.value, val)));
-watch(page, fetchMyAuctions);
+watch(page, fetchMyBids);
 
-function onCreate(status: number) {
-  createDialogShown.value = false;
-  if (status != 201) {
-    console.log("uh oh");
-  } else {
-    fetchMyAuctions();
-  }
-}
-
-async function fetchCategories() {
-  const res = await authFetch(endpoints.categories.get);
-  if (res.ok) {
-    categories.value = await res.json();
-  }
-}
-
-async function fetchMyAuctions() {
-  const url = new URL(endpoints.users.me.products);
+async function fetchMyBids() {
+  const url = new URL(endpoints.users.me.bids);
   url.searchParams.append("page", page.value.toString());
   url.searchParams.append("per_page", "12");
 
@@ -58,7 +38,7 @@ async function fetchMyAuctions() {
 onMounted(async () => {
   loading.value = true;
   try {
-    await Promise.all([fetchCategories(), fetchMyAuctions()]);
+    await fetchMyBids();
   } finally {
     loading.value = false;
   }
@@ -69,20 +49,16 @@ onMounted(async () => {
   <WhiteContainer class="justify-start gap-8">
     <NavigationBar />
 
-    <OverlayScreen :shown="createDialogShown">
-      <CreateAuctionDialog @close="createDialogShown = false" @status="onCreate" :categories />
-    </OverlayScreen>
-
     <section class="flex w-full max-w-4xl flex-col gap-4">
       <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <h2 class="text-2xl font-bold">{{ $t("auctions.title") }}</h2>
+        <h2 class="text-2xl font-bold">{{ $t("navigation.my_bids") }}</h2>
 
         <button
           class="bg-claret-600 hover:bg-claret-700 mt-2 flex w-fit cursor-pointer flex-row items-center justify-center gap-2 self-end rounded-full px-4 py-1 font-semibold text-white duration-200"
-          @click="createDialogShown = true"
+          @click="fetchMyBids"
         >
-          <LucidePackage class="size-4 text-white" />
-          {{ $t("auctions.new") }}
+          <LucideRefreshCcw class="size-4 text-white" />
+          {{ $t("general.refresh") }}
         </button>
       </div>
 

@@ -284,3 +284,34 @@ func (r *ProductRepository) CreateBid(
 			Error
 	})
 }
+
+// GetMyBids retrieves a user's bids.
+func (r *ProductRepository) GetMyBids(ctx context.Context, userID uint, limit int, offset int) ([]models.Product, error) {
+	var products []models.Product
+	err := r.DB.WithContext(ctx).
+		Model(&models.Product{}).
+		Select("DISTINCT ON (products.id) products.*").
+		Preload("Seller").
+		Preload("CurrentHighestBid.User").
+		Preload("Bids.User").
+		Joins("JOIN bids ON bids.product_id = products.id AND bids.user_id = ?", userID).
+		Order("products.id, products.expired_at ASC").
+		Limit(limit).
+		Offset(offset).
+		Find(&products).
+		Error
+	return products, err
+}
+
+func (r *ProductRepository) CountMyBids(ctx context.Context, userID uint) (int64, error) {
+	var count int64
+	err := r.DB.WithContext(ctx).
+		Model(&models.Product{}).
+		Joins("JOIN bids ON bids.product_id = products.id").
+		Where("bids.user_id = ?", userID).
+		Order("products.expired_at ASC").
+		Distinct("products.id").
+		Count(&count).
+		Error
+	return count, err
+}

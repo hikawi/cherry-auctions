@@ -129,5 +129,24 @@ async function toggleFavorite() {
       <span v-if="shouldBeRelative">{{ $t("products.expires_in", { in: expiresDisplay }) }}</span>
       <span v-else>{{ $t("products.expires_at", { at: expiresAtDisplay }) }}</span>
     </div>
+
+    <p
+      v-if="
+        product.current_highest_bid && product.current_highest_bid?.bidder.id == profile.profile?.id
+      "
+      class="font-semibold text-emerald-600"
+    >
+      {{ $t("products.highest_bid") }}
+    </p>
+    <p
+      v-else-if="
+        product.bids &&
+        profile.profile &&
+        product.bids.some((bid) => bid.bidder.id == profile.profile!.id)
+      "
+      class="font-semibold text-yellow-600"
+    >
+      {{ $t("products.outbidded") }}
+    </p>
   </div>
 </template>

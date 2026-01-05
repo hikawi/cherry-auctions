@@ -1,3 +1,4 @@
+import BidsPage from "@/pages/BidsPage.vue";
 import HomePage from "@/pages/HomePage.vue";
 import { useProfileStore } from "@/stores/profile";
 import { createRouter, createWebHistory } from "vue-router";
@@ -26,6 +27,14 @@ const router = createRouter({
       name: "auctions",
       path: "/auctions",
       component: () => import("../pages/AuctionsPage.vue"),
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      name: "bids",
+      path: "/bids",
+      component: BidsPage,
       meta: {
         requiresAuth: true,
       },

@@ -187,7 +187,7 @@ func (h *ProductsHandler) GetProductID(g *gin.Context) {
 		Bids:            ToBidDTOs(product.Bids),
 		SimilarProducts: ToProductDTOs(similarsPtr),
 	}
-	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusOK, "response": similars})
+	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusOK, "response": response})
 	g.JSON(http.StatusOK, response)
 }
 
@@ -397,58 +397,4 @@ func (h *ProductsHandler) PostProductDescription(g *gin.Context) {
 	response := shared.MessageResponse{Message: "created a description change"}
 	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusCreated, "body": body, "response": response})
 	g.JSON(http.StatusCreated, response)
-}
-
-// GetMyProducts godoc
-//
-//	@summary		Retrieves my products
-//	@description	Retrieves my products, paginated.
-//	@tags			products
-//	@security		ApiKeyAuth
-//	@param			page		query	int	false	"Page Number"
-//	@param			per_page	query	int	false	"Items per Page"
-//	@produce		json
-//	@success		200	{object}	products.GetProductsResponse	"Successfully retrieved"
-//	@failure		400	{object}	shared.ErrorResponse			"When the request is invalid"
-//	@failure		401	{object}	shared.ErrorResponse			"When the user is unauthenticated"
-//	@failure		500	{object}	shared.ErrorResponse			"The server could not make the request"
-//	@router			/products/me [get]
-func (h *ProductsHandler) GetMyProducts(g *gin.Context) {
-	ctx := g.Request.Context()
-	claimsAny, _ := g.Get("claims")
-	claims := claimsAny.(*services.JWTSubject)
-	query := GetProductsQuery{
-		Page:    1,
-		PerPage: 20,
-	}
-
-	if err := g.ShouldBindQuery(&query); err != nil {
-		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusBadRequest, "error": err.Error(), "query": query})
-		g.AbortWithStatusJSON(http.StatusBadRequest, shared.ErrorResponse{Error: "invalid query"})
-		return
-	}
-
-	products, err := h.ProductRepo.GetRunningUserProducts(ctx, claims.UserID, query.PerPage, (query.Page-1)*query.PerPage)
-	if err != nil {
-		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusInternalServerError, "error": err.Error(), "query": query})
-		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "couldn't query for user products"})
-		return
-	}
-
-	count, err := h.ProductRepo.CountRunningUserProducts(ctx, claims.UserID)
-	if err != nil {
-		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": err.Error(), "query": query})
-		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "unable to count products"})
-		return
-	}
-
-	response := GetProductsResponse{
-		Data:       ranges.EachAddress(products, ToProductDTO),
-		Total:      count,
-		TotalPages: int(math.Ceil(float64(count) / float64(query.PerPage))),
-		Page:       query.Page,
-		PerPage:    query.PerPage,
-	}
-	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusOK, "query": query, "response": response})
-	g.JSON(http.StatusOK, response)
 }

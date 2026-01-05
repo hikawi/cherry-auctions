@@ -3,14 +3,90 @@ package users
 import (
 	"mime/multipart"
 	"time"
-
-	"luny.dev/cherryauctions/internal/models"
-	"luny.dev/cherryauctions/pkg/ranges"
 )
+
+type QuestionDTO struct {
+	ID        uint       `json:"id"`
+	Content   string     `json:"content"`
+	Answer    *string    `json:"answer"`
+	User      ProfileDTO `json:"user"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+}
 
 type SubscriptionDTO struct {
 	ExpiredAt time.Time `json:"expired_at"`
 	CreatedAt time.Time `json:"created_at"`
+}
+
+type ProductImageDTO struct {
+	URL     string `json:"url"`
+	AltText string `json:"alt"`
+}
+
+type ProfileDTO struct {
+	ID            uint    `json:"id"`
+	Name          *string `json:"name"`
+	Email         *string `json:"email"`
+	AvatarURL     *string `json:"avatar_url"`
+	AverageRating float64 `json:"average_rating"`
+}
+
+type CategoryDTO struct {
+	ID       uint   `json:"id"`
+	Name     string `json:"name"`
+	ParentID *uint  `json:"parent_id"`
+}
+
+type BidDTO struct {
+	ID        uint       `json:"id"`
+	Price     int64      `json:"price"`
+	Automated bool       `json:"automated"`
+	Bidder    ProfileDTO `json:"bidder"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+}
+
+type DescriptionChangeDTO struct {
+	ID        uint      `json:"id"`
+	Changes   string    `json:"changes"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+type ProductDTO struct {
+	ID                  uint                   `json:"id"`
+	Name                string                 `json:"name"`
+	StartingBid         int64                  `json:"starting_bid"`
+	StepBidValue        int64                  `json:"step_bid_value"`
+	BINPrice            *int64                 `json:"bin_price"`
+	Description         string                 `json:"description"`
+	ThumbnailURL        string                 `json:"thumbnail_url"`
+	AllowsUnratedBuyers bool                   `json:"allows_unrated_buyers"`
+	AutoExtendsTime     bool                   `json:"auto_extends_time"`
+	CreatedAt           time.Time              `json:"created_at"`
+	ExpiredAt           time.Time              `json:"expired_at"`
+	Seller              ProfileDTO             `json:"seller"`
+	CurrentHighestBid   *BidDTO                `json:"current_highest_bid"`
+	Categories          []CategoryDTO          `json:"categories"`
+	DescriptionChanges  []DescriptionChangeDTO `json:"description_changes"`
+	DeniedBidders       []ProfileDTO           `json:"denied_bidders"`
+	Bids                []BidDTO               `json:"bids"`
+
+	BidsCount  int  `json:"bids_count"`
+	IsFavorite bool `json:"is_favorite"`
+}
+
+type GetMyProductsQuery struct {
+	Page    int `form:"page" binding:"number,gt=0,omitempty" json:"page"`
+	PerPage int `form:"per_page" binding:"number,gt=0,omitempty" json:"per_page"`
+}
+
+type GetProductsResponse struct {
+	Data       []ProductDTO `json:"data"`
+	Total      int64        `json:"total"`
+	TotalPages int          `json:"total_pages"`
+	Page       int          `json:"page"`
+	PerPage    int          `json:"per_page"`
 }
 
 type UserDTO struct {
@@ -25,37 +101,6 @@ type UserDTO struct {
 	WaitingApproval bool             `json:"waiting_approval"`
 	Roles           []string         `json:"roles"`
 	Subscription    *SubscriptionDTO `json:"subscription"`
-}
-
-func ToSubscriptionDTO(m models.SellerSubscription) SubscriptionDTO {
-	return SubscriptionDTO{
-		ExpiredAt: m.ExpiredAt,
-		CreatedAt: m.CreatedAt,
-	}
-}
-
-func ToUserDTO(m *models.User) UserDTO {
-	var subscription *SubscriptionDTO
-	if len(m.Subscriptions) > 0 {
-		dto := ToSubscriptionDTO(m.Subscriptions[0])
-		subscription = &dto
-	}
-
-	return UserDTO{
-		ID:              m.ID,
-		Name:            m.Name,
-		Email:           m.Email,
-		Address:         m.Address,
-		AvatarURL:       m.AvatarURL,
-		Verified:        m.Verified,
-		CreatedAt:       m.CreatedAt,
-		AverageRating:   m.AverageRating,
-		WaitingApproval: m.WaitingApproval,
-		Roles: ranges.Each(m.Roles, func(r models.Role) string {
-			return r.ID
-		}),
-		Subscription: subscription,
-	}
 }
 
 type GetUsersQuery struct {

@@ -649,63 +649,6 @@
                 }
             }
         },
-        "/products/me": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Retrieves my products, paginated.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "products"
-                ],
-                "summary": "Retrieves my products",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Page Number",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Items per Page",
-                        "name": "per_page",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved",
-                        "schema": {
-                            "$ref": "#/definitions/products.GetProductsResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "When the request is invalid",
-                        "schema": {
-                            "$ref": "#/definitions/shared.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "When the user is unauthenticated",
-                        "schema": {
-                            "$ref": "#/definitions/shared.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "The server could not make the request",
-                        "schema": {
-                            "$ref": "#/definitions/shared.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/products/top": {
             "get": {
                 "description": "Queriee top-products via some metrics, instead of a pure query like /products.",
@@ -1228,9 +1171,7 @@
                         }
                     }
                 }
-            }
-        },
-        "/users/profile": {
+            },
             "put": {
                 "security": [
                     {
@@ -1280,6 +1221,114 @@
                     },
                     "500": {
                         "description": "The request could not be completed due to server faults",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/me/bids": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieves information about your ongoing bids.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Gets my own bids.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page Number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Items per Page",
+                        "name": "per_page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful",
+                        "schema": {
+                            "$ref": "#/definitions/users.GetProductsResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "When unauthenticated",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "The server could not complete the request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/me/products": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieves my products, paginated.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Retrieves my products",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page Number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Items per Page",
+                        "name": "per_page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved",
+                        "schema": {
+                            "$ref": "#/definitions/users.GetProductsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "When the request is invalid",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "When the user is unauthenticated",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "The server could not make the request",
                         "schema": {
                             "$ref": "#/definitions/shared.ErrorResponse"
                         }
@@ -1822,6 +1871,80 @@
                 }
             }
         },
+        "users.BidDTO": {
+            "type": "object",
+            "properties": {
+                "automated": {
+                    "type": "boolean"
+                },
+                "bidder": {
+                    "$ref": "#/definitions/users.ProfileDTO"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "users.CategoryDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parent_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "users.DescriptionChangeDTO": {
+            "type": "object",
+            "properties": {
+                "changes": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "users.GetProductsResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/users.ProductDTO"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "per_page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "total_pages": {
+                    "type": "integer"
+                }
+            }
+        },
         "users.GetUsersResponse": {
             "type": "object",
             "properties": {
@@ -1864,6 +1987,100 @@
                     "type": "string",
                     "maxLength": 200,
                     "minLength": 2
+                }
+            }
+        },
+        "users.ProductDTO": {
+            "type": "object",
+            "properties": {
+                "allows_unrated_buyers": {
+                    "type": "boolean"
+                },
+                "auto_extends_time": {
+                    "type": "boolean"
+                },
+                "bids": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/users.BidDTO"
+                    }
+                },
+                "bids_count": {
+                    "type": "integer"
+                },
+                "bin_price": {
+                    "type": "integer"
+                },
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/users.CategoryDTO"
+                    }
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "current_highest_bid": {
+                    "$ref": "#/definitions/users.BidDTO"
+                },
+                "denied_bidders": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/users.ProfileDTO"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "description_changes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/users.DescriptionChangeDTO"
+                    }
+                },
+                "expired_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_favorite": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "seller": {
+                    "$ref": "#/definitions/users.ProfileDTO"
+                },
+                "starting_bid": {
+                    "type": "integer"
+                },
+                "step_bid_value": {
+                    "type": "integer"
+                },
+                "thumbnail_url": {
+                    "type": "string"
+                }
+            }
+        },
+        "users.ProfileDTO": {
+            "type": "object",
+            "properties": {
+                "avatar_url": {
+                    "type": "string"
+                },
+                "average_rating": {
+                    "type": "number"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },
