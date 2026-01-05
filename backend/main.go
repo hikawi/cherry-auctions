@@ -2,9 +2,11 @@ package main
 
 import (
 	"log"
+	"time"
 
 	"github.com/davidbyttow/govips/v2/vips"
 	"github.com/gin-gonic/gin"
+	"github.com/go-co-op/gocron/v2"
 	"luny.dev/cherryauctions/internal/config"
 	"luny.dev/cherryauctions/internal/infra"
 	"luny.dev/cherryauctions/internal/logging"
@@ -29,6 +31,12 @@ import (
 // @name						Authorization
 // @description				Classic Bearer token, authenticated by using the login endpoint, which should grant an access token. To refresh it, use the RefreshToken cookie.
 func main() {
+	// Setup a cron tab
+	scheduler, err := gocron.NewScheduler()
+	if err != nil {
+		log.Fatalf("failed to setup scheduler: %v", err)
+	}
+
 	cfg := config.Load()
 	vips.Startup(nil)
 	defer vips.Shutdown()
@@ -89,7 +97,22 @@ func main() {
 		},
 	})
 
-	err := server.Run(":80")
+	_, err = scheduler.NewJob(gocron.DurationJob(1*time.Minute), gocron.NewTask(func() {
+		// Sweep
+		mailerService.SendEndedAuctionsEmail()
+	}))
+	if err != nil {
+		log.Fatalf("can't setup a cron job: %v", err)
+	}
+	scheduler.Start()
+	defer func() {
+		err := scheduler.Shutdown()
+		if err != nil {
+			log.Printf("couldn't shutdown scheduler: %v", err)
+		}
+	}()
+
+	err = server.Run(":80")
 	if err != nil {
 		log.Fatalln("fatal: failed to run the server. conflicted port?")
 	}
