@@ -60,7 +60,7 @@ async function updateProfile() {
   loading.value = true;
 
   try {
-    const res = await authFetch(endpoints.users.profile, {
+    const res = await authFetch(endpoints.users.me.index, {
       method: "PUT",
       headers: {
         "content-type": "application/json",

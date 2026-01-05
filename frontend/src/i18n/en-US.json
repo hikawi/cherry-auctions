@@ -93,6 +93,7 @@
     "new": "New Auction",
     "cancel": "Cancel",
     "loading": "Loading...",
+    "no_auctions": "You don't have any products",
     "create": "Create",
     "product_name": "Product Name",
     "product_description": "Product Description",
@@ -130,7 +131,14 @@
     "title": "Acknowledgements",
     "fonts": "Fonts Usage",
     "fonts_paragraph": "Fonts used here are based on Chiron GoRound TC, which is a SIL Open Font-licensed font, distributed by Google Fonts. The fonts are property of their respective owners, and we do not claim any ownership over them.",
-    "contributors": "Contributors"
+    "contributors": "Contributors",
+    "tasks": {
+      "frontend": "Frontend Developer",
+      "backend": "Backend Developer",
+      "design": "UI Designer",
+      "infra": "DevOps and Infrastructure",
+      "forgot_password_frontend": "UI for Forgot Password (/forgot)"
+    }
   },
   "search": {
     "no_products": "No products match your criteria",
@@ -177,7 +185,9 @@
     "cant_bid_no_rating": "You must have a rating score of 0.8",
     "cant_bid_denied": "You are denied from bidding on this product",
     "cant_bid_outbid_self": "You can't outbid yourself",
-    "failed_to_bid": "Failed to bid. Someone might have beaten you to it."
+    "failed_to_bid": "Failed to bid. Someone might have beaten you to it.",
+    "highest_bid": "You hold the highest bid for this auction",
+    "outbidded": "You got outbidded on this auction"
   },
   "profile": {
     "profile": "Profile",

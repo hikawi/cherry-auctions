@@ -13,7 +13,6 @@ export const endpoints = {
     details: (id: unknown) => `${api}/v1/products/${id}`,
     favorite: `${api}/v1/products/favorite`,
     top: `${api}/v1/products/top`,
-    me: `${api}/v1/products/me`,
     bids: (id: unknown) => `${api}/v1/products/${id}/bids`,
     description: (id: unknown) => `${api}/v1/products/${id}/description`,
   },
@@ -23,13 +22,16 @@ export const endpoints = {
     edit: (id: unknown) => `${api}/v1/categories/${id}`,
     delete: (id: unknown) => `${api}/v1/categories/${id}`,
   },
-  self: `${api}/v1/users/me`,
   users: {
     all: `${api}/v1/users`,
     request: `${api}/v1/users/request`,
     approve: `${api}/v1/users/approve`,
     avatar: `${api}/v1/users/avatar`,
-    profile: `${api}/v1/users/profile`,
+    me: {
+      index: `${api}/v1/users/me`,
+      products: `${api}/v1/users/me/products`,
+      bids: `${api}/v1/users/me/bids`,
+    },
   },
   questions: {
     index: `${api}/v1/questions`,

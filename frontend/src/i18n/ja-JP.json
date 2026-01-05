@@ -93,6 +93,7 @@
     "new": "新規作成",
     "cancel": "キャンセル",
     "loading": "読み込み中",
+    "no_auctions": "商品がありません",
     "create": "出品する",
     "product_name": "商品名",
     "product_description": "商品説明",
@@ -130,7 +131,14 @@
     "title": "謝辞",
     "fonts": "使用フォントについて",
     "fonts_paragraph": "本サイトで使用されているフォントは、Google Fontsを通じて配布されているSILオープンフォントライセンスの「Chiron GoRound TC」に基づいています。フォントの著作権はそれぞれの所有者に帰属し、当サイトがそれらの所有権を主張することはありません。",
-    "contributors": "協力者・コントリビューター"
+    "contributors": "協力者・コントリビューター",
+    "tasks": {
+      "frontend": "フロントエンド開発者",
+      "backend": "バックエンド開発者",
+      "design": "ユーザーインタフェースデザイナ",
+      "infra": "DevOpsとソフトウェアアーキテクチャ",
+      "forgot_password_frontend": "パスワードを忘れ場合画面 (/forgot)"
+    }
   },
   "search": {
     "no_products": "商品一つも見つかりませんでした",
@@ -177,7 +185,9 @@
     "cant_bid_no_rating": "お客様の評価は0.8以下ため、入札できません",
     "cant_bid_denied": "拒否されたため、この商品に入札できません",
     "cant_bid_outbid_self": "自分を競り落とすことができません",
-    "failed_to_bid": "入札できませんでした。誰が先に入札したかもしれません。"
+    "failed_to_bid": "入札できませんでした。誰が先に入札したかもしれません。",
+    "highest_bid": "最高入札額持ち済み",
+    "outbidded": "他人に競り落とされました"
   },
   "profile": {
     "profile": "プロフィール",

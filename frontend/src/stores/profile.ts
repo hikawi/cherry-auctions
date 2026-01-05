@@ -23,7 +23,7 @@ export const useProfileStore = defineStore("profile", () => {
     loading.value = true;
 
     try {
-      const res = await authFetch(endpoints.self);
+      const res = await authFetch(endpoints.users.me.index);
       if (res.ok) {
         setProfile(await res.json());
       }
