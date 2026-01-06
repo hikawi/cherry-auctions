@@ -16,6 +16,6 @@ const profile = useProfileStore();
     <WhiteContainer v-if="profile.isFetching">
       <LoadingSpinner />
     </WhiteContainer>
-    <router-view></router-view>
+    <router-view v-else></router-view>
   </main>
 </template>
