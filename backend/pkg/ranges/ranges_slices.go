@@ -19,3 +19,13 @@ func EachAddress[T any, R any](input []T, mapper func(*T) R) []R {
 	}
 	return result
 }
+
+func Filter[T any](input []T, predicate func(T) bool) []T {
+	var result []T
+	for _, val := range input {
+		if predicate(val) {
+			result = append(result, val)
+		}
+	}
+	return result
+}

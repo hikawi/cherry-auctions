@@ -71,9 +71,12 @@ type QuestionDTO struct {
 }
 
 type GetProductsQuery struct {
-	Query   string `form:"query" json:"query"`
-	Page    int    `form:"page" binding:"number,gt=0,omitempty" json:"page"`
-	PerPage int    `form:"per_page" binding:"number,gt=0,omitempty" json:"per_page"`
+	Query      string   `form:"query" json:"query"`
+	Categories []string `form:"category" json:"categories" binding:"omitempty"`
+	Sort       string   `form:"sort" json:"sort" binding:"oneof=id price time,omitempty"`
+	SortAsc    bool     `form:"asc" json:"asc" binding:"boolean"`
+	Page       int      `form:"page" binding:"number,gt=0,omitempty" json:"page"`
+	PerPage    int      `form:"per_page" binding:"number,gt=0,omitempty" json:"per_page"`
 }
 
 type PostProductIDBody struct {

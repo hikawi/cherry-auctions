@@ -9,7 +9,7 @@ parent: Other Specifications
 
 ### 1.1. Menu System
 
-- [ ] Display all categories
+- [x] Display all categories
 - [x] Categories have at least 2 levels
 
 ### 1.2. Home Page
@@ -21,23 +21,23 @@ parent: Other Specifications
 ### 1.3. Products Catalog
 
 - [x] Pagination
-- [ ] From categories
+- [x] From categories
 
 ### 1.4. Products Searching
 
 - [x] Full-text Search
 - [x] Search by name
-- [ ] Search by category
+- [x] Search by category
 - [x] Paginated results
-- [ ] Ordered results
-  - [ ] Ending time
-  - [ ] Price
+- [x] Ordered results
+  - [x] Ending time
+  - [x] Price
 - [x] New products (within some minutes) have emphasis
-- [ ] Product Display on Catalog
+- [x] Product Display on Catalog
   - [x] Thumbnail
   - [x] Name
   - [x] Current Price
-  - [ ] Current Highest Bid
+  - [x] Current Highest Bid
   - [x] BIN price
   - [x] Posted date
   - [x] Remaining time
@@ -64,8 +64,8 @@ parent: Other Specifications
 
 - [x] reCaptcha
 - [x] Passwords are hashed
-- [ ] Information
-  - [ ] OTP
+- [x] Information
+  - [x] OTP
   - [x] Email
   - [x] Name
   - [x] Address
@@ -100,7 +100,7 @@ parent: Other Specifications
 - [ ] Change password (requires old password)
 - [ ] View total rating and all ratings
 - [x] View favorites / watch list
-- [ ] View current bids
+- [x] View current bids
 - [ ] View won auctions
   - [ ] Rate the product's seller (+1) or (-1), with a feedback
 

@@ -17,6 +17,7 @@ import (
 	"gorm.io/gorm"
 	"luny.dev/cherryauctions/internal/logging"
 	"luny.dev/cherryauctions/internal/models"
+	"luny.dev/cherryauctions/internal/repositories"
 	"luny.dev/cherryauctions/internal/routes/shared"
 	"luny.dev/cherryauctions/internal/services"
 	"luny.dev/cherryauctions/pkg/closer"
@@ -29,6 +30,9 @@ import (
 //	@description	Queries from a list of products using a set of keywords, using Full-text Queries or Fuzzy and Similarity queries.
 //	@tags			products
 //	@produce		json
+//	@param			category	query		array	false	"Search Categories"
+//	@param			sort		query		string	false	"Sort Type"
+//	@param			asc			query		boolean	false	"Sort Direction"
 //	@param			query		query		string	false	"Search Query"
 //	@param			page		query		int		false	"Page Number"
 //	@param			per_page	query		int		false	"Items per Page"
@@ -38,8 +42,11 @@ import (
 func (h *ProductsHandler) GetProducts(g *gin.Context) {
 	ctx := g.Request.Context()
 	query := GetProductsQuery{
-		Page:    1,
-		PerPage: 20,
+		Categories: []string{},
+		Sort:       "id",
+		SortAsc:    true,
+		Page:       1,
+		PerPage:    20,
 	}
 
 	if err := g.ShouldBindQuery(&query); err != nil {
@@ -48,14 +55,32 @@ func (h *ProductsHandler) GetProducts(g *gin.Context) {
 		return
 	}
 
-	products, err := h.ProductRepo.SearchProducts(ctx, query.Query, query.PerPage, (query.Page-1)*query.PerPage)
+	categories := []uint{}
+	for _, category := range query.Categories {
+		id, err := strconv.ParseUint(category, 10, 0)
+		if err != nil {
+			continue
+		}
+
+		categories = append(categories, uint(id))
+	}
+
+	products, err := h.ProductRepo.SearchProducts(
+		ctx,
+		query.Query,
+		categories,
+		repositories.ProductSortType(query.Sort),
+		query.SortAsc,
+		query.PerPage,
+		(query.Page-1)*query.PerPage,
+	)
 	if err != nil {
 		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": err.Error(), "query": query})
 		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "couldn't query the database"})
 		return
 	}
 
-	count, err := h.ProductRepo.CountProductsWithQuery(ctx, query.Query)
+	count, err := h.ProductRepo.CountProductsWithQuery(ctx, query.Query, categories)
 	if err != nil {
 		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": err.Error(), "query": query})
 		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "unable to count products"})
