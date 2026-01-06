@@ -185,6 +185,8 @@
     "replied_by_seller": "出品者の回答",
     "no_questions": "質問はまだありません",
     "no_bids": "入札はまだありません。一番乗りで入札しませんか？",
+    "rating": "評価{rating}",
+    "current_highest_bidder": "現在の最高入札者",
     "questions": "商品への質問一覧",
     "similar_products": "この商品をチェックした人はこんな商品もチェックしています",
     "bids": "すべての入札",

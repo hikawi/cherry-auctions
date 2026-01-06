@@ -171,11 +171,14 @@ async function bid() {
           :avatar_url="data.seller.avatar_url"
           class="size-8"
         />
-        <span class="text-lg"
+        <span
           >{{ data.seller.name }} ({{
             data.seller.email ? data.seller.email : $t("products.deleted_email")
           }})</span
         >
+        <span>
+          {{ $t("products.rating", { rating: $n(data.seller.average_rating, "decimal") }) }}
+        </span>
       </div>
 
       <div class="flex w-full flex-col gap-1">

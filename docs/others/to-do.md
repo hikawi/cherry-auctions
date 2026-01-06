@@ -45,14 +45,14 @@ parent: Other Specifications
 
 ### 1.5. Products Details
 
-- [ ] All content of the product
+- [x] All content of the product
   - [x] Thumbnail
   - [x] Other images
   - [x] Product name
   - [x] Current price
   - [x] BIN price
-  - [ ] Seller info & rating
-  - [ ] Highest bidder info & rating
+  - [x] Seller info & rating
+  - [x] Highest bidder info & rating
   - [x] Posted date
   - [x] Expired at
   - [x] Relative expired in if less than 3 days

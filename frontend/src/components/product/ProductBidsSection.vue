@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { Product } from "@/types";
 import dayjs from "dayjs";
-import { LucideCircle } from "lucide-vue-next";
+import { LucideCircle, LucideCrown } from "lucide-vue-next";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
+import AvatarCircle from "../shared/AvatarCircle.vue";
 
 const { locale } = useI18n();
 
@@ -32,6 +33,27 @@ function createAbsoluteTime(time: string): string {
 <template>
   <section class="flex w-full flex-col gap-4">
     <h2 class="text-xl font-bold">{{ $t("products.bids") }}</h2>
+
+    <div
+      v-if="sortedBids && sortedBids.length > 0"
+      class="flex w-full flex-col items-center gap-4 rounded-xl border border-zinc-300 p-4 md:w-fit md:flex-row md:p-6"
+    >
+      <LucideCrown class="size-6 fill-amber-600 text-amber-600" />
+      <h3 class="text-lg font-semibold">{{ $t("products.current_highest_bidder") }}</h3>
+
+      <div class="flex flex-col items-center gap-2 md:ml-8">
+        <AvatarCircle
+          :name="sortedBids[0].bidder.name"
+          :avatar_url="sortedBids[0].bidder.avatar_url"
+          class="size-12"
+        />
+        <span
+          >{{ sortedBids[0].bidder.name }} ({{
+            $t("products.rating", { rating: sortedBids[0].bidder.average_rating })
+          }})</span
+        >
+      </div>
+    </div>
 
     <div class="flex w-full flex-col gap-2" v-if="data.bids && data.bids.length > 0">
       <template v-for="(bid, idx) in sortedBids" :key="idx">
