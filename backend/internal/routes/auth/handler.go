@@ -3,7 +3,6 @@ package auth
 import (
 	"crypto/sha256"
 	"encoding/base64"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -164,7 +163,6 @@ func (h *AuthHandler) PostRefresh(g *gin.Context) {
 
 	// Check the refresh token.
 	decodedCookie, err := base64.URLEncoding.DecodeString(cookie)
-	fmt.Println(cookie)
 	if err != nil {
 		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusUnauthorized, "error": err.Error()})
 		g.AbortWithStatusJSON(http.StatusUnauthorized, shared.ErrorResponse{Error: "invalid refresh token"})

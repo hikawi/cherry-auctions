@@ -3,8 +3,6 @@ package models
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 // User is the main struct that binds everything together.
@@ -31,14 +29,4 @@ type User struct {
 	FavoriteProducts []Product            `gorm:"many2many:favorite_products"`
 	Ratings          []Rating             `gorm:"foreignKey:ReviewerID"`
 	RatedRatings     []Rating             `gorm:"foreignKey:RevieweeID"`
-}
-
-func (u *User) AfterCreate(tx *gorm.DB) error {
-	var role Role
-
-	if err := tx.Where("name = ?", "user").First(&role).Error; err != nil {
-		return err
-	}
-
-	return tx.Model(u).Association("Roles").Append(&role)
 }
