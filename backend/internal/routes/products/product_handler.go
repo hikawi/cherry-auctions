@@ -290,13 +290,22 @@ func (h *ProductsHandler) uploadImages(ctx context.Context, body PostProductBody
 //	@security		ApiKeyAuth
 //	@accept			multipart/form-data
 //	@produce		json
-//	@param			data	body		products.PostProductBody	true	"New product body"
-//	@success		201		{object}	shared.MessageResponse		"Successfully created an auction"
-//	@failure		400		{object}	shared.ErrorResponse		"When the multipart data is invalid"
-//	@failure		401		{object}	shared.ErrorResponse		"When the user is unauthorized"
-//	@failure		403		{object}	shared.ErrorResponse		"When the user isn't subscribed"
-//	@failure		404		{object}	shared.ErrorResponse		"The server couldn't find the requested product"
-//	@failure		500		{object}	shared.ErrorResponse		"The server could not make the request"
+//	@Param			name			formData	string					true	"Product Name"			minLength(2)
+//	@Param			description		formData	string					true	"Product Description"	minLength(50)
+//	@Param			starting_bid	formData	integer					true	"Initial bid amount"	minimum(1)
+//	@Param			categories		formData	[]int					true	"Array of category IDs"
+//	@Param			product_images	formData	file					true	"Product images to upload"
+//	@Param			step_bid_value	formData	integer					true	"Minimum bid increment"	minimum(1)
+//	@Param			bin_price		formData	integer					false	"Buy It Now price"		minimum(1)
+//	@Param			allows_unrated	formData	boolean					false	"Allow unrated users to bid"
+//	@Param			auto_extends	formData	boolean					false	"Extend auction on late bids"
+//	@Param			expired_at		formData	string					true	"Expiration date (RFC3339)"	format(date-time)
+//	@success		201				{object}	shared.MessageResponse	"Successfully created an auction"
+//	@failure		400				{object}	shared.ErrorResponse	"When the multipart data is invalid"
+//	@failure		401				{object}	shared.ErrorResponse	"When the user is unauthorized"
+//	@failure		403				{object}	shared.ErrorResponse	"When the user isn't subscribed"
+//	@failure		404				{object}	shared.ErrorResponse	"The server couldn't find the requested product"
+//	@failure		500				{object}	shared.ErrorResponse	"The server could not make the request"
 //	@router			/products [post]
 func (h *ProductsHandler) PostProduct(g *gin.Context) {
 	ctx := g.Request.Context()

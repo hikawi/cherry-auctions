@@ -3,6 +3,7 @@ import { endpoints } from "@/consts";
 import { useAuthFetch } from "@/hooks/use-auth-fetch";
 import { onMounted, ref, watch } from "vue";
 import ProductCard from "../index/ProductCard.vue";
+import { LucideChevronLeft, LucideChevronRight } from "lucide-vue-next";
 
 const { authFetch } = useAuthFetch();
 
@@ -18,6 +19,8 @@ async function fetchFavorites() {
   const url = new URL(endpoints.products.favorite);
   url.searchParams.append("page", page.value.toString());
   url.searchParams.append("per_page", "12");
+  url.searchParams.append("sort", "time"); // Just default to expired by, not required in this form.
+  url.searchParams.append("asc", "true");
 
   loading.value = true;
   try {
@@ -47,6 +50,27 @@ onMounted(() => {
     <template v-for="product in data" :key="product.id">
       <ProductCard :product @favoriteToggle="fetchFavorites" />
     </template>
+
+    <!-- Paging section -->
+    <div class="flex w-full flex-row items-center justify-between sm:col-span-2 md:col-span-3">
+      <button
+        class="cursor-pointer rounded-lg border border-zinc-300 p-2 hover:border-zinc-500 disabled:cursor-not-allowed disabled:opacity-50"
+        @click="page = Math.max(page - 1, 1)"
+        :disabled="page == 1"
+      >
+        <LucideChevronLeft class="size-4 text-black" />
+      </button>
+
+      <span>{{ page }} / {{ maxPages }}</span>
+
+      <button
+        class="cursor-pointer rounded-lg border border-zinc-300 p-2 hover:border-zinc-500 disabled:cursor-not-allowed disabled:opacity-50"
+        @click="page = Math.min(page + 1, maxPages)"
+        :disabled="page == maxPages"
+      >
+        <LucideChevronRight class="size-4 text-black" />
+      </button>
+    </div>
   </div>
   <p class="w-full py-6 text-center text-xl font-semibold" v-else>
     {{ $t("profile.no_favorites") }}

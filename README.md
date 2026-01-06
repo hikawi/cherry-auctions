@@ -1,6 +1,11 @@
 # Cherry Auctions
 
-![wakatime](https://wakatime.com/badge/user/16f7181f-8df5-44c7-b2b4-4fa68b0c2dfe/project/9c6372ce-b005-493b-95b1-60ee50480cc0.svg)
+![wakatime](https://wakatime.com/badge/user/16f7181f-8df5-44c7-b2b4-4fa68b0c2dfe/project/9c6372ce-b005-493b-95b1-60ee50480cc0.svg?style=for-the-badge)
+![vue](https://img.shields.io/badge/frontend-vue-green?style=for-the-badge&logo=Vue.js)
+![go](https://img.shields.io/badge/backend-go-9cf?style=for-the-badge&logo=go)
+![status](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.cherry-auctions.luny.dev%2Fv1%2Fhealth&query=%24.message&style=for-the-badge&label=status)
+![frontend build](https://img.shields.io/github/actions/workflow/status/hikawi/cherry-auctions/frontend.yml?style=for-the-badge&label=frontend)
+![backend build](https://img.shields.io/github/actions/workflow/status/hikawi/cherry-auctions/backend.yml?style=for-the-badge&label=backend)
 
 ## Overview
 
@@ -36,6 +41,7 @@ Relevant Links:
 - Frontend at [cherry-auctions.luny.dev](https://cherry-auctions.luny.dev)
 - Backend at [api.cherry-auctions.luny.dev](https://api.cherry-auctions.luny.dev)
 - Project Specifications at [docs.cherry-auctions.luny.dev](https://docs.cherry-auctions.luny.dev)
+- Swagger UI at [api.cherry-auctions.luny.dev/swagger](https://api.cherry-auctions.luny.dev/swagger)
 
 ## Cherry Auctions – Services Overview
 

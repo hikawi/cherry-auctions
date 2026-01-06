@@ -212,8 +212,6 @@ definitions:
     required:
     - bid
     type: object
-  products.PostProductBody:
-    type: object
   products.PostProductDescriptionBody:
     properties:
       description:
@@ -887,12 +885,62 @@ paths:
       - multipart/form-data
       description: Posts a new product up for auctions.
       parameters:
-      - description: New product body
-        in: body
-        name: data
+      - description: Product Name
+        in: formData
+        minLength: 2
+        name: name
         required: true
-        schema:
-          $ref: '#/definitions/products.PostProductBody'
+        type: string
+      - description: Product Description
+        in: formData
+        minLength: 50
+        name: description
+        required: true
+        type: string
+      - description: Initial bid amount
+        in: formData
+        minimum: 1
+        name: starting_bid
+        required: true
+        type: integer
+      - collectionFormat: csv
+        description: Array of category IDs
+        in: formData
+        items:
+          type: integer
+        name: categories
+        required: true
+        type: array
+      - description: Product images to upload
+        in: formData
+        name: product_images
+        required: true
+        type: file
+      - description: Minimum bid increment
+        in: formData
+        minimum: 1
+        name: step_bid_value
+        required: true
+        type: integer
+      - description: Buy It Now price
+        in: formData
+        minimum: 1
+        name: bin_price
+        type: integer
+      - description: Allow unrated users to bid
+        in: formData
+        name: allows_unrated
+        type: boolean
+      - description: Extend auction on late bids
+        in: formData
+        name: auto_extends
+        type: boolean
+      - description: Expiration date (RFC3339)
+        format: date-time
+        in: formData
+        name: expired_at
+        required: true
+        type: string
       produces:
       - application/json
       responses:
