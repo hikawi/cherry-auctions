@@ -20,7 +20,7 @@ type UsersHandler struct {
 func (h *UsersHandler) SetupRouter(r *gin.RouterGroup) {
 	g := r.Group("/users")
 
-	g.GET("/me", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.GetMe)
+	g.GET("/me", h.MiddlewareService.SoftAuthorizedRoute, h.GetMe)
 	g.PUT("/me", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.PutProfile)
 	g.GET("/me/products", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.GetMyProducts)
 	g.GET("/me/bids", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.GetMyBids)

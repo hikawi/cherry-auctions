@@ -14,7 +14,7 @@ func TestSignJWT(t *testing.T) {
 		JWTDomain:    "https://example.com",
 		JWTSecretKey: "test",
 	}
-	str, err := jwtService.SignJWT(2, "name", "test@example.com", "lol hi", nil)
+	str, err := jwtService.SignJWT(2, "name", "test@example.com", "lol hi", nil, true)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, str)

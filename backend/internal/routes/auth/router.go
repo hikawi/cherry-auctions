@@ -12,10 +12,13 @@ type AuthHandler struct {
 	CookieSecure bool
 	Domain       string
 
-	RandomService   *services.RandomService
-	JWTService      *services.JWTService
-	PasswordService *services.PasswordService
-	CaptchaService  *services.CaptchaService
+	RandomService     *services.RandomService
+	JWTService        *services.JWTService
+	PasswordService   *services.PasswordService
+	CaptchaService    *services.CaptchaService
+	MailerService     *services.MailerService
+	MiddlewareService *services.MiddlewareService
+	OTPService        *services.OTPService
 
 	RefreshTokenRepo *repositories.RefreshTokenRepository
 	UserRepo         *repositories.UserRepository
@@ -28,4 +31,6 @@ func (h *AuthHandler) SetupRouter(group *gin.RouterGroup) {
 	router.POST("/register", h.PostRegister)
 	router.POST("/logout", h.PostLogout)
 	router.POST("/refresh", h.PostRefresh)
+	router.POST("/verify", h.MiddlewareService.SoftAuthorizedRoute, h.PostVerify)
+	router.POST("/verify/check", h.MiddlewareService.SoftAuthorizedRoute, h.PostVerifyCheck)
 }

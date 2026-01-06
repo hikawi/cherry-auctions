@@ -38,6 +38,17 @@
     "internal_error": "サーバーエラーが発生しましたしばらくしてから再びお試しください。",
     "internet_error": "インターネット接続に問題がある可能性があります。"
   },
+  "verify": {
+    "already_verified": "認証済み",
+    "already_verified_description": "もうすでに承認しましたから、ゆっくり休んでください...",
+    "not_verified": "未認証",
+    "code": "認証コード",
+    "send": "コードを送信",
+    "sending": "コードを送信中",
+    "verify": "認証",
+    "verifying": "認証中",
+    "email_sent": "メールで認証コードを送信しました"
+  },
   "forgot": {
     "title": "パスワードリセット",
     "email": "メールアドレス",

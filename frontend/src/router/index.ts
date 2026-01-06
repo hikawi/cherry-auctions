@@ -111,6 +111,11 @@ const router = createRouter({
       ],
     },
     {
+      name: "verify",
+      path: "/verify",
+      component: () => import("../pages/VerifyPage.vue"),
+    },
+    {
       name: "403",
       path: "/403",
       component: () => import("../pages/403Page.vue"),
@@ -137,6 +142,10 @@ router.beforeEach(async (to) => {
   // 未ログイン
   if (!profile.profile && to.meta.requiresAuth) {
     return { name: "login" };
+  }
+
+  if (profile.profile && !profile.profile.verified && to.meta.requiresAuth) {
+    return { name: "verify" };
   }
 
   // 管理者専用

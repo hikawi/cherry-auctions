@@ -331,9 +331,11 @@ func (r *ProductRepository) CountMyBids(ctx context.Context, userID uint) (int64
 }
 
 func (r *ProductRepository) SetProductSentEmail(ctx context.Context, productID uint) (int, error) {
-	return gorm.G[models.Product](r.DB).
+	db := r.DB.WithContext(ctx).
+		Model(&models.Product{}).
 		Where("id = ?", productID).
-		Updates(ctx, models.Product{EmailSent: true})
+		Update("email_sent", true)
+	return int(db.RowsAffected), db.Error
 }
 
 // GetAllExpiredProducts retrieves all products that are expired,
@@ -344,7 +346,7 @@ func (r *ProductRepository) GetAllExpiredProducts(ctx context.Context) ([]models
 		Model(&models.Product{}).
 		Preload("CurrentHighestBid.User").
 		Preload("Seller").
-		Where("expired_at < now() AND not email_sent").
+		Where("expired_at < ? AND email_sent = ?", time.Now(), false).
 		Find(&products).
 		Error
 	return products, err

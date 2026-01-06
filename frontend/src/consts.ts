@@ -7,6 +7,8 @@ export const endpoints = {
     forgot: `${api}/v1/auth/forgot`,
     refresh: `${api}/v1/auth/refresh`,
     logout: `${api}/v1/auth/logout`,
+    verify: `${api}/v1/auth/verify`,
+    verifyCheck: `${api}/v1/auth/verify/check`,
   },
   products: {
     get: `${api}/v1/products`,

@@ -119,9 +119,24 @@ func (repo *UserRepository) UpdateProfile(ctx context.Context, id uint, name *st
 	return gorm.G[models.User](repo.DB).Where("id = ?", id).Updates(ctx, models.User{Name: name, Address: address})
 }
 
+// UpdateOTP updates the user's OTP to a new one.
 func (repo *UserRepository) UpdateOTP(ctx context.Context, id uint, otp string) (int, error) {
 	expiredAt := time.Now().Add(15 * time.Minute)
 	return gorm.G[models.User](repo.DB).
 		Where("id = ?", id).
 		Updates(ctx, models.User{OTPCode: &otp, OTPExpiredAt: &expiredAt})
+}
+
+// ClearOTP clears the user's OTP to an empty state to mark used.
+func (repo *UserRepository) ClearOTP(ctx context.Context, id uint) (int, error) {
+	db := repo.DB.WithContext(ctx).
+		Model(&models.User{}).
+		Where("id = ?", id).
+		Select("otp_code", "otp_expired_at").
+		Updates(map[string]any{"otp_code": nil, "otp_expired_at": nil})
+	return int(db.RowsAffected), db.Error
+}
+
+func (repo *UserRepository) UpdateUserVerified(ctx context.Context, id uint, verified bool) (int, error) {
+	return gorm.G[models.User](repo.DB).Where("id = ?", id).Update(ctx, "verified", verified)
 }

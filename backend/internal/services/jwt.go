@@ -19,17 +19,19 @@ type JWTSubject struct {
 	Email                 string     `json:"email"`
 	Roles                 string     `json:"roles"`
 	SubscriptionExpiredAt *time.Time `json:"subscription_expired_at"`
+	Verified              bool       `json:"verified"`
 	jwt.RegisteredClaims
 }
 
 // SignJWT signs a JWT based on the environment variables and returns a signed string.
-func (s *JWTService) SignJWT(id uint, name string, email string, roles string, subscription *time.Time) (string, error) {
+func (s *JWTService) SignJWT(id uint, name string, email string, roles string, subscription *time.Time, verified bool) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, JWTSubject{
 		id,
 		name,
 		email,
 		roles,
 		subscription,
+		verified,
 		jwt.RegisteredClaims{
 			Issuer:    s.JWTDomain,
 			Audience:  jwt.ClaimStrings{s.JWTAudience},

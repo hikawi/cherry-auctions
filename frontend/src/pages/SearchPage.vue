@@ -116,18 +116,6 @@ onMounted(async () => {
             {{ $t("general.search") }}
           </button>
         </label>
-
-        <img
-          v-if="profile.hasProfile"
-          :src="urlEncodedName"
-          class="aspect-square h-10 w-auto rounded-full"
-        />
-        <a
-          href="/login"
-          class="bg-claret-600 flex h-full w-fit min-w-fit items-center justify-center rounded-lg px-4 font-semibold text-white"
-          v-else
-          >{{ $t("general.login") }}</a
-        >
       </div>
 
       <!-- Sidebar -->

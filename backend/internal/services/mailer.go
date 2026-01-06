@@ -360,11 +360,11 @@ func (s *MailerService) SendOTPEmail(user *models.User, otp string) {
 		_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
-		body := fmt.Sprintf(otpEmailTemplate, "", "15")
+		body := fmt.Sprintf(otpEmailTemplate, otp, "15")
 
 		message := gomail.NewMessage()
 		message.SetHeader("From", fromHeader)
-		message.SetHeader("To", *user.Email, *user.Name)
+		message.SetAddressHeader("To", *user.Email, *user.Name)
 		message.SetBody("text/html", body)
 		message.SetHeader("Subject", "CherryAuctions - OTP Verification")
 
@@ -375,7 +375,7 @@ func (s *MailerService) SendOTPEmail(user *models.User, otp string) {
 }
 
 func (s *MailerService) SendAuctionExpiredEmail(ctx context.Context, product *models.Product) {
-	fmt.Println("Sending expired for ", product.ID)
+	fmt.Println("Sending expired for", product.ID)
 	url := fmt.Sprintf("%s/products/%d", s.cfg.CORS.Origins, product.ID)
 	body := fmt.Sprintf(auctionExpiredTemplate, product.Name, url)
 
@@ -397,7 +397,7 @@ func (s *MailerService) SendAuctionExpiredEmail(ctx context.Context, product *mo
 }
 
 func (s *MailerService) SendAuctionEndedEmail(ctx context.Context, product *models.Product) {
-	fmt.Println("Sending ended for ", product.ID)
+	fmt.Println("Sending ended for", product.ID)
 	url := fmt.Sprintf("%s/products/%d", s.cfg.CORS.Origins, product.ID)
 	body := fmt.Sprintf(
 		auctionEndedTemplate,
@@ -438,6 +438,7 @@ func (s *MailerService) SendEndedAuctionsEmail() {
 		if err != nil {
 			fmt.Printf("Sweep had an error: %v\n", err)
 		}
+		fmt.Printf("About to sweep %d products\n", len(products))
 
 		group, gctx := errgroup.WithContext(ctx)
 		for _, product := range products {

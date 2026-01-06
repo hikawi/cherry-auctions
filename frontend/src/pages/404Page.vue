@@ -15,10 +15,10 @@ const { t } = useI18n();
         <h1 class="text-watermelon-600 text-4xl font-bold">{{ t("others.404.title") }}</h1>
         <p class="text-center text-balance">{{ t("others.404.description") }}</p>
       </div>
-      <a
-        href="/"
+      <router-link
+        :to="{ name: 'home' }"
         class="bg-claret-600 hover:bg-claret-700 w-fit rounded-full px-4 py-2 font-semibold text-white"
-        >{{ t("general.back_home") }}</a
+        >{{ t("general.back_home") }}</router-link
       >
     </div>
   </WhiteContainer>

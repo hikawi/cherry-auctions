@@ -3,12 +3,15 @@ package auth
 import (
 	"crypto/sha256"
 	"encoding/base64"
+	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"luny.dev/cherryauctions/internal/logging"
+	"luny.dev/cherryauctions/internal/models"
 	"luny.dev/cherryauctions/internal/routes/shared"
+	"luny.dev/cherryauctions/internal/services"
 )
 
 // PostLogin POST /auth/login
@@ -22,6 +25,7 @@ import (
 //	@success		200			{object}	auth.LoginResponse		"Login successful"
 //	@failure		400			{object}	shared.ErrorResponse	"Bad username or password format"
 //	@failure		401			{object}	shared.ErrorResponse	"Wrong password"
+//	@failure		403			{object}	shared.ErrorResponse	"Account is not verified"
 //	@failure		404			{object}	shared.ErrorResponse	"Account does not exist"
 //	@failure		421			{object}	shared.ErrorResponse	"Account uses oauth but tries to login with password"
 //	@failure		500			{object}	shared.ErrorResponse	"Server couldn't complete the request"
@@ -74,7 +78,7 @@ func (h *AuthHandler) PostLogin(g *gin.Context) {
 		subscription = &user.Subscriptions[0].ExpiredAt
 	}
 	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusOK, "message": "user successfully logged in", "body": loggingBody})
-	h.assignJWTKeyPair(g, loggingBody, user.ID, *user.Name, *user.Email, h.toRoleString(user.Roles), subscription)
+	h.assignJWTKeyPair(g, loggingBody, user.ID, *user.Name, *user.Email, h.toRoleString(user.Roles), subscription, user.Verified)
 }
 
 // PostRegister POST /auth/register
@@ -144,7 +148,6 @@ func (h *AuthHandler) PostRegister(g *gin.Context) {
 //	@summary		Refreshs a JWT key pair.
 //	@description	Uses the provided refresh token cookie to refresh on another short-lived access token.
 //	@tags			authentication
-//	@success		204	{object}	shared.MessageResponse	"Any request, regardless of authentication status"
 //	@success		200	{object}	auth.LoginResponse		"Refreshed successfully"
 //	@failure		401	{object}	shared.ErrorResponse	"Did not attach refresh token"
 //	@router			/auth/refresh [POST]
@@ -161,6 +164,7 @@ func (h *AuthHandler) PostRefresh(g *gin.Context) {
 
 	// Check the refresh token.
 	decodedCookie, err := base64.URLEncoding.DecodeString(cookie)
+	fmt.Println(cookie)
 	if err != nil {
 		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusUnauthorized, "error": err.Error()})
 		g.AbortWithStatusJSON(http.StatusUnauthorized, shared.ErrorResponse{Error: "invalid refresh token"})
@@ -178,8 +182,8 @@ func (h *AuthHandler) PostRefresh(g *gin.Context) {
 
 	// Make sure the users are checked.
 	if token.User.ID == 0 || token.User.Email == nil {
-		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusInternalServerError, "error": "this should not be preloaded"})
-		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "this should not be not preloaded"})
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusInternalServerError, "error": "this should be preloaded"})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "this should be not preloaded"})
 		return
 	}
 
@@ -196,7 +200,7 @@ func (h *AuthHandler) PostRefresh(g *gin.Context) {
 	if len(token.User.Subscriptions) > 0 {
 		subscription = &token.User.Subscriptions[0].ExpiredAt
 	}
-	accessToken, err := h.JWTService.SignJWT(token.User.ID, *token.User.Name, *token.User.Email, h.toRoleString(token.User.Roles), subscription)
+	accessToken, err := h.JWTService.SignJWT(token.User.ID, *token.User.Name, *token.User.Email, h.toRoleString(token.User.Roles), subscription, token.User.Verified)
 	if err != nil {
 		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusInternalServerError, "error": err.Error()})
 		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "server can't sign jwt"})
@@ -224,9 +228,10 @@ func (h *AuthHandler) PostRefresh(g *gin.Context) {
 		Name:     "RefreshToken",
 		Value:    base64.URLEncoding.EncodeToString(refreshToken),
 		Path:     "/",
-		Expires:  time.Now().Add(time.Hour * 24 * 30 * 3),
+		Expires:  time.Now().Add(time.Hour * 24 * 30 * 7),
 		Domain:   h.Domain,
 		Secure:   h.CookieSecure,
+		HttpOnly: true,
 		SameSite: http.SameSiteNoneMode,
 	})
 	g.JSON(http.StatusOK, LoginResponse{AccessToken: accessToken})
@@ -258,4 +263,100 @@ func (h *AuthHandler) PostLogout(g *gin.Context) {
 	logging.LogMessage(g, logging.LOG_INFO, gin.H{"message": "invalidated refresh token", "status": http.StatusNoContent})
 	g.SetCookie("RefreshToken", "", -1, "/", h.Domain, h.CookieSecure, true)
 	g.JSON(http.StatusNoContent, shared.MessageResponse{Message: "logged out"})
+}
+
+// PostVerifyCheck godoc
+//
+//	@summary		Verifies an OTP code.
+//	@description	Verifies a user's OTP code.
+//	@tags			authentication
+//	@success		200	{object}	shared.MessageResponse	"Verification successfully"
+//	@failure		400	{object}	shared.ErrorResponse	"Failed to verify"
+//	@failure		401	{object}	shared.ErrorResponse	"Not logged in"
+//	@failure		422	{object}	shared.ErrorResponse	"Token is valid but user does not exist"
+//	@failure		500	{object}	shared.ErrorResponse	"Internal server error"
+//	@router			/auth/verify/check [POST]
+func (h *AuthHandler) PostVerifyCheck(g *gin.Context) {
+	ctx := g.Request.Context()
+	claimsAny, ok := g.Get("claims")
+	if !ok {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusUnauthorized, "error": "missing bearer token"})
+		g.AbortWithStatusJSON(http.StatusUnauthorized, shared.ErrorResponse{Error: "missing Bearer token"})
+		return
+	}
+
+	claims := claimsAny.(*services.JWTSubject)
+	if claims.Verified {
+		logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusOK, "message": "already verified", "user_id": claims.UserID})
+		g.AbortWithStatusJSON(http.StatusOK, shared.MessageResponse{Message: "already verified"})
+		return
+	}
+
+	var body PostOTPVerifyBody
+	if err := g.ShouldBind(&body); err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusBadRequest, "error": err.Error(), "user_id": claims.UserID})
+		g.AbortWithStatusJSON(http.StatusBadRequest, shared.ErrorResponse{Error: "bad request"})
+		return
+	}
+
+	err := h.OTPService.VerifyOTP(ctx, claims.UserID, body.Code)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusBadRequest, "error": err.Error(), "user_id": claims.UserID})
+		g.AbortWithStatusJSON(http.StatusBadRequest, shared.ErrorResponse{Error: "failed to verify otp"})
+		return
+	}
+
+	// Update the verified status
+	_, err = h.UserRepo.UpdateUserVerified(ctx, claims.UserID, true)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusInternalServerError, "error": err.Error(), "user_id": claims.UserID})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "failed to update verified status"})
+		return
+	}
+
+	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusOK, "message": "verified successfully"})
+	g.JSON(http.StatusOK, shared.MessageResponse{Message: "verified successfully, please refresh for a different access token"})
+}
+
+// PostVerify godoc
+//
+//	@summary		Requests an OTP code for verification.
+//	@description	Requests the server to send an OTP code for verification.
+//	@tags			authentication
+//	@success		200	{object}	shared.MessageResponse	"An OTP code has been sent"
+//	@success		204	{object}	shared.MessageResponse	"Already verified"
+//	@failure		401	{object}	shared.MessageResponse	"User is unauthenticated"
+//	@failure		500	{object}	shared.MessageResponse	"Internal server error"
+//	@router			/auth/verify [POST]
+func (h *AuthHandler) PostVerify(g *gin.Context) {
+	ctx := g.Request.Context()
+	claimsAny, ok := g.Get("claims")
+	if !ok {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusUnauthorized, "error": "missing bearer token"})
+		g.AbortWithStatusJSON(http.StatusUnauthorized, shared.ErrorResponse{Error: "missing Bearer token"})
+		return
+	}
+
+	claims := claimsAny.(*services.JWTSubject)
+	if claims.Verified {
+		logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusNoContent, "message": "already verified", "user_id": claims.UserID})
+		g.AbortWithStatusJSON(http.StatusNoContent, shared.MessageResponse{Message: "already verified"})
+		return
+	}
+
+	user := &models.User{
+		ID:    claims.UserID,
+		Name:  &claims.Name,
+		Email: &claims.Email,
+	}
+	err := h.OTPService.SendOTP(ctx, user)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": err.Error(), "user_id": user.ID, "status": http.StatusInternalServerError})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "unable to send otp"})
+		return
+	}
+
+	response := shared.MessageResponse{Message: "otp sent"}
+	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusOK, "user_id": user.ID, "response": response})
+	g.JSON(http.StatusOK, response)
 }

@@ -71,6 +71,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/shared.ErrorResponse"
                         }
                     },
+                    "403": {
+                        "description": "Account is not verified",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
                     "404": {
                         "description": "Account does not exist",
                         "schema": {
@@ -121,12 +127,6 @@ const docTemplate = `{
                         "description": "Refreshed successfully",
                         "schema": {
                             "$ref": "#/definitions/auth.LoginResponse"
-                        }
-                    },
-                    "204": {
-                        "description": "Any request, regardless of authentication status",
-                        "schema": {
-                            "$ref": "#/definitions/shared.MessageResponse"
                         }
                     },
                     "401": {
@@ -189,6 +189,82 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "The request could not be completed due to server faults",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/verify": {
+            "post": {
+                "description": "Requests the server to send an OTP code for verification.",
+                "tags": [
+                    "authentication"
+                ],
+                "summary": "Requests an OTP code for verification.",
+                "responses": {
+                    "200": {
+                        "description": "An OTP code has been sent",
+                        "schema": {
+                            "$ref": "#/definitions/shared.MessageResponse"
+                        }
+                    },
+                    "204": {
+                        "description": "Already verified",
+                        "schema": {
+                            "$ref": "#/definitions/shared.MessageResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "User is unauthenticated",
+                        "schema": {
+                            "$ref": "#/definitions/shared.MessageResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/shared.MessageResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/verify/check": {
+            "post": {
+                "description": "Verifies a user's OTP code.",
+                "tags": [
+                    "authentication"
+                ],
+                "summary": "Verifies an OTP code.",
+                "responses": {
+                    "200": {
+                        "description": "Verification successfully",
+                        "schema": {
+                            "$ref": "#/definitions/shared.MessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed to verify",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Not logged in",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "422": {
+                        "description": "Token is valid but user does not exist",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/shared.ErrorResponse"
                         }

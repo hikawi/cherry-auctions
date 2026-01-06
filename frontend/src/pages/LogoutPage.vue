@@ -14,7 +14,9 @@ const authToken = useTokenStore();
 const profile = useProfileStore();
 
 onMounted(async () => {
-  await authFetch(endpoints.auth.logout);
+  await authFetch(endpoints.auth.logout, {
+    method: "POST",
+  });
   authToken.setToken(undefined);
   profile.setProfile(undefined);
   router.push({ name: "login" });

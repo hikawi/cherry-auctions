@@ -13,9 +13,16 @@ import (
 	"luny.dev/cherryauctions/internal/routes/shared"
 )
 
-func (h *AuthHandler) assignJWTKeyPair(g *gin.Context, loggingBody any, id uint, name, email, roles string, subscription *time.Time) {
+func (h *AuthHandler) assignJWTKeyPair(
+	g *gin.Context,
+	loggingBody any,
+	id uint,
+	name, email, roles string,
+	subscription *time.Time,
+	verified bool,
+) {
 	// Generate a JWT key pair.
-	accessToken, err := h.JWTService.SignJWT(id, name, email, roles, subscription)
+	accessToken, err := h.JWTService.SignJWT(id, name, email, roles, subscription, verified)
 	if err != nil {
 		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusInternalServerError, "error": "server can't sign jwt", "body": loggingBody})
 		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "server can't sign jwt"})
@@ -42,8 +49,9 @@ func (h *AuthHandler) assignJWTKeyPair(g *gin.Context, loggingBody any, id uint,
 		Name:     "RefreshToken",
 		Value:    base64.URLEncoding.EncodeToString(refreshToken),
 		Path:     "/",
-		Expires:  time.Now().Add(time.Hour * 24 * 30 * 3),
+		Expires:  time.Now().Add(time.Hour * 24 * 30 * 7),
 		Domain:   h.Domain,
+		HttpOnly: true,
 		Secure:   h.CookieSecure,
 		SameSite: http.SameSiteNoneMode,
 	})
