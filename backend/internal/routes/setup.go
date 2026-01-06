@@ -54,15 +54,18 @@ func SetupRoutes(server *gin.Engine, deps ServerDependency) {
 	versionedGroup := server.Group(deps.Version)
 
 	authHandler := auth.AuthHandler{
-		DB:               deps.DB,
-		CookieSecure:     deps.Config.CookieSecure,
-		Domain:           deps.Config.Domain,
-		JWTService:       deps.Services.JWTService,
-		RandomService:    deps.Services.RandomService,
-		PasswordService:  deps.Services.PasswordService,
-		CaptchaService:   deps.Services.CaptchaService,
-		UserRepo:         deps.Repositories.UserRepository,
-		RefreshTokenRepo: deps.Repositories.RefreshTokenRepository,
+		DB:                deps.DB,
+		CookieSecure:      deps.Config.CookieSecure,
+		Domain:            deps.Config.Domain,
+		JWTService:        deps.Services.JWTService,
+		RandomService:     deps.Services.RandomService,
+		PasswordService:   deps.Services.PasswordService,
+		CaptchaService:    deps.Services.CaptchaService,
+		MailerService:     deps.Services.MailerService,
+		MiddlewareService: deps.Services.MiddlewareService,
+		OTPService:        deps.Services.OTPService,
+		UserRepo:          deps.Repositories.UserRepository,
+		RefreshTokenRepo:  deps.Repositories.RefreshTokenRepository,
 	}
 	authHandler.SetupRouter(versionedGroup)
 

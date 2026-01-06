@@ -50,6 +50,12 @@ func (s *MiddlewareService) AuthorizedRoute(role string) func(*gin.Context) {
 			return
 		}
 
+		if !claims.Verified {
+			logging.LogMessage(g, logging.LOG_DEBUG, gin.H{"error": "not verified"})
+			g.AbortWithStatusJSON(http.StatusUnauthorized, shared.ErrorResponse{Error: "not verified"})
+			return
+		}
+
 		// Doesn't support wildcard permissions, but I don't care.
 		g.Set("claims", claims)
 		roles := strings.Split(claims.Roles, " ")
@@ -64,6 +70,7 @@ func (s *MiddlewareService) AuthorizedRoute(role string) func(*gin.Context) {
 			// Not allowed I guess.
 			logging.LogMessage(g, logging.LOG_DEBUG, gin.H{"error": "not enough permissions", "roles": roles})
 			g.AbortWithStatusJSON(http.StatusForbidden, shared.ErrorResponse{Error: "not enough permissions"})
+			return
 		}
 
 		g.Next()

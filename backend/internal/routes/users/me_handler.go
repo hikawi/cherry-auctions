@@ -116,7 +116,13 @@ func (h *UsersHandler) GetMyProducts(g *gin.Context) {
 //	@failure		500	{object}	shared.ErrorResponse	"The request could not be completed due to server faults"
 //	@router			/users/me [GET]
 func (h *UsersHandler) GetMe(g *gin.Context) {
-	claimsAny, _ := g.Get("claims")
+	claimsAny, ok := g.Get("claims")
+	if !ok {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": "no bearer authentication", "status": http.StatusUnauthorized})
+		g.AbortWithStatusJSON(http.StatusUnauthorized, shared.ErrorResponse{Error: "no bearer authentication"})
+		return
+	}
+
 	claims := claimsAny.(*services.JWTSubject)
 	ctx := g.Request.Context()
 

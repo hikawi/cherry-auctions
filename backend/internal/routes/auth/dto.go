@@ -15,3 +15,7 @@ type RegisterRequest struct {
 	Password     string `json:"password" binding:"required,min=8,max=64"`
 	CaptchaToken string `json:"captcha_token" binding:"required"`
 }
+
+type PostOTPVerifyBody struct {
+	Code string `json:"code" binding:"required,len=6"`
+}

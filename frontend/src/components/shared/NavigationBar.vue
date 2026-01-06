@@ -102,17 +102,17 @@ const profileLinks: Link[] = [
       <hr class="rounded-full border-zinc-300" />
 
       <div class="flex w-full flex-col">
-        <a
+        <router-link
           v-for="(link, idx) in guestLinks"
           :key="idx"
-          :href="link.href"
+          :to="{ path: link.href }"
           class="hover:text-claret-600 py-2 duration-200"
           :class="{
             'text-claret-600 font-semibold': route.path == link.href,
           }"
         >
           {{ $t(link.name) }}
-        </a>
+        </router-link>
       </div>
     </div>
   </OverlayScreen>
@@ -120,25 +120,25 @@ const profileLinks: Link[] = [
   <div
     class="border-claret-100 flex w-full flex-row items-center justify-between border-b pb-4 lg:px-6"
   >
-    <a
+    <router-link
       class="via-watermelon-600 to-claret-600 flex flex-row items-center gap-2 bg-linear-to-r from-pink-600 bg-clip-text text-xl font-black duration-200 hover:text-transparent md:text-2xl"
-      href="/"
+      to="/"
     >
       <img src="/icon.png" alt="CherryAuctions" class="size-8" width="32" height="32" />
       <span class="hidden sm:block">CherryAuctions</span>
-    </a>
+    </router-link>
 
     <div class="flex flex-row items-center justify-center gap-2 md:gap-4">
       <nav class="hidden flex-row items-center gap-4 md:flex">
-        <a
+        <router-link
           v-for="(link, idx) in guestLinks"
           :key="idx"
-          :href="link.href"
+          :to="{ path: link.href }"
           class="underline-offset-8 hover:underline"
           :class="{ underline: route.path == link.href }"
         >
           {{ $t(link.name) }}
-        </a>
+        </router-link>
       </nav>
       <button
         class="block cursor-pointer rounded-full p-2 duration-200 hover:bg-zinc-200 md:hidden"
@@ -163,9 +163,9 @@ const profileLinks: Link[] = [
               v-if="link == 'separator'"
               class="h-2 w-full border-b border-zinc-300 bg-zinc-100"
             ></div>
-            <a
+            <router-link
               v-else-if="!link.admin || profile.isAdmin"
-              :href="link.href"
+              :to="{ path: link.href }"
               class="flex flex-row items-center gap-2 border-b border-zinc-300 bg-white px-4 py-2 whitespace-nowrap duration-200 first-of-type:rounded-t-xl last-of-type:rounded-b-xl last-of-type:border-0 hover:bg-zinc-200"
               :class="{ 'bg-zinc-200': route.path == link.href }"
             >
@@ -173,15 +173,15 @@ const profileLinks: Link[] = [
               <span class="min-w-fit">
                 {{ $t(link.name!) }}
               </span>
-            </a>
+            </router-link>
           </template>
         </div>
       </div>
-      <a
-        href="/login"
+      <router-link
+        :to="{ name: 'login' }"
         class="bg-claret-600 hover:bg-claret-700 flex h-full w-fit min-w-fit items-center justify-center rounded-lg px-4 py-2 font-semibold text-white duration-200"
         v-else
-        >{{ $t("general.login") }}</a
+        >{{ $t("general.login") }}</router-link
       >
     </div>
   </div>

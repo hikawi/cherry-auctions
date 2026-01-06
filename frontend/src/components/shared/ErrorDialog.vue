@@ -23,7 +23,7 @@ defineEmits<{
     </div>
 
     <button
-      class="bg-claret-600 hover:bg-claret-700 rounded-xl px-4 py-1 font-semibold text-white duration-200"
+      class="bg-claret-600 hover:bg-claret-700 rounded-full px-4 py-2 font-semibold text-white duration-200"
       @click="$emit('close')"
     >
       {{ $t("general.ok") }}

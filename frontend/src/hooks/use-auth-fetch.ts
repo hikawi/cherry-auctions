@@ -14,10 +14,17 @@ export function useAuthFetch({ json = true }: { json?: boolean } = {}) {
       headers.set("Content-Type", "application/json");
     }
 
-    const finalOptions = { ...options, headers };
+    const finalOptions = {
+      ...options,
+      headers,
+    };
 
     // 2. Initial Request
-    let response = await fetch(url, finalOptions);
+    let response = await fetch(url, {
+      ...finalOptions,
+      mode: "cors",
+      credentials: "include",
+    });
 
     // 3. Handle 401 and Token Refresh
     if (response.status === 401) {
@@ -29,7 +36,12 @@ export function useAuthFetch({ json = true }: { json?: boolean } = {}) {
         retryHeaders.set("Authorization", `Bearer ${tokenStore.token}`);
 
         // Retry the request one time
-        response = await fetch(url, { ...finalOptions, headers: retryHeaders });
+        response = await fetch(url, {
+          ...finalOptions,
+          mode: "cors",
+          credentials: "include",
+          headers: retryHeaders,
+        });
       }
     }
 
@@ -39,7 +51,11 @@ export function useAuthFetch({ json = true }: { json?: boolean } = {}) {
 
   async function tryRefresh(): Promise<boolean> {
     try {
-      const resp = await fetch(endpoints.auth.refresh, { method: "POST" });
+      const resp = await fetch(endpoints.auth.refresh, {
+        method: "POST",
+        mode: "cors",
+        credentials: "include",
+      });
       if (!resp.ok) throw new Error("Refresh failed");
       const data = await resp.json();
 

@@ -22,7 +22,6 @@ const now = useTimestamp({ interval: 1000 });
 const { authFetch } = useAuthFetch();
 const profile = useProfileStore();
 
-const productLink = computed(() => `/products/${props.product.id}`);
 const expiresDisplay = computed(() => {
   return dayjs(props.product.expired_at).locale(locale.value).from(now.value);
 });
@@ -83,9 +82,11 @@ async function toggleFavorite() {
       {{ $t("products.new") }}
     </span>
 
-    <a :href="productLink" class="hover:text-claret-600 text-lg font-semibold duration-200">{{
-      product.name
-    }}</a>
+    <router-link
+      :to="{ name: 'product-details', params: { id: product.id } }"
+      class="hover:text-claret-600 text-lg font-semibold duration-200"
+      >{{ product.name }}</router-link
+    >
     <img
       :src="product.thumbnail_url"
       :alt="product.name"

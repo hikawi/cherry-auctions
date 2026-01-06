@@ -544,6 +544,10 @@ paths:
           description: Wrong password
           schema:
             $ref: '#/definitions/shared.ErrorResponse'
+        "403":
+          description: Account is not verified
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
         "404":
           description: Account does not exist
           schema:
@@ -580,10 +584,6 @@ paths:
           description: Refreshed successfully
           schema:
             $ref: '#/definitions/auth.LoginResponse'
-        "204":
-          description: Any request, regardless of authentication status
-          schema:
-            $ref: '#/definitions/shared.MessageResponse'
         "401":
           description: Did not attach refresh token
           schema:
@@ -628,6 +628,56 @@ paths:
           schema:
             $ref: '#/definitions/shared.ErrorResponse'
       summary: Registers a new account
+      tags:
+      - authentication
+  /auth/verify:
+    post:
+      description: Requests the server to send an OTP code for verification.
+      responses:
+        "200":
+          description: An OTP code has been sent
+          schema:
+            $ref: '#/definitions/shared.MessageResponse'
+        "204":
+          description: Already verified
+          schema:
+            $ref: '#/definitions/shared.MessageResponse'
+        "401":
+          description: User is unauthenticated
+          schema:
+            $ref: '#/definitions/shared.MessageResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/shared.MessageResponse'
+      summary: Requests an OTP code for verification.
+      tags:
+      - authentication
+  /auth/verify/check:
+    post:
+      description: Verifies a user's OTP code.
+      responses:
+        "200":
+          description: Verification successfully
+          schema:
+            $ref: '#/definitions/shared.MessageResponse'
+        "400":
+          description: Failed to verify
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "401":
+          description: Not logged in
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "422":
+          description: Token is valid but user does not exist
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      summary: Verifies an OTP code.
       tags:
       - authentication
   /categories:

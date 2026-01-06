@@ -38,6 +38,17 @@
     "internal_error": "This error is not your fault! The server misbehaved.",
     "internet_error": "Your Internet connection might have gone out."
   },
+  "verify": {
+    "already_verified": "Already verified!",
+    "already_verified_description": "You have already verified your account! You don't need to do anything.",
+    "not_verified": "Not verified",
+    "code": "Verification Code",
+    "send": "Send Code",
+    "sending": "Sending email",
+    "verify": "Verify",
+    "verifying": "Verifying",
+    "email_sent": "An email has been sent with your OTP code"
+  },
   "forgot": {
     "title": "Reset password",
     "email": "Email Address",
