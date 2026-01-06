@@ -37,6 +37,7 @@ export interface SmallUser {
   name?: string;
   email?: string;
   avatar_url?: string;
+  average_rating: number;
 }
 
 export type Question = {

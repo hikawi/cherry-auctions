@@ -185,6 +185,8 @@
     "replied_by_seller": "Replied by seller",
     "no_questions": "No questions asked",
     "no_bids": "No bids yet. Be the first!",
+    "rating": "Rating {rating}",
+    "current_highest_bidder": "Current Highest Bidder",
     "questions": "Questions",
     "bids": "Bids",
     "similar_products": "You may also like",
