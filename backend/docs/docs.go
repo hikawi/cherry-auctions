@@ -529,6 +529,24 @@ const docTemplate = `{
                 "summary": "Queries products using fuzzy matchers and full-text matchers.",
                 "parameters": [
                     {
+                        "type": "array",
+                        "description": "Search Categories",
+                        "name": "category",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort Type",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Sort Direction",
+                        "name": "asc",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "Search Query",
                         "name": "query",

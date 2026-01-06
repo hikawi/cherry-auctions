@@ -10,42 +10,108 @@ import (
 	"luny.dev/cherryauctions/internal/models"
 )
 
+type ProductSortType string
+
+const (
+	ProductSortTypeNone       ProductSortType = "id"
+	ProductSortTypeExpiryTime ProductSortType = "time"
+	ProductSortTypePrice      ProductSortType = "price"
+)
+
 type ProductRepository struct {
 	DB *gorm.DB
 }
 
-func (r *ProductRepository) SearchProducts(ctx context.Context, query string, limit int, offset int) ([]models.Product, error) {
-	statement := gorm.G[models.Product](r.DB).Preload("Seller", nil)
+func (r *ProductRepository) SearchProducts(
+	ctx context.Context,
+	query string,
+	categories []uint,
+	sortType ProductSortType,
+	sortAsc bool,
+	limit int,
+	offset int,
+) ([]models.Product, error) {
+	db := r.DB.WithContext(ctx).
+		Model(&models.Product{}).
+		Preload("Seller").
+		Preload("Categories").
+		Preload("CurrentHighestBid.User")
 
-	// Conditionally apply full-text and fuzzy.
-	if query != "" {
-		return statement.Where("(search_vector @@ plainto_tsquery('simple', ?)) OR name % ?", query, query).
-			Order(gorm.Expr(
-				"(ts_rank(search_vector, plainto_tsquery('simple', ?)) * 2.0) + similarity(name, ?) DESC", // Just weigh the full-text better
-				query, query,
-			)).
-			Limit(limit).
-			Offset(offset).
-			Find(ctx)
+	if len(categories) > 0 {
+		db = db.
+			Joins("JOIN products_categories ON products_categories.product_id = products.id").
+			Where("products_categories.category_id IN ?", categories).
+			Distinct()
 	}
 
-	return statement.Limit(limit).Offset(offset).Find(ctx)
+	if query != "" {
+		db = db.Where(
+			r.DB.Where("search_vector @@ plainto_tsquery('simple', ?)", query).
+				Or("name % ?", query),
+		)
+		rankExpr := "(ts_rank(search_vector, plainto_tsquery('simple', ?)) * 2.0) + similarity(name, ?) DESC"
+		db = db.Order(gorm.Expr(rankExpr, query, query))
+	}
+
+	// Lol
+	switch sortType {
+	case ProductSortTypeNone:
+		if sortAsc {
+			db = db.Order("products.id ASC")
+		} else {
+			db = db.Order("products.id DESC")
+		}
+	case ProductSortTypeExpiryTime:
+		if sortAsc {
+			db = db.Order("products.expired_at ASC")
+		} else {
+			db = db.Order("products.expired_at DESC")
+		}
+	case ProductSortTypePrice:
+		if sortAsc {
+			db = db.Order("products.bin_price ASC")
+		} else {
+			db = db.Order("products.bin_price DESC")
+		}
+	}
+
+	var products []models.Product
+	err := db.
+		Where("expired_at > ?", time.Now()).
+		Limit(limit).
+		Offset(offset).
+		Find(&products).
+		Error
+	return products, err
 }
 
-func (r *ProductRepository) CountProductsWithQuery(ctx context.Context, query string) (int64, error) {
-	statement := gorm.G[models.Product](r.DB).Preload("Seller", nil)
+func (r *ProductRepository) CountProductsWithQuery(ctx context.Context, query string, categories []uint) (int64, error) {
+	db := r.DB.WithContext(ctx).
+		Model(&models.Product{}).
+		Preload("Seller").
+		Preload("Categories")
 
-	// Conditionally apply full-text and fuzzy.
-	if query != "" {
-		return statement.Where("(search_vector @@ plainto_tsquery('simple', ?)) OR name % ?", query, query).
-			Order(gorm.Expr(
-				"(ts_rank(search_vector, plainto_tsquery('simple', ?)) * 2.0) + similarity(name, ?) DESC", // Just weigh the full-text better
-				query, query,
-			)).
-			Count(ctx, "id")
+	if len(categories) > 0 {
+		db = db.
+			Joins("JOIN products_categories ON products_categories.product_id = products.id").
+			Where("products_categories.category_id IN ?", categories).
+			Distinct()
 	}
 
-	return statement.Count(ctx, "id")
+	if query != "" {
+		db = db.Where(
+			r.DB.Where("search_vector @@ plainto_tsquery('simple', ?)", query).
+				Or("name % ?", query),
+		)
+		rankExpr := "(ts_rank(search_vector, plainto_tsquery('simple', ?)) * 2.0) + similarity(name, ?) DESC"
+		db = db.Order(gorm.Expr(rankExpr, query, query))
+	} else {
+		db = db.Order("created_at DESC")
+	}
+
+	var count int64
+	err := db.Count(&count).Error
+	return count, err
 }
 
 func (r *ProductRepository) CountProducts(ctx context.Context) (int64, error) {

@@ -154,7 +154,14 @@
   "search": {
     "no_products": "No products match your criteria",
     "products_count": "{count} product(s) matched",
-    "all_products": "All Products"
+    "all_products": "All Products",
+    "all_categories": "All Categories",
+    "sort_id_asc": "Product ID (ASC)",
+    "sort_id_desc": "Product ID (DESC)",
+    "sort_price_asc": "Product Price (ASC)",
+    "sort_price_desc": "Product Price (DESC)",
+    "sort_time_asc": "Product Expiry (ASC)",
+    "sort_time_desc": "Product Expiry (DESC)"
   },
   "home": {
     "top_ending_soons": "Top 5 Ending Soons",

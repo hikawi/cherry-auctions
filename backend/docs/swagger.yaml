@@ -844,6 +844,18 @@ paths:
       description: Queries from a list of products using a set of keywords, using
         Full-text Queries or Fuzzy and Similarity queries.
       parameters:
+      - description: Search Categories
+        in: query
+        name: category
+        type: array
+      - description: Sort Type
+        in: query
+        name: sort
+        type: string
+      - description: Sort Direction
+        in: query
+        name: asc
+        type: boolean
       - description: Search Query
         in: query
         name: query

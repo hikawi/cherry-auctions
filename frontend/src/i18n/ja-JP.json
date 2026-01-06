@@ -154,7 +154,14 @@
   "search": {
     "no_products": "商品一つも見つかりませんでした",
     "products_count": "{count}件の商品見つけました",
-    "all_products": "すべての商品"
+    "all_products": "すべての商品",
+    "all_categories": "すべてのカテゴリ",
+    "sort_id_asc": "商品ID 昇順",
+    "sort_id_desc": "商品ID 降順",
+    "sort_price_asc": "価格が安い順",
+    "sort_price_desc": "価格が高い順",
+    "sort_time_asc": "終了が早い順",
+    "sort_time_desc": "終了が遅い順"
   },
   "home": {
     "top_ending_soons": "トップ５まもなく終了",
