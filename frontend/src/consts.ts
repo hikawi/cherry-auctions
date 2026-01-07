@@ -17,6 +17,7 @@ export const endpoints = {
     top: `${api}/v1/products/top`,
     bids: (id: unknown) => `${api}/v1/products/${id}/bids`,
     description: (id: unknown) => `${api}/v1/products/${id}/description`,
+    denials: (id: unknown) => `${api}/v1/products/${id}/denials`,
   },
   categories: {
     get: `${api}/v1/categories`,

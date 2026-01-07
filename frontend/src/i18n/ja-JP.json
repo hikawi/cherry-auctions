@@ -188,6 +188,8 @@
     "rating": "評価{rating}",
     "current_highest_bidder": "現在の最高入札者",
     "questions": "商品への質問一覧",
+    "error": "エラー",
+    "deny_bidder": "入札拒否",
     "similar_products": "この商品をチェックした人はこんな商品もチェックしています",
     "bids": "すべての入札",
     "bid_list": "{name}さんが{price}で{at}に入札しました",

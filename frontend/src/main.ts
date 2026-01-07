@@ -19,6 +19,7 @@ import "@vueup/vue-quill/dist/vue-quill.snow.css";
 // Import core locales your app starts with
 import "dayjs/locale/en";
 import "dayjs/locale/ja";
+import { createHead } from "@unhead/vue/client";
 
 // Extend Day.js once for the entire app life-cycle
 dayjs.extend(relativeTime);
@@ -81,6 +82,9 @@ const i18n = createI18n<[I18nSchema], "en-US" | "ja-JP">({
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedState);
 
+const head = createHead();
+
+app.use(head);
 app.use(pinia);
 app.use(i18n);
 app.use(router);

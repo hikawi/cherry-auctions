@@ -130,3 +130,7 @@ type GetMyProductsQuery struct {
 type PostBidBody struct {
 	BidAmount int64 `form:"bid" json:"bid" binding:"number,gt=0,required"`
 }
+
+type PostDenyBidderBody struct {
+	UserID uint `form:"user_id" json:"user_id" binding:"number,gt=0,required"`
+}
