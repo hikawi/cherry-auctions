@@ -129,9 +129,9 @@ parent: Other Specifications
 
 ### 3.3. Deny a Bidder
 
-- [ ] At details page
-- [ ] A denied bidder can no longer bid on a product
-- [ ] If the bidder gets denied, the highest bid is moved to the second highest
+- [x] At details page
+- [x] A denied bidder can no longer bid on a product
+- [x] If the bidder gets denied, the highest bid is moved to the second highest
 
 ### 3.4. Answer a User
 

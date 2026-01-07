@@ -374,7 +374,7 @@ func (r *ProductRepository) GetMyBids(ctx context.Context, userID uint, limit in
 		Preload("Seller").
 		Preload("CurrentHighestBid.User").
 		Preload("Bids.User").
-		Joins("JOIN bids ON bids.product_id = products.id AND bids.user_id = ?", userID).
+		Joins("JOIN bids ON bids.product_id = products.id AND bids.user_id = ? AND bids.deleted_at IS NULL", userID).
 		Order("products.id, products.expired_at ASC").
 		Limit(limit).
 		Offset(offset).
@@ -416,4 +416,41 @@ func (r *ProductRepository) GetAllExpiredProducts(ctx context.Context) ([]models
 		Find(&products).
 		Error
 	return products, err
+}
+
+// DenyBidder marks a bidder denied from the product.
+func (r *ProductRepository) DenyBidder(ctx context.Context, productID uint, userID uint) error {
+	return r.DB.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		var count int64
+		tx.Model(&models.DeniedBidder{}).
+			Where("product_id = ? AND user_id = ?", productID, userID).
+			Count(&count)
+
+		if count > 0 {
+			return fmt.Errorf("user %d is already denied for product %d", userID, productID)
+		}
+
+		err := tx.Model(&models.Product{Model: gorm.Model{ID: productID}}).
+			Association("DeniedBidders").
+			Append(&models.DeniedBidder{UserID: userID})
+		if err != nil {
+			return err
+		}
+
+		if err := tx.Where("product_id = ? AND user_id = ?", productID, userID).Delete(&models.Bid{}).Error; err != nil {
+			return err
+		}
+
+		return tx.Model(&models.Product{}).
+			Where("id = ?", productID).
+			Select("bids_count", "current_highest_bid_id").
+			Updates(map[string]any{
+				"bids_count": tx.Model(&models.Bid{}).Select("count(id)").Where("product_id = ?", productID),
+				"current_highest_bid_id": tx.Model(&models.Bid{}).
+					Select("id").
+					Where("product_id = ?", productID).
+					Order("price DESC, created_at ASC").
+					Limit(1),
+			}).Error
+	})
 }

@@ -122,7 +122,7 @@ onMounted(() => {
       <ProductDescriptionSection :data @reload="fetchProduct" />
 
       <!-- Bids Section -->
-      <ProductBidsSection :data />
+      <ProductBidsSection :data @reload="fetchProduct" />
 
       <!-- Questions Section -->
       <ProductQuestionsSection :data @refresh="fetchProduct" />

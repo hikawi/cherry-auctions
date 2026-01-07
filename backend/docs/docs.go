@@ -950,6 +950,73 @@ const docTemplate = `{
                 }
             }
         },
+        "/products/{id}/denials": {
+            "post": {
+                "description": "Deny a bidder from a current product.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Deny a bidder.",
+                "parameters": [
+                    {
+                        "description": "Body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/products.PostDenyBidderBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully denied bidder",
+                        "schema": {
+                            "$ref": "#/definitions/shared.MessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid bidder user ID",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "User is unauthorized or not verified",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "User is not seller, or denied bidder id is the seller",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Product is not found",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Bidder is already denied",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "The server couldn't complete the request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/products/{id}/description": {
             "post": {
                 "security": [
@@ -1851,6 +1918,17 @@ const docTemplate = `{
             ],
             "properties": {
                 "bid": {
+                    "type": "integer"
+                }
+            }
+        },
+        "products.PostDenyBidderBody": {
+            "type": "object",
+            "required": [
+                "user_id"
+            ],
+            "properties": {
+                "user_id": {
                     "type": "integer"
                 }
             }

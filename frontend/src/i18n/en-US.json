@@ -188,6 +188,8 @@
     "rating": "Rating {rating}",
     "current_highest_bidder": "Current Highest Bidder",
     "questions": "Questions",
+    "error": "Request Error",
+    "deny_bidder": "Deny Bid",
     "bids": "Bids",
     "similar_products": "You may also like",
     "bid_list": "{name} bidded {price} at {at}",
