@@ -6,18 +6,28 @@ import (
 	"gorm.io/gorm"
 )
 
+type ProductState string
+
+const (
+	ProductStateActive    ProductState = "active"
+	ProductStateEnded     ProductState = "ended"
+	ProductStateExpired   ProductState = "expired"
+	ProductStateCancelled ProductState = "cancelled"
+)
+
 type Product struct {
 	gorm.Model
-	Name                string    `gorm:"size:255;not null"`
-	StartingBid         int64     `gorm:"type:bigint;not null"`
-	StepBidValue        int64     `gorm:"type:bigint;not null"`
-	BINPrice            *int64    `gorm:"type:bigint"`
-	Description         string    `gorm:"not null"`
-	ThumbnailURL        string    `gorm:"not null"`
-	AllowsUnratedBuyers bool      `gorm:"not null;default:true"`
-	AutoExtendsTime     bool      `gorm:"not null;default:true"`
-	ExpiredAt           time.Time `gorm:"not null"`
-	EmailSent           bool      `gorm:"not null;default:false"`
+	Name                string       `gorm:"size:255;not null"`
+	StartingBid         int64        `gorm:"type:bigint;not null"`
+	StepBidValue        int64        `gorm:"type:bigint;not null"`
+	BINPrice            *int64       `gorm:"type:bigint"`
+	Description         string       `gorm:"not null"`
+	ThumbnailURL        string       `gorm:"not null"`
+	AllowsUnratedBuyers bool         `gorm:"not null;default:true"`
+	AutoExtendsTime     bool         `gorm:"not null;default:true"`
+	ExpiredAt           time.Time    `gorm:"not null"`
+	EmailSent           bool         `gorm:"not null;default:false"`
+	ProductState        ProductState `gorm:"not null;default:active"`
 
 	ProductImages      []ProductImage `gorm:"foreignKey:ProductID"`
 	Categories         []Category     `gorm:"many2many:products_categories"`

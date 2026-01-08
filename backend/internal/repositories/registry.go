@@ -7,4 +7,7 @@ type RepositoryRegistry struct {
 	RefreshTokenRepository *RefreshTokenRepository
 	ProductRepository      *ProductRepository
 	QuestionRepository     *QuestionRepository
+	ChatSessionRepository  *ChatSessionRepository
+	TransactionRepository  *TransactionRepository
+	RatingRepostory        *RatingRepostory
 }

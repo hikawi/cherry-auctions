@@ -24,6 +24,8 @@ func (h *UsersHandler) SetupRouter(r *gin.RouterGroup) {
 	g.PUT("/me", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.PutProfile)
 	g.GET("/me/products", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.GetMyProducts)
 	g.GET("/me/bids", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.GetMyBids)
+	g.GET("/me/expired", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.GetMyExpiredAuctions)
+	g.GET("/me/ended", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.GetMyEndedAuctions)
 	g.GET("", h.MiddlewareService.AuthorizedRoute(models.ROLE_ADMIN), h.GetUsers)
 	g.POST("/request", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.PostRequest)
 	g.POST("/approve", h.MiddlewareService.AuthorizedRoute(models.ROLE_ADMIN), h.PostApprove)
