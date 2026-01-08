@@ -2,8 +2,15 @@
 import LoginForm from "@/components/login/LoginForm.vue";
 import WhiteContainer from "@/components/shared/WhiteContainer.vue";
 import { useProfileStore } from "@/stores/profile";
+import { useHead } from "@unhead/vue";
+import { useI18n } from "vue-i18n";
 
 const profile = useProfileStore();
+const { t } = useI18n();
+
+useHead({
+  title: t("meta.login"),
+});
 </script>
 
 <template>

@@ -1,14 +1,22 @@
 <script setup lang="ts">
 import ProductCard from "@/components/index/ProductCard.vue";
 import NavigationBar from "@/components/shared/NavigationBar.vue";
+import PagingSection from "@/components/shared/PagingSection.vue";
 import WhiteContainer from "@/components/shared/WhiteContainer.vue";
 import { endpoints } from "@/consts";
 import { useAuthFetch } from "@/hooks/use-auth-fetch";
 import type { Product } from "@/types";
-import { LucideChevronLeft, LucideChevronRight, LucideRefreshCcw } from "lucide-vue-next";
+import { useHead } from "@unhead/vue";
+import { LucideRefreshCcw } from "lucide-vue-next";
 import { onMounted, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 
 const { authFetch } = useAuthFetch();
+const { t } = useI18n();
+
+useHead({
+  title: t("meta.my_bids"),
+});
 
 const data = ref<Product[]>();
 const page = ref(1);
@@ -49,6 +57,7 @@ onMounted(async () => {
   <WhiteContainer class="justify-start gap-8">
     <NavigationBar />
 
+    <!-- Section for seeing bids -->
     <section class="flex w-full max-w-4xl flex-col gap-4">
       <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h2 class="text-2xl font-bold">{{ $t("navigation.my_bids") }}</h2>
@@ -71,25 +80,7 @@ onMounted(async () => {
         </template>
 
         <!-- Paging section -->
-        <div class="flex w-full flex-row items-center justify-between sm:col-span-2 md:col-span-3">
-          <button
-            class="cursor-pointer rounded-lg border border-zinc-300 p-2 hover:border-zinc-500 disabled:cursor-not-allowed disabled:opacity-50"
-            @click="page = Math.max(page - 1, 1)"
-            :disabled="page == 1"
-          >
-            <LucideChevronLeft class="size-4 text-black" />
-          </button>
-
-          <span>{{ page }} / {{ maxPages }}</span>
-
-          <button
-            class="cursor-pointer rounded-lg border border-zinc-300 p-2 hover:border-zinc-500 disabled:cursor-not-allowed disabled:opacity-50"
-            @click="page = Math.min(page + 1, maxPages)"
-            :disabled="page == maxPages"
-          >
-            <LucideChevronRight class="size-4 text-black" />
-          </button>
-        </div>
+        <PagingSection :page :maxPages @setPage="(p) => (page = p)" />
       </div>
       <p class="w-full py-6 text-center text-xl font-semibold" v-else>
         {{ $t("auctions.no_auctions") }}

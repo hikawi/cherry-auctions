@@ -28,12 +28,33 @@ func InitLogger() {
 		return
 	}
 
-	f, err := os.OpenFile("./server.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	y, m, d := time.Now().Date()
+
+	fileName := fmt.Sprintf("./log/cherryauctions-%d-%d-%d.log", y, m, d)
+	f, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Fatalf("fatal: can't open file to log %s", err)
 	}
 
 	logger = io.MultiWriter(f)
+}
+
+func LogRaw(level LogLevel, message map[string]any) {
+	// NOOP if is testing
+	if gin.Mode() == gin.TestMode {
+		return
+	}
+
+	// Marshal and write
+	val, err := json.Marshal(message)
+	if err != nil {
+		fmt.Printf("warning: unable to marshal log %s\n", message)
+	}
+
+	bytes, err := fmt.Fprintf(logger, "%s\n", val)
+	if err != nil || bytes == 0 {
+		fmt.Printf("warning: unable to write log %s", err)
+	}
 }
 
 // LogMessage logs a message with a certain log level.

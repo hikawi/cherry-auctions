@@ -1,17 +1,19 @@
 <script setup lang="ts">
+import { endpoints } from "@/consts";
 import { useAuthFetch } from "@/hooks/use-auth-fetch";
+import { useProfileStore } from "@/stores/profile";
 import type { Product } from "@/types";
 import dayjs from "dayjs";
 import { LucideCircle, LucideCrown } from "lucide-vue-next";
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import AvatarCircle from "../shared/AvatarCircle.vue";
-import { endpoints } from "@/consts";
-import OverlayScreen from "../shared/OverlayScreen.vue";
 import ErrorDialog from "../shared/ErrorDialog.vue";
+import OverlayScreen from "../shared/OverlayScreen.vue";
 
 const { locale } = useI18n();
 const { authFetch } = useAuthFetch();
+const profile = useProfileStore();
 
 const props = defineProps<{
   data: Product & { similar_products?: Product[]; categories: { id: number; name: string }[] };
@@ -91,6 +93,7 @@ async function denyBidder(id: number) {
         <button
           class="bg-claret-600 hover:bg-claret-700 cursor-pointer rounded-lg px-2 py-1 font-semibold text-white duration-200"
           @click="() => denyBidder(sortedBids![0].bidder.id)"
+          v-if="profile.profile && profile.profile.id == data.seller.id"
         >
           {{ $t("products.deny_bidder") }}
         </button>

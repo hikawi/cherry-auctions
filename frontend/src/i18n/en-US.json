@@ -1,4 +1,8 @@
 {
+  "meta": {
+    "login": "CherryAuctions - Login",
+    "my_bids": "CherryAuctions - My Bids"
+  },
   "login": {
     "title": "Login",
     "email": "Email Address",
@@ -105,6 +109,9 @@
     "cancel": "Cancel",
     "loading": "Loading...",
     "no_auctions": "You don't have any products",
+    "active": "Active",
+    "ended": "Ended",
+    "expired": "Expired",
     "create": "Create",
     "product_name": "Product Name",
     "product_description": "Product Description",
