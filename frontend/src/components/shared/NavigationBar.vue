@@ -166,10 +166,10 @@ const profileLinks: Link[] = [
             <router-link
               v-else-if="!link.admin || profile.isAdmin"
               :to="{ path: link.href }"
-              class="flex flex-row items-center gap-2 border-b border-zinc-300 bg-white px-4 py-2 whitespace-nowrap duration-200 first-of-type:rounded-t-xl last-of-type:rounded-b-xl last-of-type:border-0 hover:bg-zinc-200"
+              class="flex min-w-fit flex-row items-center gap-2 border-b border-zinc-300 bg-white px-4 py-2 whitespace-nowrap duration-200 first-of-type:rounded-t-xl last-of-type:rounded-b-xl last-of-type:border-0 hover:bg-zinc-200"
               :class="{ 'bg-zinc-200': route.path == link.href }"
             >
-              <component :is="link.icon" class="size-4 min-w-fit translate-y-0.5" />
+              <component :is="link.icon" class="size-4 max-w-fit shrink-0 grow-0 translate-y-px" />
               <span class="min-w-fit">
                 {{ $t(link.name!) }}
               </span>

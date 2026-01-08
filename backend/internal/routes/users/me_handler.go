@@ -299,3 +299,20 @@ func (h *UsersHandler) GetMyEndedAuctions(g *gin.Context) {
 	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusOK, "query": query, "response": response})
 	g.JSON(http.StatusOK, response)
 }
+
+// GetMyRatings godoc
+//
+//	@summary		Gets a list of ratings made by me.
+//	@description	Gets all ratings and related products and feedbacks, made by me.
+//	@tags			users
+//	@security		ApiKeyAuth
+//	@produce		json
+//	@param			page		query		int							false	"Page number"
+//	@param			per_page	query		int							false	"Items per page"
+//	@success		200			{object}	users.GetProductsResponse	"Success"
+//	@failure		400			{object}	shared.ErrorResponse		"Invalid query"
+//	@failure		401			{object}	shared.ErrorResponse		"Unauthenticated"
+//	@failure		500			{object}	shared.ErrorResponse		"The server could not complete the request"
+//	@router			/users/me/ratings [GET]
+func (h *UsersHandler) GetMyRatings(g *gin.Context) {
+}

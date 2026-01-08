@@ -17,10 +17,12 @@ const data = ref<Product[]>();
 const categories = ref<Category[]>();
 const page = ref(1);
 const maxPages = ref(1);
+const auctionsType = ref<"active" | "expired" | "ended">("active");
 const loading = ref(false);
 
 watch(maxPages, (val) => (page.value = Math.min(page.value, val)));
 watch(page, fetchMyAuctions);
+watch(auctionsType, fetchMyAuctions);
 
 function onCreate(status: number) {
   createDialogShown.value = false;
@@ -39,7 +41,19 @@ async function fetchCategories() {
 }
 
 async function fetchMyAuctions() {
-  const url = new URL(endpoints.users.me.products);
+  let url: URL;
+  switch (auctionsType.value) {
+    case "expired":
+      url = new URL(endpoints.users.me.expired);
+      break;
+    case "ended":
+      url = new URL(endpoints.users.me.ended);
+      break;
+    default:
+      url = new URL(endpoints.users.me.products);
+      break;
+  }
+
   url.searchParams.append("page", page.value.toString());
   url.searchParams.append("per_page", "12");
 
@@ -83,6 +97,30 @@ onMounted(async () => {
         >
           <LucidePackage class="size-4 text-white" />
           {{ $t("auctions.new") }}
+        </button>
+      </div>
+
+      <div class="bg-claret-100 grid w-full grid-cols-3 rounded-full p-1">
+        <button
+          class="w-full rounded-full px-4 py-1 duration-200 hover:bg-white/50"
+          :class="{ 'bg-white': auctionsType == 'active' }"
+          @click="auctionsType = 'active'"
+        >
+          {{ $t("auctions.active") }}
+        </button>
+        <button
+          class="w-full rounded-full hover:bg-white/50"
+          :class="{ 'bg-white': auctionsType == 'ended' }"
+          @click="auctionsType = 'ended'"
+        >
+          {{ $t("auctions.ended") }}
+        </button>
+        <button
+          class="w-full rounded-full hover:bg-white/50"
+          :class="{ 'bg-white': auctionsType == 'expired' }"
+          @click="auctionsType = 'expired'"
+        >
+          {{ $t("auctions.expired") }}
         </button>
       </div>
 

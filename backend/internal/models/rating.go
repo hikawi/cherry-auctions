@@ -4,9 +4,10 @@ import "gorm.io/gorm"
 
 type Rating struct {
 	gorm.Model
-	Rating     float64 `gorm:"not null"`
-	ReviewerID uint
+	Rating     uint   `gorm:"not null"`
+	Feedback   string `gorm:"not null"`
+	ReviewerID uint   `gorm:"not null;index"`
 	Reviewer   User
-	RevieweeID uint
+	RevieweeID uint `gorm:"not null;index"`
 	Reviewee   User
 }

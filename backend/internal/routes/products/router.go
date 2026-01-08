@@ -27,5 +27,6 @@ func (h *ProductsHandler) SetupRouter(g *gin.RouterGroup) {
 	r.GET("/:id", h.MiddlewareService.SoftAuthorizedRoute, h.GetProductID)
 	r.POST("/:id/description", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.PostProductDescription)
 	r.POST("/:id/bids", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.PostBid)
+	r.DELETE("/:id/bids", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.DeleteBids)
 	r.POST("/:id/denials", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.PostDenyBidder)
 }

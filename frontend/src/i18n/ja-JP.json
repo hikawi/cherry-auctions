@@ -1,4 +1,8 @@
 {
+  "meta": {
+    "login": "CherryAuctions ログイン",
+    "my_bids": "CherryAuctions 入札履歴"
+  },
   "login": {
     "title": "ログイン",
     "email": "メールアドレス",

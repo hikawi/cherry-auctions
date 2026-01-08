@@ -13,6 +13,7 @@ type UsersHandler struct {
 	MiddlewareService *services.MiddlewareService
 	UserRepo          *repositories.UserRepository
 	ProductRepo       *repositories.ProductRepository
+	RatingRepo        *repositories.RatingRepostory
 	S3Service         *services.S3Service
 	S3PermURL         string
 }

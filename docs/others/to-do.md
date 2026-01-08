@@ -140,7 +140,7 @@ parent: Other Specifications
 ### 3.5. Profile Management
 
 - [x] View my auctions
-- [ ] View expired auctions
+- [x] View expired auctions
   - [ ] Can rate or feedback on the highest bidder
   - [ ] Can cancel the auction and automatically mark as -1 with a description
         "Bidder did not follow through"

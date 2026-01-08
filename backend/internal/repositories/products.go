@@ -350,6 +350,11 @@ func (r *ProductRepository) CreateBid(
 			return fmt.Errorf("bid is not high enough")
 		}
 
+		// Check if it's not the seller
+		if product.SellerID == userID {
+			return fmt.Errorf("you can't bid on your own auction")
+		}
+
 		// Check if it's the same user.
 		if product.CurrentHighestBid != nil && product.CurrentHighestBid.UserID == userID {
 			return fmt.Errorf("you can't outbid yourself")
@@ -375,6 +380,57 @@ func (r *ProductRepository) CreateBid(
 				"current_highest_bid_id": bid.ID,
 				"bids_count":             gorm.Expr("bids_count + 1"),
 				"expired_at":             expiredAt,
+			}).
+			Error
+	})
+}
+
+func (r *ProductRepository) ClearAllBids(ctx context.Context, productID uint) (int64, error) {
+	db := r.DB.WithContext(ctx).
+		Model(&models.Bid{}).
+		Where("product_id = ?", productID).
+		Delete(&models.Bid{})
+	return db.RowsAffected, db.Error
+}
+
+func (r *ProductRepository) CreateBINPurchase(ctx context.Context, productID uint, userID uint) error {
+	return r.DB.Transaction(func(tx *gorm.DB) error {
+		// Retrieve the product about to update
+		product := models.Product{}
+		err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
+			Model(&models.Product{}).
+			Preload("CurrentHighestBid").
+			Preload("Seller").
+			Where("id = ?", productID).
+			First(&product).
+			Error
+		if err != nil {
+			return err
+		}
+
+		if product.BINPrice == nil {
+			return fmt.Errorf("product %d does not have a bin price", productID)
+		}
+
+		// Check if it's not the seller
+		if product.SellerID == userID {
+			return fmt.Errorf("you can't bid on your own auction")
+		}
+
+		// Now try to insert into the bids table I guess.
+		bid := models.Bid{Price: *product.BINPrice, UserID: userID, ProductID: product.ID}
+		err = tx.Model(&bid).Create(&bid).Error
+		if err != nil {
+			return err
+		}
+
+		// Now mark the bids as counted, and extend it if it is needed.
+		return tx.Model(&models.Product{Model: gorm.Model{ID: productID}}).
+			Select("current_highest_bid_id", "bids_count", "expired_at").
+			Updates(map[string]any{
+				"current_highest_bid_id": bid.ID,
+				"bids_count":             gorm.Expr("bids_count + 1"),
+				"expired_at":             time.Now(),
 			}).
 			Error
 	})

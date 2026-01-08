@@ -1008,6 +1008,38 @@ paths:
       tags:
       - products
   /products/{id}/bids:
+    delete:
+      consumes:
+      - application/json
+      description: Removes all bidders from a product.
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Successful removal
+          schema:
+            $ref: '#/definitions/shared.MessageResponse'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "401":
+          description: User is unauthenticated
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "403":
+          description: User is not the seller
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: Server could not finish the request
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Clears all bids on a product.
+      tags:
+      - products
     post:
       consumes:
       - application/json
@@ -1049,6 +1081,39 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Creates a bid on a product
+      tags:
+      - products
+  /products/{id}/bin:
+    post:
+      consumes:
+      - application/json
+      description: Make a BIN bid to a product and end it immediately.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful bid
+          schema:
+            $ref: '#/definitions/shared.MessageResponse'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "401":
+          description: User is unauthenticated
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "403":
+          description: User is not the seller
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: Server could not finish the request
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Make a BIN purchase.
       tags:
       - products
   /products/{id}/denials:
@@ -1600,6 +1665,42 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Retrieves my products
+      tags:
+      - users
+  /users/me/ratings:
+    get:
+      description: Gets all ratings and related products and feedbacks, made by me.
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: per_page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/users.GetProductsResponse'
+        "400":
+          description: Invalid query
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "401":
+          description: Unauthenticated
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: The server could not complete the request
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Gets a list of ratings made by me.
       tags:
       - users
   /users/request:
