@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"luny.dev/cherryauctions/internal/logging"
+	"luny.dev/cherryauctions/internal/models"
 	"luny.dev/cherryauctions/internal/routes/shared"
 	"luny.dev/cherryauctions/internal/services"
 	"luny.dev/cherryauctions/pkg/ranges"
@@ -174,6 +175,114 @@ func (h *UsersHandler) GetMyBids(g *gin.Context) {
 	}
 
 	count, err := h.ProductRepo.CountMyBids(ctx, claims.UserID)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": err.Error(), "query": query})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "unable to count products"})
+		return
+	}
+
+	response := GetProductsResponse{
+		Data:       ranges.EachAddress(products, ToProductDTO),
+		Total:      count,
+		TotalPages: int(math.Ceil(float64(count) / float64(query.PerPage))),
+		Page:       query.Page,
+		PerPage:    query.PerPage,
+	}
+	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusOK, "query": query, "response": response})
+	g.JSON(http.StatusOK, response)
+}
+
+// GetMyExpiredAuctions godoc
+//
+//	@summary		Gets my expired auctions.
+//	@description	Gets all auctions that are marked as expired.
+//	@tags			users
+//	@produce		json
+//	@security		ApiKeyAuth
+//	@param			page		query		int							false	"Page number"
+//	@param			per_page	query		int							false	"Items per page"
+//	@success		200			{object}	users.GetProductsResponse	"Success"
+//	@failure		400			{object}	shared.ErrorResponse		"Invalid query"
+//	@failure		401			{object}	shared.ErrorResponse		"Unauthenticated"
+//	@failure		500			{object}	shared.ErrorResponse		"The server could not complete the request"
+//	@router			/users/me/expired [GET]
+func (h *UsersHandler) GetMyExpiredAuctions(g *gin.Context) {
+	claimsAny, _ := g.Get("claims")
+	claims := claimsAny.(*services.JWTSubject)
+	ctx := g.Request.Context()
+	query := GetMyProductsQuery{
+		Page:    1,
+		PerPage: 20,
+	}
+
+	if err := g.ShouldBindQuery(&query); err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusBadRequest, "error": err.Error(), "query": query})
+		g.AbortWithStatusJSON(http.StatusBadRequest, shared.ErrorResponse{Error: "invalid query"})
+		return
+	}
+
+	products, err := h.ProductRepo.GetUserProducts(ctx, claims.UserID, models.ProductStateExpired, query.PerPage, (query.Page-1)*query.PerPage)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusInternalServerError, "error": err.Error(), "query": query})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "couldn't query for user bids"})
+		return
+	}
+
+	count, err := h.ProductRepo.CountUserProducts(ctx, claims.UserID, models.ProductStateExpired)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": err.Error(), "query": query})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "unable to count products"})
+		return
+	}
+
+	response := GetProductsResponse{
+		Data:       ranges.EachAddress(products, ToProductDTO),
+		Total:      count,
+		TotalPages: int(math.Ceil(float64(count) / float64(query.PerPage))),
+		Page:       query.Page,
+		PerPage:    query.PerPage,
+	}
+	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusOK, "query": query, "response": response})
+	g.JSON(http.StatusOK, response)
+}
+
+// GetMyEndedAuctions godoc
+//
+//	@summary		Gets my ended auctions.
+//	@description	Gets all auctions that are marked as ended.
+//	@tags			users
+//	@security		ApiKeyAuth
+//	@produce		json
+//	@param			page		query		int							false	"Page number"
+//	@param			per_page	query		int							false	"Items per page"
+//	@success		200			{object}	users.GetProductsResponse	"Success"
+//	@failure		400			{object}	shared.ErrorResponse		"Invalid query"
+//	@failure		401			{object}	shared.ErrorResponse		"Unauthenticated"
+//	@failure		500			{object}	shared.ErrorResponse		"The server could not complete the request"
+//	@router			/users/me/ended [GET]
+func (h *UsersHandler) GetMyEndedAuctions(g *gin.Context) {
+	claimsAny, _ := g.Get("claims")
+	claims := claimsAny.(*services.JWTSubject)
+	ctx := g.Request.Context()
+	query := GetMyProductsQuery{
+		Page:    1,
+		PerPage: 20,
+	}
+
+	if err := g.ShouldBindQuery(&query); err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusBadRequest, "error": err.Error(), "query": query})
+		g.AbortWithStatusJSON(http.StatusBadRequest, shared.ErrorResponse{Error: "invalid query"})
+		return
+	}
+
+	products, err := h.ProductRepo.GetUserProducts(ctx, claims.UserID, models.ProductStateEnded, query.PerPage, (query.Page-1)*query.PerPage)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusInternalServerError, "error": err.Error(), "query": query})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "couldn't query for user bids"})
+		return
+	}
+
+	count, err := h.ProductRepo.CountUserProducts(ctx, claims.UserID, models.ProductStateEnded)
 	if err != nil {
 		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": err.Error(), "query": query})
 		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "unable to count products"})

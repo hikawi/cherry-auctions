@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"time"
 
@@ -54,6 +56,9 @@ func main() {
 	refreshTokenRepo := &repositories.RefreshTokenRepository{DB: db}
 	productRepo := &repositories.ProductRepository{DB: db}
 	questionRepo := repositories.NewQuestionRepository(db)
+	chatSessionRepo := repositories.NewChatSessionRepository(db)
+	transactionRepo := repositories.NewTransactionRepository(db, productRepo)
+	ratingRepo := repositories.NewRatingRepository(db)
 
 	// Setup services here
 	jwtService := &services.JWTService{JWTDomain: cfg.Domain, JWTAudience: cfg.JWT.Audience, JWTSecretKey: cfg.JWT.Secret, JWTExpiry: cfg.JWT.Expiry}
@@ -94,11 +99,22 @@ func main() {
 			RefreshTokenRepository: refreshTokenRepo,
 			ProductRepository:      productRepo,
 			QuestionRepository:     questionRepo,
+			ChatSessionRepository:  chatSessionRepo,
+			TransactionRepository:  transactionRepo,
+			RatingRepostory:        ratingRepo,
 		},
 	})
 
 	_, err = scheduler.NewJob(gocron.DurationJob(1*time.Minute), gocron.NewTask(func() {
 		// Sweep
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+		defer cancel()
+
+		err := productRepo.UpdateAllExpiredProducts(ctx)
+		if err != nil {
+			fmt.Printf("warning: unable to update expired products: %v\n", err)
+		}
+
 		mailerService.SendEndedAuctionsEmail()
 	}))
 	if err != nil {

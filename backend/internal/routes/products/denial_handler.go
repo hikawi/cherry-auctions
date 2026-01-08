@@ -15,6 +15,7 @@ import (
 //
 //	@summary		Deny a bidder.
 //	@description	Deny a bidder from a current product.
+//	@tags			products
 //	@accept			json
 //	@produce		json
 //	@param			body	body		products.PostDenyBidderBody	true	"Body"

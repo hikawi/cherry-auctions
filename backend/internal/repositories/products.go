@@ -77,7 +77,7 @@ func (r *ProductRepository) SearchProducts(
 
 	var products []models.Product
 	err := db.
-		Where("expired_at > ?", time.Now()).
+		Where("product_state = ?", models.ProductStateActive).
 		Limit(limit).
 		Offset(offset).
 		Find(&products).
@@ -110,12 +110,11 @@ func (r *ProductRepository) CountProductsWithQuery(ctx context.Context, query st
 	}
 
 	var count int64
-	err := db.Count(&count).Error
+	err := db.
+		Where("product_state = ?", models.ProductStateActive).
+		Count(&count).
+		Error
 	return count, err
-}
-
-func (r *ProductRepository) CountProducts(ctx context.Context) (int64, error) {
-	return gorm.G[models.Product](r.DB).Count(ctx, "id")
 }
 
 // GetTopEndingSoons returns 5 products that are currently about to expire.
@@ -123,24 +122,26 @@ func (r *ProductRepository) GetTopEndingSoons(ctx context.Context) ([]models.Pro
 	return gorm.G[models.Product](r.DB).
 		Preload("Seller", nil).
 		Preload("Categories", nil).
-		Preload("CurrentHighestBid", nil).
-		Where("expired_at > ?", time.Now()).
+		Preload("CurrentHighestBid.User", nil).
+		Where("product_state = ?", models.ProductStateActive).
 		Order("expired_at ASC").
 		Limit(5).
 		Find(ctx)
 }
 
+// GetMostActiveProducts returns 5 products that have the most number of bids.
 func (r *ProductRepository) GetMostActiveProducts(ctx context.Context) ([]models.Product, error) {
 	return gorm.G[models.Product](r.DB).
 		Preload("Seller", nil).
 		Preload("Categories", nil).
-		Preload("CurrentHighestBid", nil).
-		Where("expired_at > ?", time.Now()).
+		Preload("CurrentHighestBid.User", nil).
+		Where("product_state = ?", models.ProductStateActive).
 		Order("bids_count DESC, expired_at ASC").
 		Limit(5).
 		Find(ctx)
 }
 
+// GetHighestBiddedProducts returns 5 products with the current highest active bid.
 func (r *ProductRepository) GetHighestBiddedProducts(ctx context.Context) ([]models.Product, error) {
 	var products []models.Product
 
@@ -148,8 +149,8 @@ func (r *ProductRepository) GetHighestBiddedProducts(ctx context.Context) ([]mod
 		Joins("INNER JOIN bids ON products.current_highest_bid_id = bids.id").
 		Preload("Seller").
 		Preload("Categories").
-		Preload("CurrentHighestBid").
-		Where("products.expired_at > ?", time.Now()).
+		Preload("CurrentHighestBid.User").
+		Where("product_state = ?", models.ProductStateActive).
 		Order("bids.price DESC").
 		Limit(5).
 		Find(&products).
@@ -158,7 +159,10 @@ func (r *ProductRepository) GetHighestBiddedProducts(ctx context.Context) ([]mod
 	return products, err
 }
 
+// GetProductByID gets a product's full details from an ID.
+// This is a rather expensive query. Use sparingly, only when actually needed everything.
 func (r *ProductRepository) GetProductByID(ctx context.Context, id int) (models.Product, error) {
+	// This query should allow expired products to show up also.
 	return gorm.G[models.Product](r.DB).
 		Preload("Seller", nil).
 		Preload("Categories", nil).
@@ -173,6 +177,7 @@ func (r *ProductRepository) GetProductByID(ctx context.Context, id int) (models.
 		First(ctx)
 }
 
+// GetSimilarProductsTo retrieves a list of products that are similar to another.
 func (r *ProductRepository) GetSimilarProductsTo(ctx context.Context, product *models.Product) ([]models.Product, error) {
 	var categoryIDs []uint
 	for _, cat := range product.Categories {
@@ -184,6 +189,7 @@ func (r *ProductRepository) GetSimilarProductsTo(ctx context.Context, product *m
 		Joins("JOIN products_categories ON products_categories.product_id = products.id").
 		Where("products.id <> ?", product.ID).                      // Exclude current product
 		Where("products_categories.category_id IN ?", categoryIDs). // Match any shared category
+		Where("products.product_state = ?", models.ProductStateActive).
 		Preload("Seller").
 		Preload("Categories").
 		Preload("CurrentHighestBid").
@@ -194,11 +200,13 @@ func (r *ProductRepository) GetSimilarProductsTo(ctx context.Context, product *m
 	return products, err
 }
 
+// GetFavoriteProducts retrieves a list of products the user marked as favorite.
 func (r *ProductRepository) GetFavoriteProducts(ctx context.Context, userID uint, limit int, offset int) ([]models.Product, error) {
 	var products []models.Product
 	err := r.DB.Model(&models.Product{}).WithContext(ctx).
 		Joins("JOIN favorite_products ON products.id = favorite_products.product_id").
 		Where("favorite_products.user_id = ?", userID).
+		Where("product_state = ?", models.ProductStateActive).
 		Preload("Seller").
 		Preload("Categories").
 		Preload("CurrentHighestBid").
@@ -211,12 +219,15 @@ func (r *ProductRepository) GetFavoriteProducts(ctx context.Context, userID uint
 	return products, err
 }
 
+// CountFavoriteProducts counts how many products the user has marked as favorite.
 func (r *ProductRepository) CountFavoriteProducts(ctx context.Context, userID uint) (int64, error) {
 	var count int64
 	err := r.DB.Table("favorite_products").Where("user_id = ?", userID).Count(&count).Error
 	return count, err
 }
 
+// ToggleFavoriteProduct toggles a favorite product state.
+// This is tricky because it's a many-many table, not something you can just expr your way through.
 func (r *ProductRepository) ToggleFavoriteProduct(ctx context.Context, userID uint, productID uint) error {
 	return r.DB.Transaction(func(tx *gorm.DB) error {
 		data := models.FavoriteProduct{
@@ -265,21 +276,25 @@ func (r *ProductRepository) AttachFavoriteStatus(ctx context.Context, userID uin
 
 // GetRunningUserProducts returns a list of products for a user, paged.
 func (r *ProductRepository) GetRunningUserProducts(ctx context.Context, userID uint, limit int, offset int) ([]models.Product, error) {
-	return gorm.G[models.Product](r.DB).
+	statement := gorm.G[models.Product](r.DB).
 		Preload("Seller", nil).
 		Preload("Categories", nil).
-		Preload("CurrentHighestBid", nil).
-		Where("seller_id = ? AND expired_at > ?", userID, time.Now()).
-		Order("expired_at").
+		Preload("CurrentHighestBid.User", nil).
+		Where("product_state = ?", models.ProductStateActive).
+		Where("seller_id = ?", userID)
+
+	return statement.Order("expired_at").
 		Limit(limit).
 		Offset(offset).
 		Find(ctx)
 }
 
+// CountRunningUserProducts counts the number of products posted by a user.
 func (r *ProductRepository) CountRunningUserProducts(ctx context.Context, userID uint) (int64, error) {
-	return gorm.G[models.Product](r.DB).
-		Where("seller_id = ? AND expired_at > ?", userID, time.Now()).
-		Count(ctx, "id")
+	statement := gorm.G[models.Product](r.DB).
+		Where("seller_id = ?", userID).
+		Where("product_state = ?", models.ProductStateActive)
+	return statement.Count(ctx, "id")
 }
 
 // CreateProduct creates a new product.
@@ -366,6 +381,7 @@ func (r *ProductRepository) CreateBid(
 }
 
 // GetMyBids retrieves a user's bids.
+// Should this allow the user to see won bids? Prob not, let's call that transactions.
 func (r *ProductRepository) GetMyBids(ctx context.Context, userID uint, limit int, offset int) ([]models.Product, error) {
 	var products []models.Product
 	err := r.DB.WithContext(ctx).
@@ -376,6 +392,7 @@ func (r *ProductRepository) GetMyBids(ctx context.Context, userID uint, limit in
 		Preload("Bids.User").
 		Joins("JOIN bids ON bids.product_id = products.id AND bids.user_id = ? AND bids.deleted_at IS NULL", userID).
 		Order("products.id, products.expired_at ASC").
+		Where("products.product_state = ?", models.ProductStateActive).
 		Limit(limit).
 		Offset(offset).
 		Find(&products).
@@ -390,12 +407,14 @@ func (r *ProductRepository) CountMyBids(ctx context.Context, userID uint) (int64
 		Joins("JOIN bids ON bids.product_id = products.id").
 		Where("bids.user_id = ?", userID).
 		Order("products.expired_at ASC").
+		Where("product_state = ?", models.ProductStateActive).
 		Distinct("products.id").
 		Count(&count).
 		Error
 	return count, err
 }
 
+// SetProductSentEmail marks a product's sent-email field as true.
 func (r *ProductRepository) SetProductSentEmail(ctx context.Context, productID uint) (int, error) {
 	db := r.DB.WithContext(ctx).
 		Model(&models.Product{}).
@@ -404,7 +423,7 @@ func (r *ProductRepository) SetProductSentEmail(ctx context.Context, productID u
 	return int(db.RowsAffected), db.Error
 }
 
-// GetAllExpiredProducts retrieves all products that are expired,
+// GetAllExpiredProducts retrieves all products that are expired or ended
 // but not have an email sent yet.
 func (r *ProductRepository) GetAllExpiredProducts(ctx context.Context) ([]models.Product, error) {
 	var products []models.Product
@@ -412,10 +431,42 @@ func (r *ProductRepository) GetAllExpiredProducts(ctx context.Context) ([]models
 		Model(&models.Product{}).
 		Preload("CurrentHighestBid.User").
 		Preload("Seller").
-		Where("expired_at < ? AND email_sent = ?", time.Now(), false).
+		Where("product_state <> ?", models.ProductStateActive).
+		Where("email_sent = ?", false).
 		Find(&products).
 		Error
 	return products, err
+}
+
+// UpdateAllExpiredProducts updates all products' state to match their status.
+func (r *ProductRepository) UpdateAllExpiredProducts(ctx context.Context) error {
+	now := time.Now()
+
+	return r.DB.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		// 入札なし → EXPIRED
+		if err := tx.
+			Model(&models.Product{}).
+			Where("product_state = ?", models.ProductStateActive).
+			Where("expired_at < ?", now).
+			Where("current_highest_bid_id IS NULL").
+			Update("product_state", models.ProductStateExpired).
+			Error; err != nil {
+			return err
+		}
+
+		// 入札あり → ENDED
+		if err := tx.
+			Model(&models.Product{}).
+			Where("product_state = ?", models.ProductStateActive).
+			Where("expired_at < ?", now).
+			Where("current_highest_bid_id IS NOT NULL").
+			Update("product_state", models.ProductStateEnded).
+			Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
 }
 
 // DenyBidder marks a bidder denied from the product.
@@ -453,4 +504,35 @@ func (r *ProductRepository) DenyBidder(ctx context.Context, productID uint, user
 					Limit(1),
 			}).Error
 	})
+}
+
+func (r *ProductRepository) GetUserProducts(ctx context.Context, userID uint, state models.ProductState, limit int, offset int) ([]models.Product, error) {
+	var products []models.Product
+	err := r.DB.
+		WithContext(ctx).
+		Model(&models.Product{}).
+		Preload("Seller").
+		Preload("CurrentHighestBid.User").
+		Preload("Bids.User").
+		Where("seller_id = ?", userID).
+		Where("product_state = ?", state).
+		Order("expired_at DESC, created_at DESC").
+		Limit(limit).
+		Offset(offset).
+		Find(&products).
+		Error
+	return products, err
+}
+
+func (r *ProductRepository) CountUserProducts(ctx context.Context, userID uint, state models.ProductState) (int64, error) {
+	var count int64
+	err := r.DB.
+		WithContext(ctx).
+		Model(&models.Product{}).
+		Where("seller_id = ?", userID).
+		Where("product_state = ?", state).
+		Order("expired_at DESC, created_at DESC").
+		Count(&count).
+		Error
+	return count, err
 }
