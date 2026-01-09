@@ -18,6 +18,7 @@ type MailerService struct {
 	mailer       *gomail.Dialer
 	productRepo  *repositories.ProductRepository
 	questionRepo *repositories.QuestionRepository
+	userRepo     *repositories.UserRepository
 }
 
 const (
@@ -119,6 +120,34 @@ const (
   </p>
 </body>
 </html>`
+	deniedBidTemplate = `
+<!DOCTYPE html>
+<html>
+<head>
+ <meta charset="UTF-8">
+</head>
+<body style="font-family: sans-serif;">
+ <h2>Your bid has been denied!</h2>
+
+ <p>
+ On the product "<strong>%s</strong>"
+ </p>
+
+ <hr />
+
+	<a href="%s">Link to product</a>
+
+ <p>
+Your bid has been denied by the seller. You may no longer participate in this auction.
+ </p>
+
+ <hr />
+
+ <p style="color: #666; font-size: 12px;">
+	This mail is automated, do not reply.
+ </p>
+</body>
+</html>`
 	auctionEndedTemplate = `
 <!DOCTYPE html>
 <html>
@@ -218,8 +247,15 @@ func NewMailerService(
 	mailer *gomail.Dialer,
 	productRepo *repositories.ProductRepository,
 	questionRepo *repositories.QuestionRepository,
+	userRepo *repositories.UserRepository,
 ) *MailerService {
-	return &MailerService{cfg: config, mailer: mailer, productRepo: productRepo, questionRepo: questionRepo}
+	return &MailerService{
+		cfg:          config,
+		mailer:       mailer,
+		productRepo:  productRepo,
+		userRepo:     userRepo,
+		questionRepo: questionRepo,
+	}
 }
 
 func (s *MailerService) SendQuestionEmail(product *models.Product, question string, user string) {
@@ -459,5 +495,34 @@ func (s *MailerService) SendEndedAuctionsEmail() {
 		}
 
 		defer fmt.Printf("Finishing the sweep at %v!\n", time.Now())
+	}()
+}
+
+// SendDeniedBidEmail sends an email out when there's a bidder denied from an auction.
+// I honestly don't know of any structure to send to this service, but I just need the minimum
+// that fits with the actual handler (since the handler didn't fetch the user who was denied).
+func (s *MailerService) SendDeniedBidEmail(product *models.Product, deniedID uint) {
+	go func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		// Don't need to send to non-existent user
+		user, err := s.userRepo.GetUserByID(ctx, deniedID)
+		if err != nil || user.Email == nil {
+			return
+		}
+
+		url := fmt.Sprintf("%s/products/%d", s.cfg.CORS.Origins, product.ID)
+		body := fmt.Sprintf(deniedBidTemplate, product.Name, url)
+
+		msg := gomail.NewMessage()
+		msg.SetHeader("From", fromHeader)
+		msg.SetAddressHeader("To", *user.Email, *user.Name)
+		msg.SetHeader("Subject", "CherryAuctions - Bid Denied")
+		msg.SetBody("text/html", body)
+
+		if err := s.mailer.DialAndSend(msg); err != nil {
+			log.Printf("failed to send bid denied email: %v", err)
+		}
 	}()
 }

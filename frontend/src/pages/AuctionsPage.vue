@@ -41,21 +41,10 @@ async function fetchCategories() {
 }
 
 async function fetchMyAuctions() {
-  let url: URL;
-  switch (auctionsType.value) {
-    case "expired":
-      url = new URL(endpoints.users.me.expired);
-      break;
-    case "ended":
-      url = new URL(endpoints.users.me.ended);
-      break;
-    default:
-      url = new URL(endpoints.users.me.products);
-      break;
-  }
-
+  const url = new URL(endpoints.users.me.products);
   url.searchParams.append("page", page.value.toString());
   url.searchParams.append("per_page", "12");
+  url.searchParams.append("type", auctionsType.value);
 
   try {
     const res = await authFetch(url);

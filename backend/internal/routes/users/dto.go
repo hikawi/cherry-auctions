@@ -71,14 +71,21 @@ type ProductDTO struct {
 	DescriptionChanges  []DescriptionChangeDTO `json:"description_changes"`
 	DeniedBidders       []ProfileDTO           `json:"denied_bidders"`
 	Bids                []BidDTO               `json:"bids"`
-
-	BidsCount  int  `json:"bids_count"`
-	IsFavorite bool `json:"is_favorite"`
+	BidsCount           int                    `json:"bids_count"`
+	IsFavorite          bool                   `json:"is_favorite"`
+	ProductState        string                 `json:"product_state"`
 }
 
 type GetMyProductsQuery struct {
-	Page    int `form:"page" binding:"number,gt=0,omitempty" json:"page"`
-	PerPage int `form:"per_page" binding:"number,gt=0,omitempty" json:"per_page"`
+	Page    int    `form:"page" binding:"number,gt=0,omitempty" json:"page"`
+	PerPage int    `form:"per_page" binding:"number,gt=0,omitempty" json:"per_page"`
+	Type    string `form:"type" binding:"required,oneof=active expired ended" json:"type"`
+}
+
+type GetMyBidsQuery struct {
+	Page    int    `form:"page" binding:"number,gt=0,omitempty" json:"page"`
+	PerPage int    `form:"per_page" binding:"number,gt=0,omitempty" json:"per_page"`
+	Status  string `form:"includes_lost" json:"includes_lost" binding:"required,oneof=active ended"`
 }
 
 type GetProductsResponse struct {
