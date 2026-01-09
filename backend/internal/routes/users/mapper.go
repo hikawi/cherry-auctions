@@ -125,3 +125,12 @@ func ToProductDTO(m *models.Product) ProductDTO {
 		IsFavorite: m.IsFavorite,
 	}
 }
+
+func ToRatingDTO(m *models.Rating) RatingDTO {
+	return RatingDTO{
+		Rating:   m.Rating,
+		Feedback: m.Feedback,
+		Reviewer: ToProfileDTO(m.Reviewer),
+		Reviewee: ToProfileDTO(m.Reviewee),
+	}
+}

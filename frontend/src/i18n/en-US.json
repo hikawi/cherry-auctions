@@ -225,10 +225,12 @@
   "profile": {
     "profile": "Profile",
     "favorites": "My Favorites",
+    "others_ratings": "Others Ratings on me",
     "upload_avatar": "Change Picture",
     "email": "Email Address",
     "name": "Full Name",
     "address": "Address",
+    "rating": "My Rating",
     "change_password": "Change Password",
     "new_password": "New Password",
     "current_password": "Current Password",
@@ -239,8 +241,10 @@
     "error_oauth": "You don't use passwords to login",
     "error_invalid_password": "Password is too short",
     "error_wrong_password": "Wrong password",
+    "error_cant_fetch_ratings": "Couldn't load ratings",
     "changed_password": "Successfully changed password",
-    "no_favorites": "No favorites yet"
+    "no_favorites": "No favorites yet",
+    "no_ratings": "No one has rated you yet"
   },
   "general": {
     "categories": "Categories",

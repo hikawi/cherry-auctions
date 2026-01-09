@@ -89,3 +89,12 @@ export interface Product {
   description_changes: DescriptionChanges[];
   is_favorite?: boolean;
 }
+
+export interface Rating {
+  rating: number;
+  feedback: string;
+  reviewer: Profile;
+  reviewee: Profile;
+  created_at: string;
+  updated_at: string;
+}

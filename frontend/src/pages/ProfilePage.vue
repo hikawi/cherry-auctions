@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ChangePasswordSection from "@/components/profile/ChangePasswordSection.vue";
 import FavoritesSection from "@/components/profile/FavoritesSection.vue";
+import MyRatingsSection from "@/components/profile/MyRatingsSection.vue";
 import ProfileSection from "@/components/profile/ProfileSection.vue";
 import NavigationBar from "@/components/shared/NavigationBar.vue";
 import WhiteContainer from "@/components/shared/WhiteContainer.vue";
@@ -24,6 +25,10 @@ useHead({
 
     <section class="flex w-full max-w-4xl flex-col gap-8">
       <ChangePasswordSection />
+    </section>
+
+    <section class="flex w-full max-w-4xl flex-col gap-8">
+      <MyRatingsSection />
     </section>
 
     <section class="flex w-full max-w-4xl flex-col gap-8">

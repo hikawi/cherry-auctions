@@ -225,10 +225,12 @@
   "profile": {
     "profile": "プロフィール",
     "favorites": "お気に入り",
+    "others_ratings": "付けられた評価履歴",
     "upload_avatar": "写真編集",
     "email": "メールアドレス",
     "name": "氏名",
     "address": "住所",
+    "rating": "評価",
     "change_password": "パスワード変更",
     "new_password": "新しいパスワード",
     "current_password": "現在のパスワード",
@@ -239,8 +241,10 @@
     "error_oauth": "このアカウントがパスワードを使わないので、変更できません",
     "error_invalid_password": "パスワードが無効です",
     "error_wrong_password": "パスワードが正しくありません",
+    "error_cant_fetch_ratings": "評価履歴ロード失敗してしまいました",
     "changed_password": "パスワード変更済み",
-    "no_favorites": "お気に入りがありません"
+    "no_favorites": "お気に入りがありません",
+    "no_ratings": "他人からの評価がありません"
   },
   "general": {
     "categories": "カテゴリー",
