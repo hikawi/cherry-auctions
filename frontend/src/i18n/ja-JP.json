@@ -201,6 +201,7 @@
     "similar_products": "この商品をチェックした人はこんな商品もチェックしています",
     "bids": "すべての入札",
     "bid_list": "{name}さんが{price}で{at}に入札しました",
+    "bid_list_unmasked": "{name}({email})さんが{price}で{at}に入札しました",
     "cant_bid": "入札することができません",
     "description": "商品説明",
     "add_remark": "説明を追伸",
@@ -259,7 +260,9 @@
     "loading": "読み込み中",
     "lets_go": "いくぞ",
     "error": "エラー",
-    "ok": "OK"
+    "ok": "OK",
+    "deleted_user": "削除したユーザー",
+    "deleted_email": "適用不可"
   },
   "others": {
     "403": {
