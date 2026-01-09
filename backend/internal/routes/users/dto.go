@@ -103,6 +103,13 @@ type UserDTO struct {
 	Subscription    *SubscriptionDTO `json:"subscription"`
 }
 
+type RatingDTO struct {
+	Rating   uint       `json:"rating"`
+	Feedback string     `json:"feedback"`
+	Reviewer ProfileDTO `json:"reviewer"`
+	Reviewee ProfileDTO `json:"reviewee"`
+}
+
 type GetUsersQuery struct {
 	Query   string `form:"query" json:"query"`
 	Page    int    `form:"page" binding:"number,gt=0,omitempty" json:"page"`
@@ -137,4 +144,12 @@ type PostProfileRequest struct {
 type PutPasswordRequest struct {
 	NewPassword     string `json:"new_password" form:"new_password" binding:"min=2,required"`
 	CurrentPassword string `json:"current_password" form:"current_password" binding:"min=2,required"`
+}
+
+type GetRatingsResponse struct {
+	Data       []RatingDTO `json:"data"`
+	Total      int64       `json:"total"`
+	TotalPages int         `json:"total_pages"`
+	Page       int         `json:"page"`
+	PerPage    int         `json:"per_page"`
 }

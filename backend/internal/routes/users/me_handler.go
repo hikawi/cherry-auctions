@@ -382,10 +382,101 @@ func (h *UsersHandler) GetMyEndedAuctions(g *gin.Context) {
 //	@produce		json
 //	@param			page		query		int							false	"Page number"
 //	@param			per_page	query		int							false	"Items per page"
-//	@success		200			{object}	users.GetProductsResponse	"Success"
+//	@success		200			{object}	users.GetRatingsResponse	"Success"
 //	@failure		400			{object}	shared.ErrorResponse		"Invalid query"
 //	@failure		401			{object}	shared.ErrorResponse		"Unauthenticated"
 //	@failure		500			{object}	shared.ErrorResponse		"The server could not complete the request"
 //	@router			/users/me/ratings [GET]
 func (h *UsersHandler) GetMyRatings(g *gin.Context) {
+	ctx := g.Request.Context()
+	claimsAny, _ := g.Get("claims")
+	claims := claimsAny.(*services.JWTSubject)
+	query := GetMyProductsQuery{
+		Page:    1,
+		PerPage: 20,
+	}
+
+	if err := g.ShouldBindQuery(&query); err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusBadRequest, "error": err.Error(), "query": query})
+		g.AbortWithStatusJSON(http.StatusBadRequest, shared.ErrorResponse{Error: "invalid query"})
+		return
+	}
+
+	ratings, err := h.RatingRepo.GetMyRatings(ctx, claims.UserID, query.PerPage, (query.Page-1)*query.PerPage)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusInternalServerError, "error": err.Error()})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "failed to read ratings"})
+		return
+	}
+
+	count, err := h.RatingRepo.CountMyRatings(ctx, claims.UserID)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusInternalServerError, "error": err.Error(), "query": query})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "unable to count products"})
+		return
+	}
+
+	response := GetRatingsResponse{
+		Data:       ranges.EachAddress(ratings, ToRatingDTO),
+		Total:      count,
+		TotalPages: int(math.Ceil(float64(count) / float64(query.PerPage))),
+		Page:       query.Page,
+		PerPage:    query.PerPage,
+	}
+	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusOK, "query": query, "response": response})
+	g.JSON(http.StatusOK, response)
+}
+
+// GetMyRated godoc
+//
+//	@summary		Gets a list of ratings on me.
+//	@description	Gets all ratings and related products and feedbacks, made on me.
+//	@tags			users
+//	@security		ApiKeyAuth
+//	@produce		json
+//	@param			page		query		int							false	"Page number"
+//	@param			per_page	query		int							false	"Items per page"
+//	@success		200			{object}	users.GetRatingsResponse	"Success"
+//	@failure		400			{object}	shared.ErrorResponse		"Invalid query"
+//	@failure		401			{object}	shared.ErrorResponse		"Unauthenticated"
+//	@failure		500			{object}	shared.ErrorResponse		"The server could not complete the request"
+//	@router			/users/me/ratings [GET]
+func (h *UsersHandler) GetMyRated(g *gin.Context) {
+	ctx := g.Request.Context()
+	claimsAny, _ := g.Get("claims")
+	claims := claimsAny.(*services.JWTSubject)
+	query := GetMyProductsQuery{
+		Page:    1,
+		PerPage: 20,
+	}
+
+	if err := g.ShouldBindQuery(&query); err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusBadRequest, "error": err.Error(), "query": query})
+		g.AbortWithStatusJSON(http.StatusBadRequest, shared.ErrorResponse{Error: "invalid query"})
+		return
+	}
+
+	ratings, err := h.RatingRepo.GetMyReviewedRatings(ctx, claims.UserID, query.PerPage, (query.Page-1)*query.PerPage)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusInternalServerError, "error": err.Error()})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "failed to read ratings"})
+		return
+	}
+
+	count, err := h.RatingRepo.CountMyReviewedRatings(ctx, claims.UserID)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusInternalServerError, "error": err.Error(), "query": query})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "unable to count products"})
+		return
+	}
+
+	response := GetRatingsResponse{
+		Data:       ranges.EachAddress(ratings, ToRatingDTO),
+		Total:      count,
+		TotalPages: int(math.Ceil(float64(count) / float64(query.PerPage))),
+		Page:       query.Page,
+		PerPage:    query.PerPage,
+	}
+	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusOK, "query": query, "response": response})
+	g.JSON(http.StatusOK, response)
 }
