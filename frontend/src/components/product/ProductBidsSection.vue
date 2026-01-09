@@ -97,7 +97,11 @@ async function denyBidder(id: number) {
         <button
           class="bg-claret-600 hover:bg-claret-700 cursor-pointer rounded-lg px-2 py-1 font-semibold text-white duration-200"
           @click="() => denyBidder(sortedBids![0].bidder.id)"
-          v-if="profile.profile && profile.profile.id == data.seller.id"
+          v-if="
+            profile.profile &&
+            profile.profile.id == data.seller.id &&
+            data.product_state == 'active'
+          "
         >
           {{ $t("products.deny_bidder") }}
         </button>

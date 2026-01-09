@@ -23,7 +23,9 @@ const loading = ref(false);
 const data = ref<
   Product & { similar_products?: Product[]; categories: { id: number; name: string }[] }
 >();
-const isExpired = computed(() => dayjs(data.value?.expired_at).isBefore(dayjs()));
+const isExpired = computed(
+  () => data.value?.product_state == "expired" || data.value?.product_state == "ended",
+);
 
 watch(route, fetchProduct);
 

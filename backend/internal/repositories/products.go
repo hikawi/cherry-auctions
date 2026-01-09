@@ -438,17 +438,24 @@ func (r *ProductRepository) CreateBINPurchase(ctx context.Context, productID uin
 
 // GetMyBids retrieves a user's bids.
 // Should this allow the user to see won bids? Prob not, let's call that transactions.
-func (r *ProductRepository) GetMyBids(ctx context.Context, userID uint, limit int, offset int) ([]models.Product, error) {
+func (r *ProductRepository) GetMyBids(ctx context.Context, userID uint, ended bool, limit int, offset int) ([]models.Product, error) {
 	var products []models.Product
-	err := r.DB.WithContext(ctx).
+	db := r.DB.WithContext(ctx).
 		Model(&models.Product{}).
 		Select("DISTINCT ON (products.id) products.*").
 		Preload("Seller").
 		Preload("CurrentHighestBid.User").
 		Preload("Bids.User").
 		Joins("JOIN bids ON bids.product_id = products.id AND bids.user_id = ? AND bids.deleted_at IS NULL", userID).
-		Order("products.id, products.expired_at ASC").
-		Where("products.product_state = ?", models.ProductStateActive).
+		Order("products.id, products.expired_at ASC")
+
+	if ended {
+		db = db.Where("products.product_state in ?", []models.ProductState{models.ProductStateEnded, models.ProductStateExpired})
+	} else {
+		db = db.Where("products.product_state = ?", models.ProductStateActive)
+	}
+
+	err := db.
 		Limit(limit).
 		Offset(offset).
 		Find(&products).
@@ -456,15 +463,18 @@ func (r *ProductRepository) GetMyBids(ctx context.Context, userID uint, limit in
 	return products, err
 }
 
-func (r *ProductRepository) CountMyBids(ctx context.Context, userID uint) (int64, error) {
+func (r *ProductRepository) CountMyBids(ctx context.Context, userID uint, ended bool) (int64, error) {
 	var count int64
-	err := r.DB.WithContext(ctx).
-		Model(&models.Product{}).
-		Joins("JOIN bids ON bids.product_id = products.id").
-		Where("bids.user_id = ?", userID).
-		Order("products.expired_at ASC").
-		Where("product_state = ?", models.ProductStateActive).
-		Distinct("products.id").
+	db := r.DB.WithContext(ctx).
+		Model(&models.Product{})
+
+	if ended {
+		db = db.Where("products.product_state in ?", []models.ProductState{models.ProductStateEnded, models.ProductStateExpired})
+	} else {
+		db = db.Where("products.product_state = ?", models.ProductStateActive)
+	}
+
+	err := db.
 		Count(&count).
 		Error
 	return count, err
@@ -587,7 +597,6 @@ func (r *ProductRepository) CountUserProducts(ctx context.Context, userID uint, 
 		Model(&models.Product{}).
 		Where("seller_id = ?", userID).
 		Where("product_state = ?", state).
-		Order("expired_at DESC, created_at DESC").
 		Count(&count).
 		Error
 	return count, err

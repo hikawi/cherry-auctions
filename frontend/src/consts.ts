@@ -34,8 +34,6 @@ export const endpoints = {
       index: `${api}/v1/users/me`,
       products: `${api}/v1/users/me/products`,
       bids: `${api}/v1/users/me/bids`,
-      expired: `${api}/v1/users/me/expired`,
-      ended: `${api}/v1/users/me/ended`,
       password: `${api}/v1/users/me/password`,
       ratings: `${api}/v1/users/me/ratings`,
       rated: `${api}/v1/users/me/rated`,

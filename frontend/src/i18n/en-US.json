@@ -217,6 +217,7 @@
     "cant_bid_denied": "You are denied from bidding on this product",
     "cant_bid_outbid_self": "You can't outbid yourself",
     "cant_bid_ended": "This auction has ended",
+    "cant_deny": "Failed to deny bid. The auction might have already ended.",
     "failed_to_bid": "Failed to bid. Someone might have beaten you to it.",
     "highest_bid": "You hold the highest bid for this auction",
     "outbidded": "You got outbidded on this auction",

@@ -384,6 +384,21 @@ definitions:
       total_pages:
         type: integer
     type: object
+  users.GetRatingsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/users.RatingDTO'
+        type: array
+      page:
+        type: integer
+      per_page:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
   users.GetUsersResponse:
     properties:
       data:
@@ -487,6 +502,17 @@ definitions:
     required:
     - current_password
     - new_password
+    type: object
+  users.RatingDTO:
+    properties:
+      feedback:
+        type: string
+      rating:
+        type: integer
+      reviewee:
+        $ref: '#/definitions/users.ProfileDTO'
+      reviewer:
+        $ref: '#/definitions/users.ProfileDTO'
     type: object
   users.SubscriptionDTO:
     properties:
@@ -1551,6 +1577,10 @@ paths:
         in: query
         name: per_page
         type: integer
+      - description: Includes non-winning auctions
+        in: query
+        name: includes_loss
+        type: boolean
       produces:
       - application/json
       responses:
@@ -1569,78 +1599,6 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Gets my own bids.
-      tags:
-      - users
-  /users/me/ended:
-    get:
-      description: Gets all auctions that are marked as ended.
-      parameters:
-      - description: Page number
-        in: query
-        name: page
-        type: integer
-      - description: Items per page
-        in: query
-        name: per_page
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: '#/definitions/users.GetProductsResponse'
-        "400":
-          description: Invalid query
-          schema:
-            $ref: '#/definitions/shared.ErrorResponse'
-        "401":
-          description: Unauthenticated
-          schema:
-            $ref: '#/definitions/shared.ErrorResponse'
-        "500":
-          description: The server could not complete the request
-          schema:
-            $ref: '#/definitions/shared.ErrorResponse'
-      security:
-      - ApiKeyAuth: []
-      summary: Gets my ended auctions.
-      tags:
-      - users
-  /users/me/expired:
-    get:
-      description: Gets all auctions that are marked as expired.
-      parameters:
-      - description: Page number
-        in: query
-        name: page
-        type: integer
-      - description: Items per page
-        in: query
-        name: per_page
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: '#/definitions/users.GetProductsResponse'
-        "400":
-          description: Invalid query
-          schema:
-            $ref: '#/definitions/shared.ErrorResponse'
-        "401":
-          description: Unauthenticated
-          schema:
-            $ref: '#/definitions/shared.ErrorResponse'
-        "500":
-          description: The server could not complete the request
-          schema:
-            $ref: '#/definitions/shared.ErrorResponse'
-      security:
-      - ApiKeyAuth: []
-      summary: Gets my expired auctions.
       tags:
       - users
   /users/me/password:
@@ -1691,6 +1649,10 @@ paths:
     get:
       description: Retrieves my products, paginated.
       parameters:
+      - description: Type of products, active/ended/expired
+        in: query
+        name: type
+        type: string
       - description: Page Number
         in: query
         name: page
@@ -1723,6 +1685,42 @@ paths:
       summary: Retrieves my products
       tags:
       - users
+  /users/me/rated:
+    get:
+      description: Gets all ratings and related products and feedbacks, made on me.
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: per_page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/users.GetRatingsResponse'
+        "400":
+          description: Invalid query
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "401":
+          description: Unauthenticated
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: The server could not complete the request
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Gets a list of ratings on me.
+      tags:
+      - users
   /users/me/ratings:
     get:
       description: Gets all ratings and related products and feedbacks, made by me.
@@ -1741,7 +1739,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/users.GetProductsResponse'
+            $ref: '#/definitions/users.GetRatingsResponse'
         "400":
           description: Invalid query
           schema:

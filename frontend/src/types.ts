@@ -64,7 +64,7 @@ export interface DescriptionChanges {
   created_at: string;
 }
 
-export type StepBidType = "percentage" | "fixed";
+export type ProductState = "active" | "ended" | "expired" | "cancelled";
 
 export interface Product {
   id: number;
@@ -73,7 +73,6 @@ export interface Product {
   thumbnail_url: string;
   starting_bid: number;
   bin_price?: number;
-  step_bid_type: StepBidType;
   step_bid_value: number;
   bids_count: number;
   current_highest_bid?: Bid;
@@ -88,6 +87,7 @@ export interface Product {
   denied_bidders: SmallUser[];
   description_changes: DescriptionChanges[];
   is_favorite?: boolean;
+  product_state: ProductState;
 }
 
 export interface Rating {

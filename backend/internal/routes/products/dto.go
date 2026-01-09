@@ -56,9 +56,9 @@ type ProductDTO struct {
 	Categories          []CategoryDTO          `json:"categories"`
 	DescriptionChanges  []DescriptionChangeDTO `json:"description_changes"`
 	DeniedBidders       []ProfileDTO           `json:"denied_bidders"`
-
-	BidsCount  int  `json:"bids_count"`
-	IsFavorite bool `json:"is_favorite"`
+	BidsCount           int                    `json:"bids_count"`
+	IsFavorite          bool                   `json:"is_favorite"`
+	ProductState        string                 `json:"product_state"`
 }
 
 type QuestionDTO struct {

@@ -3,10 +3,10 @@ package products
 import (
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"luny.dev/cherryauctions/internal/logging"
+	"luny.dev/cherryauctions/internal/models"
 	"luny.dev/cherryauctions/internal/routes/shared"
 	"luny.dev/cherryauctions/internal/services"
 )
@@ -53,7 +53,7 @@ func (h *ProductsHandler) PostDenyBidder(g *gin.Context) {
 		return
 	}
 
-	if product.ExpiredAt.Before(time.Now()) {
+	if product.ProductState != models.ProductStateActive {
 		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusBadRequest, "error": "product is expired"})
 		g.AbortWithStatusJSON(http.StatusBadRequest, shared.ErrorResponse{Error: "product is expired"})
 		return
@@ -75,5 +75,6 @@ func (h *ProductsHandler) PostDenyBidder(g *gin.Context) {
 
 	response := shared.MessageResponse{Message: "denied bidder"}
 	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusOK, "response": response})
+	h.MailerService.SendDeniedBidEmail(&product, body.UserID)
 	g.JSON(http.StatusOK, response)
 }
