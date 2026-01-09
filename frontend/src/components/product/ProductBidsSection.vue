@@ -11,7 +11,7 @@ import AvatarCircle from "../shared/AvatarCircle.vue";
 import ErrorDialog from "../shared/ErrorDialog.vue";
 import OverlayScreen from "../shared/OverlayScreen.vue";
 
-const { locale } = useI18n();
+const { t, locale } = useI18n();
 const { authFetch } = useAuthFetch();
 const profile = useProfileStore();
 
@@ -33,7 +33,11 @@ const sortedBids = computed(() => {
 });
 
 // Yes, I know I should truncate on the backend side.
-function truncate(s: string): string {
+function truncate(s?: string): string {
+  if (!s) {
+    return t("general.deleted_user");
+  }
+
   const prefix = s.slice(0, Math.min(s.length / 2 + 1, 4));
   return prefix.padEnd(8, "*");
 }
@@ -71,9 +75,9 @@ async function denyBidder(id: number) {
 
     <div
       v-if="sortedBids && sortedBids.length > 0"
-      class="flex w-full flex-col items-center gap-4 rounded-xl border border-zinc-300 p-4 md:w-fit md:flex-row md:p-6"
+      class="flex w-full flex-col items-center gap-4 rounded-xl border border-zinc-300 p-4 md:p-6"
     >
-      <div class="flex flex-row items-center gap-2">
+      <div class="flex w-full flex-row items-center justify-start gap-2">
         <LucideCrown class="size-6 fill-amber-600 text-amber-600" />
         <h3 class="text-lg font-semibold">{{ $t("products.current_highest_bidder") }}</h3>
       </div>
@@ -85,7 +89,7 @@ async function denyBidder(id: number) {
           class="size-12"
         />
         <span
-          >{{ sortedBids[0].bidder.name }} ({{
+          >{{ truncate(sortedBids[0].bidder.name) }} ({{
             $t("products.rating", { rating: sortedBids[0].bidder.average_rating })
           }})</span
         >
@@ -111,10 +115,23 @@ async function denyBidder(id: number) {
             }"
           />
 
-          <span class="w-full">
+          <!-- Show truncated if not the seller. Yes I'm aware this does nothing when the user opens Network tab -->
+          <span class="w-full" v-if="!profile.profile || profile.profile.id != data.seller.id">
             {{
               $t("products.bid_list", {
-                name: truncate(bid.bidder.name || ""),
+                name: truncate(bid.bidder.name || $t("general.deleted_user")),
+                price: $n(bid.price / 100, "currency"),
+                at: createAbsoluteTime(bid.created_at),
+              })
+            }}
+          </span>
+
+          <!-- I'm just tired okay. -->
+          <span class="w-full" v-else>
+            {{
+              $t("products.bid_list_unmasked", {
+                name: bid.bidder.name || $t("general.deleted_user"),
+                email: bid.bidder.email || $t("general.deleted_email"),
                 price: $n(bid.price / 100, "currency"),
                 at: createAbsoluteTime(bid.created_at),
               })

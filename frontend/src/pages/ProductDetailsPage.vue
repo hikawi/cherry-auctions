@@ -13,7 +13,7 @@ import { useAuthFetch } from "@/hooks/use-auth-fetch";
 import type { Product } from "@/types";
 import dayjs from "dayjs";
 import { LucideChevronLeft } from "lucide-vue-next";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
@@ -24,6 +24,8 @@ const data = ref<
   Product & { similar_products?: Product[]; categories: { id: number; name: string }[] }
 >();
 const isExpired = computed(() => dayjs(data.value?.expired_at).isBefore(dayjs()));
+
+watch(route, fetchProduct);
 
 async function fetchProduct() {
   loading.value = true;

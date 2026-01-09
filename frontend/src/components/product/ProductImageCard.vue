@@ -3,11 +3,13 @@ import { endpoints } from "@/consts";
 import { useAuthFetch } from "@/hooks/use-auth-fetch";
 import { useProfileStore } from "@/stores/profile";
 import type { Product } from "@/types";
+import { useInterval } from "@vueuse/core";
 import { LucideChevronLeft, LucideChevronRight, LucideHeart } from "lucide-vue-next";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 const profile = useProfileStore();
 const { authFetch } = useAuthFetch();
+const now = useInterval(3000);
 
 const props = defineProps<{
   data: Product & { similar_products?: Product[]; categories: { id: number; name: string }[] };
@@ -22,6 +24,10 @@ const images = ref([
   props.data.thumbnail_url,
   ...(props.data.product_images || []).map((img) => img.url),
 ]);
+
+watch(now, () => {
+  currentImage.value = (currentImage.value + 1) % images.value.length;
+});
 
 async function toggleFavorite() {
   if (!props.data) {

@@ -201,6 +201,7 @@
     "bids": "Bids",
     "similar_products": "You may also like",
     "bid_list": "{name} bidded {price} at {at}",
+    "bid_list_unmasked": "{name} ({email}) bidded {price} at {at}",
     "cant_bid": "You can't bid on this product",
     "description": "Product Description",
     "add_remark": "Add description remark",
@@ -259,7 +260,9 @@
     "loading": "Loading",
     "lets_go": "Let's GO!",
     "error": "Error",
-    "ok": "OK"
+    "ok": "OK",
+    "deleted_user": "Deleted User",
+    "deleted_email": "N/A"
   },
   "others": {
     "403": {
