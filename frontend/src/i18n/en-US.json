@@ -1,6 +1,7 @@
 {
   "meta": {
     "login": "CherryAuctions - Login",
+    "profile": "CherryAuctions - My Profile",
     "my_bids": "CherryAuctions - My Bids"
   },
   "login": {
@@ -227,6 +228,17 @@
     "email": "Email Address",
     "name": "Full Name",
     "address": "Address",
+    "change_password": "Change Password",
+    "new_password": "New Password",
+    "current_password": "Current Password",
+    "confirm_password": "Confirm New Password",
+    "error": "Profile Error",
+    "error_passwords_dont_match": "Passwords don't match",
+    "error_cant_change_password": "Couldn't change password",
+    "error_oauth": "You don't use passwords to login",
+    "error_invalid_password": "Password is too short",
+    "error_wrong_password": "Wrong password",
+    "changed_password": "Successfully changed password",
     "no_favorites": "No favorites yet"
   },
   "general": {

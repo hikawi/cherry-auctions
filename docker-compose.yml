@@ -88,7 +88,7 @@ services:
     command: -c /fluent-bit/etc/fluent-bit.yaml
     environment:
       FLUENTBIT_LOG_LEVEL: debug
-      FLUENTBIT_LOG_FILE: /var/log/cherryauctions
+      FLUENTBIT_LOG_FILE: "/var/log/cherryauctions/*.log"
 
   mailpit:
     image: axllent/mailpit:latest
