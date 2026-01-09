@@ -119,6 +119,10 @@ func (repo *UserRepository) UpdateProfile(ctx context.Context, id uint, name *st
 	return gorm.G[models.User](repo.DB).Where("id = ?", id).Updates(ctx, models.User{Name: name, Address: address})
 }
 
+func (repo *UserRepository) UpdatePassword(ctx context.Context, id uint, password string) (int, error) {
+	return gorm.G[models.User](repo.DB).Where("id = ?", id).Update(ctx, "password", password)
+}
+
 // UpdateOTP updates the user's OTP to a new one.
 func (repo *UserRepository) UpdateOTP(ctx context.Context, id uint, otp string) (int, error) {
 	expiredAt := time.Now().Add(15 * time.Minute)

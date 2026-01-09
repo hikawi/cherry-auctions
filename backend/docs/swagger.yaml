@@ -476,6 +476,18 @@ definitions:
       name:
         type: string
     type: object
+  users.PutPasswordRequest:
+    properties:
+      current_password:
+        minLength: 2
+        type: string
+      new_password:
+        minLength: 2
+        type: string
+    required:
+    - current_password
+    - new_password
+    type: object
   users.SubscriptionDTO:
     properties:
       created_at:
@@ -1629,6 +1641,50 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Gets my expired auctions.
+      tags:
+      - users
+  /users/me/password:
+    put:
+      consumes:
+      - application/json
+      description: Updates the current authenticated user's profile password
+      parameters:
+      - description: New password data
+        in: body
+        name: profile
+        required: true
+        schema:
+          $ref: '#/definitions/users.PutPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: When successfully changed
+          schema:
+            $ref: '#/definitions/shared.MessageResponse'
+        "400":
+          description: Invalid body
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "401":
+          description: When unauthorized
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "403":
+          description: Incorrect current password
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "421":
+          description: Account uses OAuth
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: The request could not be completed due to server faults
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Updates your profile password
       tags:
       - users
   /users/me/products:

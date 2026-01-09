@@ -11,6 +11,7 @@ import (
 type UsersHandler struct {
 	DB                *gorm.DB
 	MiddlewareService *services.MiddlewareService
+	PasswordService   *services.PasswordService
 	UserRepo          *repositories.UserRepository
 	ProductRepo       *repositories.ProductRepository
 	RatingRepo        *repositories.RatingRepostory
@@ -27,6 +28,7 @@ func (h *UsersHandler) SetupRouter(r *gin.RouterGroup) {
 	g.GET("/me/bids", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.GetMyBids)
 	g.GET("/me/expired", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.GetMyExpiredAuctions)
 	g.GET("/me/ended", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.GetMyEndedAuctions)
+	g.PUT("/me/password", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.PutPassword)
 	g.GET("", h.MiddlewareService.AuthorizedRoute(models.ROLE_ADMIN), h.GetUsers)
 	g.POST("/request", h.MiddlewareService.AuthorizedRoute(models.ROLE_USER), h.PostRequest)
 	g.POST("/approve", h.MiddlewareService.AuthorizedRoute(models.ROLE_ADMIN), h.PostApprove)

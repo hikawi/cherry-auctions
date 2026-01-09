@@ -72,6 +72,7 @@ func SetupRoutes(server *gin.Engine, deps ServerDependency) {
 	usersHandler := users.UsersHandler{
 		DB:                deps.DB,
 		MiddlewareService: deps.Services.MiddlewareService,
+		PasswordService:   deps.Services.PasswordService,
 		UserRepo:          deps.Repositories.UserRepository,
 		ProductRepo:       deps.Repositories.ProductRepository,
 		RatingRepo:        deps.Repositories.RatingRepostory,

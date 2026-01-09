@@ -133,3 +133,8 @@ type PostProfileRequest struct {
 	Name    *string `json:"name" form:"name" binding:"min=2,max=200,omitempty"`
 	Address *string `json:"address" form:"address" binding:"min=2,omitempty"`
 }
+
+type PutPasswordRequest struct {
+	NewPassword     string `json:"new_password" form:"new_password" binding:"min=2,required"`
+	CurrentPassword string `json:"current_password" form:"current_password" binding:"min=2,required"`
+}

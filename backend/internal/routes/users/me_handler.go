@@ -50,6 +50,79 @@ func (h *UsersHandler) PutProfile(g *gin.Context) {
 	g.JSON(http.StatusOK, response)
 }
 
+// PutPassword godoc
+//
+//	@summary		Updates your profile password
+//	@description	Updates the current authenticated user's profile password
+//	@tags			users
+//	@accept			json
+//	@produce		json
+//	@security		ApiKeyAuth
+//	@param			profile	body		users.PutPasswordRequest	true	"New password data"
+//	@success		200		{object}	shared.MessageResponse		"When successfully changed"
+//	@failure		400		{object}	shared.ErrorResponse		"Invalid body"
+//	@failure		401		{object}	shared.ErrorResponse		"When unauthorized"
+//	@failure		403		{object}	shared.ErrorResponse		"Incorrect current password"
+//	@failure		421		{object}	shared.ErrorResponse		"Account uses OAuth"
+//	@failure		500		{object}	shared.ErrorResponse		"The request could not be completed due to server faults"
+//	@router			/users/me/password [PUT]
+func (h *UsersHandler) PutPassword(g *gin.Context) {
+	ctx := g.Request.Context()
+	claimsAny, _ := g.Get("claims")
+	claims := claimsAny.(*services.JWTSubject)
+
+	var body PutPasswordRequest
+	if err := g.ShouldBind(&body); err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": err.Error(), "status": http.StatusBadRequest})
+		g.AbortWithStatusJSON(http.StatusBadRequest, shared.ErrorResponse{Error: "bad request"})
+		return
+	}
+
+	user, err := h.UserRepo.GetUserByID(ctx, claims.UserID)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": err.Error(), "status": http.StatusInternalServerError})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "failed to query for user"})
+		return
+	}
+
+	if user.Password == nil || user.OauthType != "none" {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusMisdirectedRequest, "error": "user does not use password"})
+		g.AbortWithStatusJSON(http.StatusMisdirectedRequest, shared.ErrorResponse{Error: "user does not use password"})
+		return
+	}
+
+	ok, err := h.PasswordService.VerifyPassword(*user.Password, body.CurrentPassword)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusInternalServerError, "error": err.Error()})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "failed to verify user password"})
+		return
+	}
+
+	if !ok {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusForbidden, "error": "wrong password"})
+		g.AbortWithStatusJSON(http.StatusForbidden, shared.ErrorResponse{Error: "wrong password"})
+		return
+	}
+
+	hash, err := h.PasswordService.HashPassword(body.NewPassword)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusInternalServerError, "error": "failed to hash password"})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "failed to hash password"})
+		return
+	}
+
+	_, err = h.UserRepo.UpdatePassword(ctx, user.ID, hash)
+	if err != nil {
+		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusInternalServerError, "error": err.Error()})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "failed to update password"})
+		return
+	}
+
+	response := shared.MessageResponse{Message: "updated password"}
+	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusOK, "response": response})
+	g.JSON(http.StatusOK, response)
+}
+
 // GetMyProducts godoc
 //
 //	@summary		Retrieves my products
