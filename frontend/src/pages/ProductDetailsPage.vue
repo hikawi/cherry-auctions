@@ -11,7 +11,6 @@ import WhiteContainer from "@/components/shared/WhiteContainer.vue";
 import { endpoints } from "@/consts";
 import { useAuthFetch } from "@/hooks/use-auth-fetch";
 import type { Product } from "@/types";
-import dayjs from "dayjs";
 import { LucideChevronLeft } from "lucide-vue-next";
 import { computed, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";

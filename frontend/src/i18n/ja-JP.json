@@ -136,7 +136,8 @@
     "error_step_bid_value": "入札単位を入力してください",
     "error_step_bid_type": "入札単位種類を選択してください",
     "error_bin_price": "即決価格を入力してください",
-    "error_expired_at": "終了日時を未来の時間に設定してください"
+    "error_expired_at": "終了日時を未来の時間に設定してください",
+    "error_cant_fetch_auctions": "オークションリストを読み込むことできませんでした"
   },
   "subscriptions": {
     "title": "サブスクリプション",

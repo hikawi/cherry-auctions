@@ -19,6 +19,7 @@ const page = ref(1);
 const maxPages = ref(1);
 const auctionsType = ref<"active" | "expired" | "ended">("active");
 const loading = ref(false);
+const error = ref("");
 
 watch(maxPages, (val) => (page.value = Math.min(page.value, val)));
 watch(page, fetchMyAuctions);
@@ -54,7 +55,7 @@ async function fetchMyAuctions() {
       maxPages.value = Math.max(json.total_pages, 1);
     }
   } catch {
-    // TODO: Add error flow
+    error.value = "auctions.cant_fetch_auctions";
   }
 }
 
@@ -87,6 +88,13 @@ onMounted(async () => {
           <LucidePackage class="size-4 text-white" />
           {{ $t("auctions.new") }}
         </button>
+      </div>
+
+      <div
+        v-if="error"
+        class="border-watermelon-600 bg-watermelon-200/50 text-watermelon-600 w-full rounded-xl border-2 px-4 py-2"
+      >
+        {{ $t(error) }}
       </div>
 
       <div class="bg-claret-100 grid w-full grid-cols-3 rounded-full p-1">

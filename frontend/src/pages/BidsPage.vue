@@ -21,15 +21,18 @@ useHead({
 const data = ref<Product[]>();
 const page = ref(1);
 const maxPages = ref(1);
+const bidType = ref<"active" | "ended">("active");
 const loading = ref(false);
 
 watch(maxPages, (val) => (page.value = Math.min(page.value, val)));
 watch(page, fetchMyBids);
+watch(bidType, fetchMyBids);
 
 async function fetchMyBids() {
   const url = new URL(endpoints.users.me.bids);
   url.searchParams.append("page", page.value.toString());
   url.searchParams.append("per_page", "12");
+  url.searchParams.append("status", bidType.value);
 
   try {
     const res = await authFetch(url);
@@ -68,6 +71,23 @@ onMounted(async () => {
         >
           <LucideRefreshCcw class="size-4 text-white" />
           {{ $t("general.refresh") }}
+        </button>
+      </div>
+
+      <div class="bg-claret-100 grid w-full grid-cols-2 rounded-full p-1">
+        <button
+          class="w-full rounded-full px-4 py-1 duration-200 hover:bg-white/50"
+          :class="{ 'bg-white': bidType == 'active' }"
+          @click="bidType = 'active'"
+        >
+          {{ $t("auctions.active") }}
+        </button>
+        <button
+          class="w-full rounded-full hover:bg-white/50"
+          :class="{ 'bg-white': bidType == 'ended' }"
+          @click="bidType = 'ended'"
+        >
+          {{ $t("auctions.ended") }}
         </button>
       </div>
 

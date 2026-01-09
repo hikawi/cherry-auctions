@@ -1594,9 +1594,9 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "type": "boolean",
-                        "description": "Includes non-winning auctions",
-                        "name": "includes_loss",
+                        "type": "string",
+                        "description": "What type of bids to include, active/ended?",
+                        "name": "status",
                         "in": "query"
                     }
                 ],
@@ -2139,6 +2139,9 @@ const docTemplate = `{
                         "$ref": "#/definitions/products.ProductImageDTO"
                     }
                 },
+                "product_state": {
+                    "type": "string"
+                },
                 "questions": {
                     "type": "array",
                     "items": {
@@ -2297,6 +2300,9 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "product_state": {
                     "type": "string"
                 },
                 "seller": {
@@ -2611,6 +2617,9 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "product_state": {
                     "type": "string"
                 },
                 "seller": {

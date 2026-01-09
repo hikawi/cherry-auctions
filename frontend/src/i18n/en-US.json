@@ -136,7 +136,8 @@
     "error_step_bid_value": "Step bid value is invalid",
     "error_step_bid_type": "Step bid type is invalid, must be percentage or fixed",
     "error_bin_price": "BIN price is invalid",
-    "error_expired_at": "Expiry time is invalid, must be in the future"
+    "error_expired_at": "Expiry time is invalid, must be in the future",
+    "error_cant_fetch_auctions": "Couldn't fetch your auctions"
   },
   "subscriptions": {
     "title": "My Subscriptions",

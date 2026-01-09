@@ -231,12 +231,12 @@ func (h *UsersHandler) GetMe(g *gin.Context) {
 //	@tags			users
 //	@produce		json
 //	@security		ApiKeyAuth
-//	@param			page			query		int							false	"Page Number"
-//	@param			per_page		query		int							false	"Items per Page"
-//	@param			includes_loss	query		boolean						false	"Includes non-winning auctions"
-//	@success		200				{object}	users.GetProductsResponse	"Successful"
-//	@failure		401				{object}	shared.ErrorResponse		"When unauthenticated"
-//	@failure		500				{object}	shared.ErrorResponse		"The server could not complete the request"
+//	@param			page		query		int							false	"Page Number"
+//	@param			per_page	query		int							false	"Items per Page"
+//	@param			status		query		string						false	"What type of bids to include, active/ended?"
+//	@success		200			{object}	users.GetProductsResponse	"Successful"
+//	@failure		401			{object}	shared.ErrorResponse		"When unauthenticated"
+//	@failure		500			{object}	shared.ErrorResponse		"The server could not complete the request"
 //	@router			/users/me/bids [GET]
 func (h *UsersHandler) GetMyBids(g *gin.Context) {
 	claimsAny, _ := g.Get("claims")
@@ -254,14 +254,14 @@ func (h *UsersHandler) GetMyBids(g *gin.Context) {
 		return
 	}
 
-	products, err := h.ProductRepo.GetMyBids(ctx, claims.UserID, query.Status == "active", query.PerPage, (query.Page-1)*query.PerPage)
+	products, err := h.ProductRepo.GetMyBids(ctx, claims.UserID, query.Status == "ended", query.PerPage, (query.Page-1)*query.PerPage)
 	if err != nil {
 		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusInternalServerError, "error": err.Error(), "query": query})
 		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "couldn't query for user bids"})
 		return
 	}
 
-	count, err := h.ProductRepo.CountMyBids(ctx, claims.UserID, query.Status == "active")
+	count, err := h.ProductRepo.CountMyBids(ctx, claims.UserID, query.Status == "ended")
 	if err != nil {
 		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": err.Error(), "query": query})
 		g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "unable to count products"})
