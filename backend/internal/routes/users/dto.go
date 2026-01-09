@@ -85,7 +85,7 @@ type GetMyProductsQuery struct {
 type GetMyBidsQuery struct {
 	Page    int    `form:"page" binding:"number,gt=0,omitempty" json:"page"`
 	PerPage int    `form:"per_page" binding:"number,gt=0,omitempty" json:"per_page"`
-	Status  string `form:"includes_lost" json:"includes_lost" binding:"required,oneof=active ended"`
+	Status  string `form:"status" json:"status" binding:"required,oneof=active ended"`
 }
 
 type GetProductsResponse struct {

@@ -158,6 +158,8 @@ definitions:
         items:
           $ref: '#/definitions/products.ProductImageDTO'
         type: array
+      product_state:
+        type: string
       questions:
         items:
           $ref: '#/definitions/products.QuestionDTO'
@@ -262,6 +264,8 @@ definitions:
       is_favorite:
         type: boolean
       name:
+        type: string
+      product_state:
         type: string
       seller:
         $ref: '#/definitions/products.ProfileDTO'
@@ -468,6 +472,8 @@ definitions:
       is_favorite:
         type: boolean
       name:
+        type: string
+      product_state:
         type: string
       seller:
         $ref: '#/definitions/users.ProfileDTO'
@@ -1577,10 +1583,10 @@ paths:
         in: query
         name: per_page
         type: integer
-      - description: Includes non-winning auctions
+      - description: What type of bids to include, active/ended?
         in: query
-        name: includes_loss
-        type: boolean
+        name: status
+        type: string
       produces:
       - application/json
       responses:
