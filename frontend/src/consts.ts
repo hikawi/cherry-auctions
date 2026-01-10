@@ -25,6 +25,11 @@ export const endpoints = {
     edit: (id: unknown) => `${api}/v1/categories/${id}`,
     delete: (id: unknown) => `${api}/v1/categories/${id}`,
   },
+  chat: {
+    stream: `${api}/v1/chat/stream`,
+    index: `${api}/v1/chat`,
+    id: (id: unknown) => `${api}/v1/chat/${id}`,
+  },
   users: {
     all: `${api}/v1/users`,
     request: `${api}/v1/users/request`,

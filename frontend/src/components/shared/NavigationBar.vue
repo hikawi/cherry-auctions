@@ -5,6 +5,7 @@ import {
   LucideLayoutDashboard,
   LucideLogOut,
   LucideMenu,
+  LucideMessageCircle,
   LucideRocket,
   LucideStar,
   LucideStore,
@@ -61,6 +62,11 @@ const profileLinks: Link[] = [
     name: "navigation.my_reviews",
     href: "/reviews",
     icon: LucideStar,
+  },
+  {
+    name: "navigation.my_messages",
+    href: "/messages",
+    icon: LucideMessageCircle,
   },
   {
     name: "navigation.my_subscriptions",
