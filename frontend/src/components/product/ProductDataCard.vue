@@ -90,14 +90,14 @@ const nextBidValue = computed(() => {
 });
 
 // Send a request to add a bid.
-async function bid() {
+async function bid(cents: number) {
   loading.value = true;
   error.value = "";
 
   try {
     const res = await authFetch(endpoints.products.bids(props.data.id), {
       method: "POST",
-      body: JSON.stringify({ bid: nextBidValue.value }),
+      body: JSON.stringify({ bid: cents }),
     });
     confirmBidDialog.value = false;
 
@@ -106,6 +106,21 @@ async function bid() {
     } else {
       error.value = "products.failed_to_bid";
     }
+  } finally {
+    loading.value = false;
+  }
+}
+
+// Creates a new conversation to finalize product
+async function finalizeProduct() {
+  loading.value = true;
+  error.value = "";
+
+  try {
+    const res = await authFetch(endpoints.chat.index, {
+      method: "POST",
+      body: JSON.stringify({ product_id: props.data.id }),
+    });
   } finally {
     loading.value = false;
   }
@@ -121,6 +136,8 @@ async function bid() {
       @cancel="confirmBidDialog = false"
       @confirm="bid"
     />
+
+    <div class="flex flex-col"></div>
   </OverlayScreen>
 
   <OverlayScreen shown v-if="error" class="p-6">
@@ -200,7 +217,7 @@ async function bid() {
           data.current_highest_bid?.bidder.id == profile.profile?.id
         "
         :disabled="data.finalized_at != null"
-        @click="$router.push({ name: 'checkout', params: { id: data.id } })"
+        @click="finalizeProduct"
       >
         {{ data.finalized_at ? $t("products.already_checkout") : $t("products.checkout") }}
       </button>

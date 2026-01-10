@@ -26,6 +26,9 @@ const router = createRouter({
       name: "checkout",
       path: "/products/:id/checkout",
       component: () => import("../pages/CheckoutPage.vue"),
+      meta: {
+        requiresAuth: true,
+      },
     },
     {
       name: "auctions",
@@ -39,6 +42,14 @@ const router = createRouter({
       name: "bids",
       path: "/bids",
       component: () => import("../pages/BidsPage.vue"),
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      name: "messages",
+      path: "/messages",
+      component: () => import("../pages/MessagesPage.vue"),
       meta: {
         requiresAuth: true,
       },

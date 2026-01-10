@@ -1,17 +1,18 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 
-defineProps<{
+const props = defineProps<{
   label: string;
   required?: boolean;
   placeholder?: string;
+  default?: string;
 }>();
 
 const emit = defineEmits<{
   change: [val: number];
 }>();
 
-const value = ref<string>("");
+const value = ref<string>(props.default || "");
 
 watch(value, (nc) => {
   const numeric = parseFloat(nc.replace(/,/g, ""));

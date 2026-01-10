@@ -1,27 +1,53 @@
 <script setup lang="ts">
-defineProps<{
+import { ref } from "vue";
+import MoneyInput from "../shared/inputs/MoneyInput.vue";
+import z from "zod";
+
+const props = defineProps<{
   name: string;
   nextBidValue: number;
   loading: boolean;
 }>();
 
-defineEmits<{
+const emits = defineEmits<{
   cancel: [];
-  confirm: [];
+  confirm: [cents: number];
 }>();
+
+const nextBid = ref<number>(props.nextBidValue);
+const error = ref("");
+
+function confirm() {
+  error.value = "";
+
+  const cents = nextBid.value;
+  const number = z.number().min(props.nextBidValue).safeParse(cents);
+
+  if (number.error) {
+    error.value = "products.minimum_bid";
+    return;
+  }
+
+  emits("confirm", cents);
+}
 </script>
 
 <template>
   <div class="flex w-full max-w-lg flex-col gap-4 rounded-2xl bg-white p-4 shadow-md sm:p-6">
     <h2 class="text-center text-xl font-bold">{{ $t("products.confirm_bid") }}</h2>
     <hr class="h-px w-full rounded-full border-zinc-300" />
-    <p class="text-center text-balance">
-      {{
-        $t("products.confirm_bid_description", {
-          name: name,
-          price: $n(nextBidValue / 100, "currency"),
-        })
-      }}
+
+    <MoneyInput
+      :label="$t('products.next_bid')"
+      :default="$n(nextBidValue / 100, 'decimal')"
+      @change="(val) => (nextBid = val)"
+    />
+
+    <p
+      class="border-watermelon-600 text-watermelon-600 bg-watermelon-200/50 rounded-xl border-2 px-4 py-2"
+      v-if="error"
+    >
+      {{ $t(error, { bid: $n(nextBidValue / 100, "currency") }) }}
     </p>
 
     <div class="flex w-full flex-row items-center justify-center gap-2 font-semibold">
@@ -34,7 +60,7 @@ defineEmits<{
 
       <button
         class="bg-claret-600 hover:bg-claret-700 cursor-pointer rounded-xl px-4 py-1 text-white duration-200 disabled:cursor-not-allowed disabled:opacity-50"
-        @click="$emit('confirm')"
+        @click="confirm"
         :disabled="loading"
       >
         {{ loading ? $t("general.loading") : $t("general.lets_go") }}
