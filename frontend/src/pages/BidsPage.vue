@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ProductCard from "@/components/index/ProductCard.vue";
+import ProductPreviewCard from "@/components/product/ProductPreviewCard.vue";
 import NavigationBar from "@/components/shared/NavigationBar.vue";
 import PagingSection from "@/components/shared/PagingSection.vue";
 import WhiteContainer from "@/components/shared/WhiteContainer.vue";
@@ -26,7 +26,10 @@ const loading = ref(false);
 
 watch(maxPages, (val) => (page.value = Math.min(page.value, val)));
 watch(page, fetchMyBids);
-watch(bidType, fetchMyBids);
+watch(bidType, () => {
+  page.value = 1;
+  fetchMyBids();
+});
 
 async function fetchMyBids() {
   const url = new URL(endpoints.users.me.bids);
@@ -96,7 +99,7 @@ onMounted(async () => {
         v-if="data && data.length > 0"
       >
         <template v-for="product in data" :key="product.id">
-          <ProductCard :product />
+          <ProductPreviewCard :product :enabledFeatures="['seller', 'datetime', 'price']" />
         </template>
 
         <!-- Paging section -->

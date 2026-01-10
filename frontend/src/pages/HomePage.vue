@@ -6,7 +6,7 @@ import { useAuthFetch } from "@/hooks/use-auth-fetch";
 import { LucideRefreshCw } from "lucide-vue-next";
 import { onMounted, ref } from "vue";
 import type { Product } from "@/types";
-import ProductCard from "@/components/index/ProductCard.vue";
+import ProductPreviewCard from "@/components/product/ProductPreviewCard.vue";
 
 const { authFetch } = useAuthFetch();
 
@@ -68,10 +68,11 @@ function toggleFavoriteStatus(id: number) {
           {{ $t("home.no_products") }}
         </p>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" v-else>
-          <ProductCard
+          <ProductPreviewCard
             v-for="product in data.ending_soon"
             :key="product.id"
             :product
+            :enabledFeatures="['seller', 'favorite', 'datetime', 'price']"
             @click="() => toggleFavoriteStatus(product.id)"
           />
         </div>
@@ -84,10 +85,11 @@ function toggleFavoriteStatus(id: number) {
           {{ $t("home.no_products") }}
         </p>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" v-else>
-          <ProductCard
+          <ProductPreviewCard
             v-for="product in data.top_bids"
             :key="product.id"
             :product
+            :enabledFeatures="['seller', 'favorite', 'datetime', 'price']"
             @click="() => toggleFavoriteStatus(product.id)"
           />
         </div>
@@ -103,10 +105,11 @@ function toggleFavoriteStatus(id: number) {
           {{ $t("home.no_products") }}
         </p>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" v-else>
-          <ProductCard
+          <ProductPreviewCard
             v-for="product in data.highest_bids"
             :key="product.id"
             :product
+            :enabledFeatures="['seller', 'favorite', 'datetime', 'price']"
             @click="() => toggleFavoriteStatus(product.id)"
           />
         </div>

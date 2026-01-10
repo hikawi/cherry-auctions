@@ -466,7 +466,9 @@ func (r *ProductRepository) GetMyBids(ctx context.Context, userID uint, ended bo
 func (r *ProductRepository) CountMyBids(ctx context.Context, userID uint, ended bool) (int64, error) {
 	var count int64
 	db := r.DB.WithContext(ctx).
-		Model(&models.Product{})
+		Select("DISTINCT ON (products.id) products.*").
+		Model(&models.Product{}).
+		Joins("JOIN bids ON bids.product_id = products.id AND bids.user_id = ? AND bids.deleted_at IS NULL", userID)
 
 	if ended {
 		db = db.Where("products.product_state in ?", []models.ProductState{models.ProductStateEnded, models.ProductStateExpired})

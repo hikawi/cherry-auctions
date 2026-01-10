@@ -148,6 +148,8 @@ definitions:
         type: array
       expired_at:
         type: string
+      finalized_at:
+        type: string
       id:
         type: integer
       is_favorite:
@@ -259,6 +261,8 @@ definitions:
         type: array
       expired_at:
         type: string
+      finalized_at:
+        type: string
       id:
         type: integer
       is_favorite:
@@ -329,6 +333,31 @@ definitions:
         type: string
     required:
     - answer
+    type: object
+  ratings.PostRatingBody:
+    properties:
+      feedback:
+        type: string
+      rating:
+        maximum: 1
+        minimum: 0
+        type: integer
+      reviewee_id:
+        type: integer
+    required:
+    - feedback
+    - reviewee_id
+    type: object
+  ratings.PutRatingBody:
+    properties:
+      feedback:
+        type: string
+      rating:
+        maximum: 1
+        minimum: 0
+        type: integer
+    required:
+    - feedback
     type: object
   shared.ErrorResponse:
     properties:
@@ -466,6 +495,8 @@ definitions:
           $ref: '#/definitions/users.DescriptionChangeDTO'
         type: array
       expired_at:
+        type: string
+      finalized_at:
         type: string
       id:
         type: integer
@@ -1419,6 +1450,125 @@ paths:
       summary: Answers a question.
       tags:
       - questions
+  /ratings:
+    post:
+      consumes:
+      - application/json
+      description: Posts a rating and feedback onto a users profile.
+      parameters:
+      - description: Rating context
+        in: body
+        name: rating
+        required: true
+        schema:
+          $ref: '#/definitions/ratings.PostRatingBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successfully rated person
+          schema:
+            $ref: '#/definitions/shared.MessageResponse'
+        "400":
+          description: Invalid reviewee ID or invalid format
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: The server failed to complete the request
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      summary: Creates a rating.
+      tags:
+      - ratings
+  /ratings/{id}:
+    delete:
+      description: Deletes a rating.
+      parameters:
+      - description: Rating ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully deleted rating
+          schema:
+            $ref: '#/definitions/shared.MessageResponse'
+        "400":
+          description: Invalid reviewee ID or invalid format
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "403":
+          description: Not your rating
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "404":
+          description: Rating ID not found
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: The server failed to complete the request
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      summary: Deletes a rating.
+      tags:
+      - ratings
+    put:
+      consumes:
+      - application/json
+      description: Edits a rating and feedback onto a users profile.
+      parameters:
+      - description: Rating ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Rating context
+        in: body
+        name: rating
+        required: true
+        schema:
+          $ref: '#/definitions/ratings.PutRatingBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully edited rating
+          schema:
+            $ref: '#/definitions/shared.MessageResponse'
+        "400":
+          description: Invalid reviewee ID or invalid format
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "403":
+          description: Not your rating
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "404":
+          description: Rating ID not found
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: The server failed to complete the request
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      summary: Edits a rating.
+      tags:
+      - ratings
   /users:
     get:
       description: Retrieves all users.

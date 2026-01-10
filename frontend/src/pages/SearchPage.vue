@@ -10,7 +10,7 @@ import {
 import { useAuthFetch } from "@/hooks/use-auth-fetch";
 import { endpoints } from "@/consts";
 import type { Category, Product } from "@/types";
-import ProductCard from "@/components/index/ProductCard.vue";
+import ProductPreviewCard from "@/components/product/ProductPreviewCard.vue";
 import NavigationBar from "@/components/shared/NavigationBar.vue";
 
 const { authFetch } = useAuthFetch();
@@ -46,6 +46,18 @@ function toggleCategory(cat: Category) {
   } else {
     selectedCategories.value = [...selectedCategories.value, cat.id];
   }
+}
+
+function markAsFavorite(id: number) {
+  products.value = products.value?.map((product) => {
+    if (product.id != id) {
+      return product;
+    }
+    return {
+      ...product,
+      is_favorite: !product.is_favorite,
+    };
+  });
 }
 
 async function fetchCategories() {
@@ -162,14 +174,6 @@ onMounted(async () => {
           </button>
         </label>
 
-        <!-- <button -->
-        <!--   class="bg-claret-200 hover:bg-claret-300 flex w-full shrink-0 cursor-pointer flex-row items-center justify-center gap-2 rounded-lg px-4 py-2 font-semibold duration-200 md:w-fit" -->
-        <!--   @click="cycleSort" -->
-        <!-- > -->
-        <!--   <LucideArrowUpDown class="size-6 text-black" /> -->
-        <!---->
-        <!--   {{ $t(`search.sort_${sortType}`) }} -->
-        <!-- </button> -->
         <select
           class="flex h-full w-full min-w-fit shrink-0 cursor-pointer flex-row items-center gap-2 rounded-lg border border-zinc-300 px-4 py-2 duration-200 hover:bg-zinc-200 md:max-w-fit"
           v-model="sortType"
@@ -230,7 +234,11 @@ onMounted(async () => {
             {{ $t("search.no_products") }}
           </p>
           <template v-else v-for="product in products" :key="product.id">
-            <ProductCard :product="product" />
+            <ProductPreviewCard
+              :product="product"
+              :enabledFeatures="['seller', 'price', 'favorite', 'datetime']"
+              @favoriteToggle="markAsFavorite"
+            />
           </template>
         </div>
 

@@ -192,6 +192,18 @@ async function bid() {
         <span class="text-lg font-semibold">{{ $t("products.bin") }}</span>
         <span class="text-sm">{{ $n(data.bin_price / 100, "currency") }}</span>
       </button>
+
+      <button
+        class="w-full cursor-pointer rounded-xl border-2 border-emerald-600 bg-emerald-600 p-4 font-semibold text-white duration-200 enabled:hover:bg-white enabled:hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-50 md:col-span-2"
+        v-if="
+          data.product_state == 'ended' &&
+          data.current_highest_bid?.bidder.id == profile.profile?.id
+        "
+        :disabled="data.finalized_at != null"
+        @click="$router.push({ name: 'checkout', params: { id: data.id } })"
+      >
+        {{ data.finalized_at ? $t("products.already_checkout") : $t("products.checkout") }}
+      </button>
     </div>
   </div>
 </template>

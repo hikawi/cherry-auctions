@@ -124,6 +124,7 @@ func ToProductDTO(m *models.Product) ProductDTO {
 		}),
 		IsFavorite:   m.IsFavorite,
 		ProductState: string(m.ProductState),
+		FinalizedAt:  m.FinalizedAt,
 	}
 }
 

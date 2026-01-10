@@ -60,7 +60,7 @@ async function toggleFavorite() {
       @click="toggleFavorite"
     >
       <LucideHeart
-        class="duration-200"
+        class="size-4 duration-200"
         :class="{
           'text-claret-600 hover:fill-claret-600/50': !data.is_favorite,
           'fill-claret-600 text-claret-600': data.is_favorite,

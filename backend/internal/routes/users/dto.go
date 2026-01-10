@@ -74,6 +74,7 @@ type ProductDTO struct {
 	BidsCount           int                    `json:"bids_count"`
 	IsFavorite          bool                   `json:"is_favorite"`
 	ProductState        string                 `json:"product_state"`
+	FinalizedAt         *time.Time             `json:"finalized_at"`
 }
 
 type GetMyProductsQuery struct {

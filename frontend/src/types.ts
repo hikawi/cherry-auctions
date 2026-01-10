@@ -88,6 +88,7 @@ export interface Product {
   description_changes: DescriptionChanges[];
   is_favorite?: boolean;
   product_state: ProductState;
+  finalized_at?: string;
 }
 
 export interface Rating {
