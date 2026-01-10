@@ -188,8 +188,13 @@
     "expires_at": "終了日時 {at}",
     "created_at": "出品日時 {at}",
     "new": "NEW",
+    "expiring_soon": "まもなく終了",
+    "won": "落札",
+    "bidding": "入札中",
     "bid": "入札",
     "bin": "即決購入",
+    "checkout": "チェックアウトに進む",
+    "already_checkout": "チェックアウト完了",
     "asked_by": "{name}さんからの質問",
     "replied_by_seller": "出品者の回答",
     "no_questions": "質問はまだありません",
@@ -222,7 +227,7 @@
     "failed_to_bid": "入札できませんでした。誰が先に入札したかもしれません。",
     "highest_bid": "最高入札額持ち済み",
     "outbidded": "他人に競り落とされました",
-    "expired": "このオークションがすでに終了しましたから、インタラクトすることができません"
+    "expired": "このオークションがすでに終了したため、インタラクトすることができません"
   },
   "profile": {
     "profile": "プロフィール",

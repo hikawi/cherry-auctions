@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ProductCard from "@/components/index/ProductCard.vue";
+import ProductPreviewCard from "@/components/product/ProductPreviewCard.vue";
 import CreateAuctionDialog from "@/components/product/CreateAuctionDialog.vue";
 import NavigationBar from "@/components/shared/NavigationBar.vue";
 import OverlayScreen from "@/components/shared/OverlayScreen.vue";
@@ -23,7 +23,10 @@ const error = ref("");
 
 watch(maxPages, (val) => (page.value = Math.min(page.value, val)));
 watch(page, fetchMyAuctions);
-watch(auctionsType, fetchMyAuctions);
+watch(auctionsType, () => {
+  page.value = 1;
+  fetchMyAuctions();
+});
 
 function onCreate(status: number) {
   createDialogShown.value = false;
@@ -126,7 +129,7 @@ onMounted(async () => {
         v-if="data && data.length > 0"
       >
         <template v-for="product in data" :key="product.id">
-          <ProductCard :product />
+          <ProductPreviewCard :product :enabledFeatures="['datetime', 'seller', 'price']" />
         </template>
 
         <!-- Paging section -->

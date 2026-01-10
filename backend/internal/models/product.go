@@ -28,6 +28,7 @@ type Product struct {
 	ExpiredAt           time.Time    `gorm:"not null"`
 	EmailSent           bool         `gorm:"not null;default:false"`
 	ProductState        ProductState `gorm:"not null;default:active"`
+	FinalizedAt         *time.Time   `gorm:"default:null"`
 
 	ProductImages      []ProductImage `gorm:"foreignKey:ProductID"`
 	Categories         []Category     `gorm:"many2many:products_categories"`

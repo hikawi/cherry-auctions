@@ -86,7 +86,9 @@ async function ask() {
     <!-- Part to ask a question -->
     <div
       class="flex w-full flex-col items-center justify-center gap-2 sm:flex-row"
-      v-if="profile.profile && data.seller.id != profile.profile.id"
+      v-if="
+        profile.profile && data.seller.id != profile.profile.id && data.product_state == 'active'
+      "
     >
       <div class="flex w-full flex-row items-center gap-2">
         <AvatarCircle :name="profile.profile.name" :avatar_url="profile.profile.avatar_url" />

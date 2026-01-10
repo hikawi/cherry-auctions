@@ -41,6 +41,7 @@ import (
 //	@router			/products [get]
 func (h *ProductsHandler) GetProducts(g *gin.Context) {
 	ctx := g.Request.Context()
+	claims, ok := g.Get("claims")
 	query := GetProductsQuery{
 		Categories: []string{},
 		Sort:       "id",
@@ -80,6 +81,18 @@ func (h *ProductsHandler) GetProducts(g *gin.Context) {
 		return
 	}
 
+	// Transform them to pointers
+	ptrs := []*models.Product{}
+	for _, product := range products {
+		ptrs = append(ptrs, &product)
+	}
+
+	// Try to mark them as favorite
+	if ok {
+		sub := claims.(*services.JWTSubject)
+		h.ProductRepo.AttachFavoriteStatus(ctx, sub.UserID, ptrs...)
+	}
+
 	count, err := h.ProductRepo.CountProductsWithQuery(ctx, query.Query, categories)
 	if err != nil {
 		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"error": err.Error(), "query": query})
@@ -88,8 +101,8 @@ func (h *ProductsHandler) GetProducts(g *gin.Context) {
 	}
 
 	productsDto := make([]ProductDTO, 0)
-	for _, prod := range products {
-		productsDto = append(productsDto, ToProductDTO(&prod))
+	for _, prod := range ptrs {
+		productsDto = append(productsDto, ToProductDTO(prod))
 	}
 
 	response := GetProductsResponse{

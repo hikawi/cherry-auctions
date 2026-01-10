@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import ProductCard from "@/components/index/ProductCard.vue";
 import ProductBidsSection from "@/components/product/ProductBidsSection.vue";
 import ProductDataCard from "@/components/product/ProductDataCard.vue";
 import ProductDescriptionSection from "@/components/product/ProductDescriptionSection.vue";
 import ProductImageCard from "@/components/product/ProductImageCard.vue";
+import ProductPreviewCard from "@/components/product/ProductPreviewCard.vue";
 import ProductQuestionsSection from "@/components/product/ProductQuestionsSection.vue";
 import LoadingSpinner from "@/components/shared/LoadingSpinner.vue";
 import NavigationBar from "@/components/shared/NavigationBar.vue";
@@ -135,10 +135,11 @@ onMounted(() => {
         <h2 class="text-xl font-bold">{{ $t("products.similar_products") }}</h2>
 
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <ProductCard
+          <ProductPreviewCard
             v-for="product in data.similar_products"
             :key="product.id"
             :product
+            :enabledFeatures="['price', 'datetime', 'favorite']"
             @favoriteToggle="() => toggleSimilarFavorite(product.id)"
           />
         </div>

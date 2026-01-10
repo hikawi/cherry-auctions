@@ -115,7 +115,8 @@ func ToProductDTO(m *models.Product) ProductDTO {
 				CreatedAt: m.CreatedAt,
 			}
 		}),
-		IsFavorite: m.IsFavorite,
+		IsFavorite:  m.IsFavorite,
+		FinalizedAt: m.FinalizedAt,
 	}
 }
 

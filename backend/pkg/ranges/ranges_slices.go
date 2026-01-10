@@ -5,7 +5,7 @@ package ranges
 // Each takes a slice, and applies a transformation function
 // on each element, and aggregates into an array.
 func Each[T any, R any](input []T, mapper func(T) R) []R {
-	var result []R
+	result := make([]R, 0)
 	for _, val := range input {
 		result = append(result, mapper(val))
 	}
@@ -13,7 +13,7 @@ func Each[T any, R any](input []T, mapper func(T) R) []R {
 }
 
 func EachAddress[T any, R any](input []T, mapper func(*T) R) []R {
-	var result []R
+	result := make([]R, 0)
 	for _, val := range input {
 		result = append(result, mapper(&val))
 	}

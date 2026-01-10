@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { endpoints } from "@/consts";
 import { useAuthFetch } from "@/hooks/use-auth-fetch";
-import { onMounted, ref, watch } from "vue";
-import ProductCard from "../index/ProductCard.vue";
 import { LucideChevronLeft, LucideChevronRight } from "lucide-vue-next";
+import { onMounted, ref, watch } from "vue";
+import ProductPreviewCard from "../product/ProductPreviewCard.vue";
 
 const { authFetch } = useAuthFetch();
 
@@ -48,7 +48,11 @@ onMounted(() => {
     v-if="data && data.length > 0"
   >
     <template v-for="product in data" :key="product.id">
-      <ProductCard :product @favoriteToggle="fetchFavorites" />
+      <ProductPreviewCard
+        :product
+        :enabledFeatures="['favorite', 'datetime', 'seller']"
+        @favoriteToggle="fetchFavorites"
+      />
     </template>
 
     <!-- Paging section -->

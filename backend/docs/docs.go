@@ -1325,6 +1325,186 @@ const docTemplate = `{
                 }
             }
         },
+        "/ratings": {
+            "post": {
+                "description": "Posts a rating and feedback onto a users profile.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ratings"
+                ],
+                "summary": "Creates a rating.",
+                "parameters": [
+                    {
+                        "description": "Rating context",
+                        "name": "rating",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ratings.PostRatingBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Successfully rated person",
+                        "schema": {
+                            "$ref": "#/definitions/shared.MessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid reviewee ID or invalid format",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "The server failed to complete the request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/ratings/{id}": {
+            "put": {
+                "description": "Edits a rating and feedback onto a users profile.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ratings"
+                ],
+                "summary": "Edits a rating.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Rating ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Rating context",
+                        "name": "rating",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ratings.PutRatingBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully edited rating",
+                        "schema": {
+                            "$ref": "#/definitions/shared.MessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid reviewee ID or invalid format",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Not your rating",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Rating ID not found",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "The server failed to complete the request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes a rating.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ratings"
+                ],
+                "summary": "Deletes a rating.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Rating ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted rating",
+                        "schema": {
+                            "$ref": "#/definitions/shared.MessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid reviewee ID or invalid format",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Not your rating",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Rating ID not found",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "The server failed to complete the request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "get": {
                 "security": [
@@ -2124,6 +2304,9 @@ const docTemplate = `{
                 "expired_at": {
                     "type": "string"
                 },
+                "finalized_at": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -2293,6 +2476,9 @@ const docTemplate = `{
                 "expired_at": {
                     "type": "string"
                 },
+                "finalized_at": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -2398,6 +2584,42 @@ const docTemplate = `{
                 "answer": {
                     "type": "string",
                     "minLength": 2
+                }
+            }
+        },
+        "ratings.PostRatingBody": {
+            "type": "object",
+            "required": [
+                "feedback",
+                "reviewee_id"
+            ],
+            "properties": {
+                "feedback": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "integer",
+                    "maximum": 1,
+                    "minimum": 0
+                },
+                "reviewee_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "ratings.PutRatingBody": {
+            "type": "object",
+            "required": [
+                "feedback"
+            ],
+            "properties": {
+                "feedback": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "integer",
+                    "maximum": 1,
+                    "minimum": 0
                 }
             }
         },
@@ -2608,6 +2830,9 @@ const docTemplate = `{
                     }
                 },
                 "expired_at": {
+                    "type": "string"
+                },
+                "finalized_at": {
                     "type": "string"
                 },
                 "id": {
