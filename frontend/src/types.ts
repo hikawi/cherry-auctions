@@ -99,3 +99,18 @@ export interface Rating {
   created_at: string;
   updated_at: string;
 }
+
+export interface ChatSession {
+  id: number;
+  seller: Profile;
+  buyer: Profile;
+  product: Product;
+}
+
+export interface ChatMessage {
+  chat_session_id: number;
+  content: string;
+  id: number;
+  image_url: string;
+  sender: Profile;
+}

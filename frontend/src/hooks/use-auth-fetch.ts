@@ -69,5 +69,5 @@ export function useAuthFetch({ json = true }: { json?: boolean } = {}) {
     }
   }
 
-  return { authFetch };
+  return { authFetch, tryRefresh };
 }

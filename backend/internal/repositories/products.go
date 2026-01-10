@@ -173,6 +173,7 @@ func (r *ProductRepository) GetProductByID(ctx context.Context, id int) (models.
 		Preload("ProductImages", nil).
 		Preload("DescriptionChanges", nil).
 		Preload("DeniedBidders.User", nil).
+		Preload("ChatSession", nil).
 		Where("id = ?", id).
 		First(ctx)
 }

@@ -498,6 +498,294 @@ const docTemplate = `{
                 }
             }
         },
+        "/chat": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Gets all users chat sessions.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "chat"
+                ],
+                "summary": "Gets all chat sessions.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page Number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Items per Page",
+                        "name": "per_page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful query",
+                        "schema": {
+                            "$ref": "#/definitions/chat.ChatSessionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "The server could not complete the request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Creates a new chat session for a product, only callable by the seller or the winner.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "chat"
+                ],
+                "summary": "Creates a new chat session for a product.",
+                "parameters": [
+                    {
+                        "description": "Body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/chat.CreateChatSessionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Successfully created chat session",
+                        "schema": {
+                            "$ref": "#/definitions/shared.MessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "No authority to create session for the product",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Failed to create chat session",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "The server could not complete the request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/chat/stream": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Establishes a persistent HTTP connection to receive real-time messages and receipts via Server-Sent Events.",
+                "produces": [
+                    "text/event-stream"
+                ],
+                "tags": [
+                    "chat"
+                ],
+                "summary": "Opens a SSE stream to the chat channel",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The stream will push objects of this type",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ChatMessageDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/chat/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieves a list of chat messages in a channel for history reasons.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "chat"
+                ],
+                "summary": "Retrieves a list of chat messages in a channel",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Channel ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page Number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Items per Page",
+                        "name": "per_page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful",
+                        "schema": {
+                            "$ref": "#/definitions/chat.ChatMessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Not a chat participant",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "The server could not complete the request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Posts a chat message to a channel the user may access.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "chat"
+                ],
+                "summary": "Posts a chat message to a channel.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Channel ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Successfully posted a message to a channel",
+                        "schema": {
+                            "$ref": "#/definitions/shared.MessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad channel ID, or invalid body",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Unknown channel ID",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "413": {
+                        "description": "Image too heavy",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "The server failed to complete the request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/health": {
             "get": {
                 "produces": [
@@ -2202,6 +2490,60 @@ const docTemplate = `{
                 }
             }
         },
+        "chat.ChatMessageResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/shared.ChatMessageDTO"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "per_page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "total_pages": {
+                    "type": "integer"
+                }
+            }
+        },
+        "chat.ChatSessionResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/shared.ChatSessionDTO"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "per_page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "total_pages": {
+                    "type": "integer"
+                }
+            }
+        },
+        "chat.CreateChatSessionRequest": {
+            "type": "object",
+            "properties": {
+                "product_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "products.BidDTO": {
             "type": "object",
             "properties": {
@@ -2623,6 +2965,43 @@ const docTemplate = `{
                 }
             }
         },
+        "shared.ChatMessageDTO": {
+            "type": "object",
+            "properties": {
+                "chat_session_id": {
+                    "type": "integer"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "sender": {
+                    "$ref": "#/definitions/shared.ProfileDTO"
+                }
+            }
+        },
+        "shared.ChatSessionDTO": {
+            "type": "object",
+            "properties": {
+                "buyer": {
+                    "$ref": "#/definitions/shared.ProfileDTO"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "product": {
+                    "$ref": "#/definitions/shared.ProductDTO"
+                },
+                "seller": {
+                    "$ref": "#/definitions/shared.ProfileDTO"
+                }
+            }
+        },
         "shared.ErrorResponse": {
             "type": "object",
             "properties": {
@@ -2635,6 +3014,80 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "shared.ProductDTO": {
+            "type": "object",
+            "properties": {
+                "allows_unrated_buyers": {
+                    "type": "boolean"
+                },
+                "auto_extends_time": {
+                    "type": "boolean"
+                },
+                "bids_count": {
+                    "description": "CurrentHighestBid   *BidDTO                ` + "`" + `json:\"current_highest_bid\"` + "`" + `\nCategories          []CategoryDTO          ` + "`" + `json:\"categories\"` + "`" + `\nDescriptionChanges  []DescriptionChangeDTO ` + "`" + `json:\"description_changes\"` + "`" + `\nDeniedBidders []ProfileDTO ` + "`" + `json:\"denied_bidders\"` + "`" + `",
+                    "type": "integer"
+                },
+                "bin_price": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "expired_at": {
+                    "type": "string"
+                },
+                "finalized_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_favorite": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "product_state": {
+                    "type": "string"
+                },
+                "seller": {
+                    "$ref": "#/definitions/shared.ProfileDTO"
+                },
+                "starting_bid": {
+                    "type": "integer"
+                },
+                "step_bid_value": {
+                    "type": "integer"
+                },
+                "thumbnail_url": {
+                    "type": "string"
+                }
+            }
+        },
+        "shared.ProfileDTO": {
+            "type": "object",
+            "properties": {
+                "avatar_url": {
+                    "type": "string"
+                },
+                "average_rating": {
+                    "type": "number"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
                     "type": "string"
                 }
             }

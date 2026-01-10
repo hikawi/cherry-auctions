@@ -228,6 +228,7 @@
     "cant_bid_ended": "This auction has ended",
     "cant_deny": "Failed to deny bid. The auction might have already ended.",
     "failed_to_bid": "Failed to bid. Someone might have beaten you to it.",
+    "failed_to_create_chat": "Couldn't create chat session. Are you the winner or the seller?",
     "highest_bid": "You hold the highest bid for this auction",
     "outbidded": "You got outbidded on this auction",
     "expired": "This product has expired, and you can no longer bid on it"
@@ -255,6 +256,9 @@
     "changed_password": "Successfully changed password",
     "no_favorites": "No favorites yet",
     "no_ratings": "No one has rated you yet"
+  },
+  "messages": {
+    "choose_session": "Pick a conversation"
   },
   "general": {
     "categories": "Categories",

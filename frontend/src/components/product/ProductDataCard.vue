@@ -10,10 +10,12 @@ import AvatarCircle from "../shared/AvatarCircle.vue";
 import ErrorDialog from "../shared/ErrorDialog.vue";
 import OverlayScreen from "../shared/OverlayScreen.vue";
 import ConfirmBidDialog from "./ConfirmBidDialog.vue";
+import { useRouter } from "vue-router";
 
 const profile = useProfileStore();
 const { locale } = useI18n();
 const { authFetch } = useAuthFetch();
+const router = useRouter();
 
 const props = defineProps<{
   data: Product & { similar_products?: Product[]; categories: { id: number; name: string }[] };
@@ -121,6 +123,12 @@ async function finalizeProduct() {
       method: "POST",
       body: JSON.stringify({ product_id: props.data.id }),
     });
+    if (res.status == 409 || res.ok) {
+      router.push({ name: "messages" });
+      return;
+    }
+
+    error.value = "products.failed_to_create_chat";
   } finally {
     loading.value = false;
   }
@@ -214,7 +222,8 @@ async function finalizeProduct() {
         class="w-full cursor-pointer rounded-xl border-2 border-emerald-600 bg-emerald-600 p-4 font-semibold text-white duration-200 enabled:hover:bg-white enabled:hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-50 md:col-span-2"
         v-if="
           data.product_state == 'ended' &&
-          data.current_highest_bid?.bidder.id == profile.profile?.id
+          (data.current_highest_bid?.bidder.id == profile.profile?.id ||
+            data.seller.id == profile.profile?.id)
         "
         :disabled="data.finalized_at != null"
         @click="finalizeProduct"

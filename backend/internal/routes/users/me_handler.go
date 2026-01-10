@@ -297,7 +297,7 @@ func (h *UsersHandler) GetMyRatings(g *gin.Context) {
 	ctx := g.Request.Context()
 	claimsAny, _ := g.Get("claims")
 	claims := claimsAny.(*services.JWTSubject)
-	query := GetMyProductsQuery{
+	query := shared.PaginationRequest{
 		Page:    1,
 		PerPage: 20,
 	}
@@ -351,7 +351,7 @@ func (h *UsersHandler) GetMyRated(g *gin.Context) {
 	ctx := g.Request.Context()
 	claimsAny, _ := g.Get("claims")
 	claims := claimsAny.(*services.JWTSubject)
-	query := GetMyProductsQuery{
+	query := shared.PaginationRequest{
 		Page:    1,
 		PerPage: 20,
 	}
