@@ -28,6 +28,15 @@ func (s *MiddlewareService) parseAuthHeaders(g *gin.Context) (*JWTSubject, error
 	return claims, nil
 }
 
+// Middleware to inject authentication token in query into request headers.
+func (s *MiddlewareService) InjectAuthQuery(g *gin.Context) {
+	str := g.Query("token")
+	if str != "" {
+		g.Request.Header.Add("Authorization", "Bearer "+str)
+	}
+	g.Next()
+}
+
 func (s *MiddlewareService) SoftAuthorizedRoute(g *gin.Context) {
 	claims, err := s.parseAuthHeaders(g)
 	if err == nil {

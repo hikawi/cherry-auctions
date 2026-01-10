@@ -228,6 +228,7 @@
     "cant_bid_ended": "このオークションはすでに終了しました",
     "cant_deny": "入札拒否失敗しました。オークションが終了したかもしれません。",
     "failed_to_bid": "入札できませんでした。誰が先に入札したかもしれません。",
+    "failed_to_create_chat": "チャットルーム作れませんでした",
     "highest_bid": "最高入札額持ち済み",
     "outbidded": "他人に競り落とされました",
     "expired": "このオークションがすでに終了したため、インタラクトすることができません"
@@ -255,6 +256,9 @@
     "changed_password": "パスワード変更済み",
     "no_favorites": "お気に入りがありません",
     "no_ratings": "他人からの評価がありません"
+  },
+  "messages": {
+    "choose_session": "チャットを選択してください"
   },
   "general": {
     "categories": "カテゴリー",

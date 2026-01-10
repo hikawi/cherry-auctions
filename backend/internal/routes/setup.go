@@ -17,6 +17,7 @@ import (
 	"luny.dev/cherryauctions/internal/repositories"
 	"luny.dev/cherryauctions/internal/routes/auth"
 	"luny.dev/cherryauctions/internal/routes/categories"
+	"luny.dev/cherryauctions/internal/routes/chat"
 	"luny.dev/cherryauctions/internal/routes/products"
 	"luny.dev/cherryauctions/internal/routes/questions"
 	"luny.dev/cherryauctions/internal/routes/ratings"
@@ -111,6 +112,15 @@ func SetupRoutes(server *gin.Engine, deps ServerDependency) {
 		deps.Services.MiddlewareService,
 	)
 	ratingHandler.SetupRouter(versionedGroup)
+
+	chatHandler := chat.NewChatHandler(
+		deps.Services.MiddlewareService,
+		deps.Services.S3Service,
+		deps.Repositories.ChatSessionRepository,
+		deps.Repositories.ProductRepository,
+		deps.Config.AWS.S3PermURL,
+	)
+	chatHandler.SetupRouter(versionedGroup)
 
 	versionedGroup.GET("/health", GetHealth)
 

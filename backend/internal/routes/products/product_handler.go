@@ -254,13 +254,6 @@ func (h *ProductsHandler) uploadImages(ctx context.Context, body PostProductBody
 			}
 			defer img.Close()
 
-			// 3. Process (Thumbnail)
-			// For product images, you might want a larger size than avatars
-			err = img.Thumbnail(800, 800, vips.InterestingAttention)
-			if err != nil {
-				return fmt.Errorf("processing failed for file %d: %w", i, err)
-			}
-
 			// 4. Export to WebP
 			ep := vips.NewWebpExportParams()
 			ep.Quality = 75
