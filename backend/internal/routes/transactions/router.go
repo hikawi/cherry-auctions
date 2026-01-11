@@ -11,6 +11,7 @@ import (
 type TransactionHandler struct {
 	transactionRepo   *repositories.TransactionRepository
 	productRepo       *repositories.ProductRepository
+	ratingRepo        *repositories.RatingRepostory
 	middlewareService *services.MiddlewareService
 	chatHandler       *chat.ChatHandler
 }
@@ -18,12 +19,14 @@ type TransactionHandler struct {
 func NewTransactionHandler(
 	transactionRepo *repositories.TransactionRepository,
 	productRepo *repositories.ProductRepository,
+	ratingRepo *repositories.RatingRepostory,
 	middlewareService *services.MiddlewareService,
 	chatHandler *chat.ChatHandler,
 ) *TransactionHandler {
 	return &TransactionHandler{
 		transactionRepo:   transactionRepo,
 		productRepo:       productRepo,
+		ratingRepo:        ratingRepo,
 		middlewareService: middlewareService,
 		chatHandler:       chatHandler,
 	}
