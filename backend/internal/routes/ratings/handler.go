@@ -46,6 +46,7 @@ func (h *RatingHandler) PostRating(g *gin.Context) {
 	}
 
 	rating := models.Rating{
+		ProductID:  body.ProductID,
 		ReviewerID: claims.UserID,
 		RevieweeID: body.RevieweeID,
 		Rating:     body.Rating,

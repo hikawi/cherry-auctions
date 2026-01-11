@@ -387,6 +387,8 @@ definitions:
     properties:
       feedback:
         type: string
+      product_id:
+        type: integer
       rating:
         maximum: 1
         minimum: 0
@@ -395,6 +397,7 @@ definitions:
         type: integer
     required:
     - feedback
+    - product_id
     - reviewee_id
     type: object
   ratings.PutRatingBody:
@@ -1258,11 +1261,7 @@ paths:
         type: string
       produces:
       - text/event-stream
-      responses:
-        "200":
-          description: The stream will push objects of this type
-          schema:
-            $ref: '#/definitions/shared.ChatMessageDTO'
+      responses: {}
       security:
       - ApiKeyAuth: []
       summary: Opens a SSE stream to the chat channel
@@ -1441,6 +1440,50 @@ paths:
           schema:
             $ref: '#/definitions/shared.ErrorResponse'
       summary: Retrieves details on a single product.
+      tags:
+      - products
+  /products/{id}/autobids:
+    post:
+      consumes:
+      - application/json
+      description: Bids on a product, hopefully with some race-condition management.
+      parameters:
+      - description: Bid body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/products.PostBidBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successful bid
+          schema:
+            $ref: '#/definitions/shared.MessageResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "401":
+          description: User is unauthenticated
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "403":
+          description: User can not bid for other reasons
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "409":
+          description: Race condition, and you lost
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+        "500":
+          description: Server could not finish the request
+          schema:
+            $ref: '#/definitions/shared.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Makes an automated bid on a product.
       tags:
       - products
   /products/{id}/bids:

@@ -2,10 +2,12 @@
 import ProductBidsSection from "@/components/product/ProductBidsSection.vue";
 import ProductDataCard from "@/components/product/ProductDataCard.vue";
 import ProductDescriptionSection from "@/components/product/ProductDescriptionSection.vue";
+import OverlayScreen from "@/components/shared/OverlayScreen.vue";
 import ProductImageCard from "@/components/product/ProductImageCard.vue";
 import ProductPreviewCard from "@/components/product/ProductPreviewCard.vue";
 import ProductQuestionsSection from "@/components/product/ProductQuestionsSection.vue";
 import LoadingSpinner from "@/components/shared/LoadingSpinner.vue";
+import RatingDialog from "@/components/product/RatingDialog.vue";
 import NavigationBar from "@/components/shared/NavigationBar.vue";
 import WhiteContainer from "@/components/shared/WhiteContainer.vue";
 import { endpoints } from "@/consts";
@@ -25,6 +27,9 @@ const data = ref<
 const isExpired = computed(
   () => data.value?.product_state == "expired" || data.value?.product_state == "ended",
 );
+const rateDialogOpen = ref(false);
+const reviewingProductId = ref(0);
+const reviewingRevieweeId = ref(0);
 
 watch(route, fetchProduct);
 
@@ -62,12 +67,28 @@ function toggleSimilarFavorite(id: number) {
   };
 }
 
+async function openRateDialog(productID: number, revieweeID: number) {
+  reviewingProductId.value = productID;
+  reviewingRevieweeId.value = revieweeID;
+  rateDialogOpen.value = true;
+}
+
 onMounted(() => {
   fetchProduct();
 });
 </script>
 
 <template>
+  <OverlayScreen shown v-if="rateDialogOpen">
+    <RatingDialog
+      :revieweeId="reviewingRevieweeId"
+      :productId="reviewingProductId"
+      @cancel="rateDialogOpen = false"
+      @fail="rateDialogOpen = false"
+      @rate="fetchProduct"
+    />
+  </OverlayScreen>
+
   <WhiteContainer class="justify-start gap-8">
     <NavigationBar />
 
@@ -118,14 +139,14 @@ onMounted(() => {
         />
 
         <!-- The data card -->
-        <ProductDataCard :data @reload="fetchProduct" />
+        <ProductDataCard :data @reload="fetchProduct" @rate="openRateDialog" />
       </div>
 
       <!-- Product Description -->
       <ProductDescriptionSection :data @reload="fetchProduct" />
 
       <!-- Bids Section -->
-      <ProductBidsSection :data @reload="fetchProduct" />
+      <ProductBidsSection :data @reload="fetchProduct" @rate="openRateDialog" />
 
       <!-- Questions Section -->
       <ProductQuestionsSection :data @refresh="fetchProduct" />

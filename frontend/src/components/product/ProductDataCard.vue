@@ -10,6 +10,7 @@ import AvatarCircle from "../shared/AvatarCircle.vue";
 import ErrorDialog from "../shared/ErrorDialog.vue";
 import OverlayScreen from "../shared/OverlayScreen.vue";
 import ConfirmBidDialog from "./ConfirmBidDialog.vue";
+import { LucideThumbsUp } from "lucide-vue-next";
 import { useRouter } from "vue-router";
 
 const profile = useProfileStore();
@@ -23,6 +24,7 @@ const props = defineProps<{
 
 const emits = defineEmits<{
   reload: [];
+  rate: [productId: number, revieweeId: number];
 }>();
 
 const confirmBidDialog = ref(false);
@@ -186,6 +188,15 @@ async function finalizeProduct() {
         <span>
           {{ $t("products.rating", { rating: $n(data.seller.average_rating, "decimal") }) }}
         </span>
+        <button
+          v-if="
+            data.product_state == 'ended' &&
+            data.current_highest_bid?.bidder.id == profile.profile?.id
+          "
+          @click="$emit('rate', data.id, data.seller.id)"
+        >
+          <LucideThumbsUp class="size-4 cursor-pointer text-zinc-500 hover:text-black" />
+        </button>
       </div>
 
       <div class="flex w-full flex-col gap-1">

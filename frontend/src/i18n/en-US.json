@@ -180,6 +180,9 @@
     "no_products": "No products here"
   },
   "products": {
+    "loading": "Loading...",
+    "rate": "Rate User",
+    "feedback": "Feedback",
     "bin_price": "Buy it now",
     "current_bid": "Current bid",
     "starting_bid": "Starting bid",

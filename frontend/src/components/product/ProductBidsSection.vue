@@ -4,7 +4,7 @@ import { useAuthFetch } from "@/hooks/use-auth-fetch";
 import { useProfileStore } from "@/stores/profile";
 import type { Product } from "@/types";
 import dayjs from "dayjs";
-import { LucideCircle, LucideCrown } from "lucide-vue-next";
+import { LucideCircle, LucideCrown, LucideThumbsUp } from "lucide-vue-next";
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import AvatarCircle from "../shared/AvatarCircle.vue";
@@ -21,6 +21,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   reload: [];
+  rate: [productID: number, revieweeID: number];
 }>();
 
 const error = ref<string>();
@@ -104,6 +105,13 @@ async function denyBidder(id: number) {
           "
         >
           {{ $t("products.deny_bidder") }}
+        </button>
+
+        <button
+          v-if="data.product_state == 'ended' && data.seller.id == profile.profile?.id"
+          @click="$emit('rate', data.id, sortedBids![0].bidder.id)"
+        >
+          <LucideThumbsUp class="size-4 cursor-pointer text-zinc-500 hover:text-black" />
         </button>
       </div>
     </div>

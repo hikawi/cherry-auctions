@@ -646,14 +646,7 @@ const docTemplate = `{
                         "required": true
                     }
                 ],
-                "responses": {
-                    "200": {
-                        "description": "The stream will push objects of this type",
-                        "schema": {
-                            "$ref": "#/definitions/shared.ChatMessageDTO"
-                        }
-                    }
-                }
+                "responses": {}
             }
         },
         "/chat/{id}": {
@@ -1162,6 +1155,75 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "The server could not make the request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/products/{id}/autobids": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Bids on a product, hopefully with some race-condition management.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Makes an automated bid on a product.",
+                "parameters": [
+                    {
+                        "description": "Bid body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/products.PostBidBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Successful bid",
+                        "schema": {
+                            "$ref": "#/definitions/shared.MessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "User is unauthenticated",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "User can not bid for other reasons",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Race condition, and you lost",
+                        "schema": {
+                            "$ref": "#/definitions/shared.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Server could not finish the request",
                         "schema": {
                             "$ref": "#/definitions/shared.ErrorResponse"
                         }
@@ -3160,11 +3222,15 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "feedback",
+                "product_id",
                 "reviewee_id"
             ],
             "properties": {
                 "feedback": {
                     "type": "string"
+                },
+                "product_id": {
+                    "type": "integer"
                 },
                 "rating": {
                     "type": "integer",

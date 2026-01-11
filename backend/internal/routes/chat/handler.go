@@ -358,7 +358,7 @@ func (h *ChatHandler) PostChatMessage(g *gin.Context) {
 //	@Tags			chat
 //	@Produce		text/event-stream
 //	@Security		ApiKeyAuth
-//	@Param			token	query		string					true	"Authentication token"
+//	@Param			token	query	string	true	"Authentication token"
 //	@Router			/chat/stream [get]
 func (h *ChatHandler) GetChatStream(g *gin.Context) {
 	claims, _ := g.Get("claims")

@@ -180,6 +180,9 @@
     "no_products": "商品がありません"
   },
   "products": {
+    "loading": "ロード中",
+    "rate": "評価",
+    "feedback": "フィードバック",
     "bin_price": "即決価格",
     "current_bid": "現在入札額",
     "starting_bid": "開始入札額",

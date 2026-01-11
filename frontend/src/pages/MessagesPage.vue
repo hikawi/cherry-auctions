@@ -22,6 +22,7 @@ const message = ref("");
 const es = ref<EventSource>();
 const image = ref<Blob>();
 const error = ref("");
+const rating = ref<number>();
 
 const hiddenInput = useTemplateRef<HTMLInputElement>("hiddenInput");
 const messageCon = useTemplateRef<HTMLDivElement>("messageContainer");
@@ -316,9 +317,12 @@ async function proceed(status: string) {
           <!-- Spacer to allow inner scrolling -->
           <div class="flex-1"></div>
 
-          <div class="flex w-fit flex-col self-center rounded-xl">
+          <router-link
+            :to="{ name: 'product-details', params: { id: currentSessionData.product.id } }"
+            class="flex w-fit flex-col self-center rounded-xl border border-zinc-300"
+          >
             <img :src="currentSessionData.product.thumbnail_url" class="aspect-video w-64" />
-          </div>
+          </router-link>
 
           <template v-for="chatMsg in currentChatMessages" :key="chatMsg.id">
             <div
