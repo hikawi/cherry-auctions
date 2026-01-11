@@ -40,7 +40,6 @@ const isExpiring = computed(() => {
 });
 const hasWon = computed(
   () =>
-    props.product.product_state == "ended" &&
     props.product.current_highest_bid &&
     props.product.current_highest_bid.bidder.id == profile.profile?.id,
 );
@@ -72,10 +71,10 @@ async function toggleFavorite() {
   <div
     class="relative flex h-full w-full flex-col items-center justify-between gap-4 rounded-xl shadow-xl"
     :class="{
-      'ring-claret-600 ring-2': isNew,
-      'ring-2 ring-amber-600': isExpiring,
+      'ring-2 ring-amber-600': isExpiring && !hasBid && !hasWon && !isNew,
+      'ring-2 ring-yellow-500': hasBid && !hasWon,
       'ring-2 ring-emerald-600': hasWon,
-      'ring-2 ring-yellow-500': hasBid,
+      'ring-claret-600 ring-2': isNew && !hasWon && !hasBid && !isExpiring,
     }"
   >
     <div
@@ -83,12 +82,6 @@ async function toggleFavorite() {
       v-if="isNew"
     >
       {{ $t("products.new") }}
-    </div>
-    <div
-      class="absolute top-0 left-1/2 w-fit -translate-x-1/2 rounded-b-xl bg-linear-to-r from-amber-600 to-orange-600 px-2 pt-px pb-1.5 text-sm font-bold text-white"
-      v-else-if="isExpiring"
-    >
-      {{ $t("products.expiring_soon") }}
     </div>
     <div
       class="absolute top-0 left-1/2 w-fit -translate-x-1/2 rounded-b-xl bg-linear-to-r from-emerald-600 to-green-600 px-2 pt-px pb-1.5 text-sm font-bold text-white"
@@ -101,6 +94,12 @@ async function toggleFavorite() {
       v-else-if="hasBid"
     >
       {{ $t("products.bidding") }}
+    </div>
+    <div
+      class="absolute top-0 left-1/2 w-fit -translate-x-1/2 rounded-b-xl bg-linear-to-r from-amber-600 to-orange-600 px-2 pt-px pb-1.5 text-sm font-bold text-white"
+      v-else-if="isExpiring"
+    >
+      {{ $t("products.expiring_soon") }}
     </div>
 
     <!-- Favorite button -->
@@ -118,7 +117,7 @@ async function toggleFavorite() {
       />
     </button>
 
-    <div class="flex flex-col gap-4">
+    <div class="flex w-full flex-col gap-4">
       <img
         :src="product.thumbnail_url"
         :alt="product.name"

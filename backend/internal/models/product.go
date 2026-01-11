@@ -43,8 +43,8 @@ type Product struct {
 	SellerID uint `gorm:"not null"`
 	Seller   User
 
-	CurrentHighestBid   *Bid
-	CurrentHighestBidID *uint `gorm:"default:null"`
+	CurrentHighestBid   *Bid  `gorm:"foreignKey:CurrentHighestBidID;references:ID"`
+	CurrentHighestBidID *uint `gorm:"index"`
 
 	BidsCount    int    `gorm:"default:0;not null"`
 	SearchVector string `gorm:"type:tsvector;index:,type:gin"`
