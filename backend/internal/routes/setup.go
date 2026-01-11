@@ -126,6 +126,7 @@ func SetupRoutes(server *gin.Engine, deps ServerDependency) {
 	transactionHandler := transactions.NewTransactionHandler(
 		deps.Repositories.TransactionRepository,
 		deps.Repositories.ProductRepository,
+		deps.Repositories.RatingRepostory,
 		deps.Services.MiddlewareService,
 		chatHandler,
 	)

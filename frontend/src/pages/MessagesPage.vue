@@ -259,7 +259,7 @@ async function proceed(status: string) {
                 profile.profile?.id == currentSessionData.product.transaction.seller_id
               "
               class="flex rounded-full bg-zinc-200 px-2 py-1 font-semibold text-black hover:bg-zinc-300"
-              @click="proceed('cancel')"
+              @click="proceed('cancelled')"
             >
               {{ $t("messages.transaction_cancel") }}
             </button>

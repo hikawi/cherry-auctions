@@ -227,6 +227,31 @@ func (h *TransactionHandler) PutTransaction(g *gin.Context) {
 		return
 	}
 
+	// Mark as finalized
+	if transaction.TransactionStatus == models.TransactionStatusCompleted || transaction.TransactionStatus == models.TransactionStatusCancelled {
+		if _, err := h.productRepo.FinalizeProduct(ctx, transaction.ProductID); err != nil {
+			logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusInternalServerError, "error": err.Error()})
+			g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "failed to update finalized status"})
+			return
+		}
+	}
+
+	// Auto add rating to user
+	if transaction.TransactionStatus == models.TransactionStatusCancelled {
+		rating := models.Rating{
+			ProductID:  transaction.ProductID,
+			ReviewerID: transaction.SellerID,
+			RevieweeID: transaction.BuyerID,
+			Rating:     0,
+			Feedback:   "Did not follow through",
+		}
+		if err := h.ratingRepo.CreateRating(ctx, &rating); err != nil {
+			logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusInternalServerError, "error": err.Error()})
+			g.AbortWithStatusJSON(http.StatusInternalServerError, shared.ErrorResponse{Error: "failed to update rating"})
+			return
+		}
+	}
+
 	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusOK, "response": shared.IDResponse{ID: uint(id)}})
 	h.chatHandler.SendTransactionChangeNotification(transaction.Product.ChatSession.ID, &transaction)
 	g.JSON(http.StatusOK, shared.IDResponse{ID: uint(id)})

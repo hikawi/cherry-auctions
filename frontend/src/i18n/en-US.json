@@ -265,6 +265,7 @@
     "transaction_status_paid": "Buyer paid",
     "transaction_status_delivered": "Delivered",
     "transaction_status_completed": "Completed",
+    "transaction_status_cancelled": "Cancelled",
     "transaction_start": "Start",
     "transaction_paid": "Mark as paid",
     "transaction_deliver": "Mark as delivered",

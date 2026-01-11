@@ -265,6 +265,7 @@
     "transaction_status_paid": "振り込み確認中",
     "transaction_status_delivered": "配達中",
     "transaction_status_completed": "完了",
+    "transaction_status_cancelled": "無効",
     "transaction_start": "開始",
     "transaction_paid": "振り込んだ",
     "transaction_deliver": "配達した",
