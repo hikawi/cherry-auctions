@@ -8,6 +8,10 @@ type MessageResponse struct {
 	Message string `json:"message"`
 }
 
+type IDResponse struct {
+	ID uint `json:"id"`
+}
+
 type PaginationResponse struct {
 	Total      int64 `json:"total"`
 	TotalPages int   `json:"total_pages"`

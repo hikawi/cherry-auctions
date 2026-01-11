@@ -258,7 +258,19 @@
     "no_ratings": "No one has rated you yet"
   },
   "messages": {
-    "choose_session": "Pick a conversation"
+    "choose_session": "Pick a conversation",
+    "transaction_status": "Transaction Status",
+    "transaction_status_none": "NONE",
+    "transaction_status_pending": "Pending",
+    "transaction_status_paid": "Buyer paid",
+    "transaction_status_delivered": "Delivered",
+    "transaction_status_completed": "Completed",
+    "transaction_start": "Start",
+    "transaction_paid": "Mark as paid",
+    "transaction_deliver": "Mark as delivered",
+    "transaction_complete": "Mark as completed",
+    "transaction_cancel": "Cancel Transaction",
+    "error": "Error"
   },
   "general": {
     "categories": "Categories",

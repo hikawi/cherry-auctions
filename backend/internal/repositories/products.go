@@ -395,6 +395,7 @@ func (r *ProductRepository) ClearAllBids(ctx context.Context, productID uint) (i
 }
 
 func (r *ProductRepository) CreateBINPurchase(ctx context.Context, productID uint, userID uint) error {
+	now := time.Now()
 	return r.DB.Transaction(func(tx *gorm.DB) error {
 		// Retrieve the product about to update
 		product := models.Product{}
@@ -431,7 +432,7 @@ func (r *ProductRepository) CreateBINPurchase(ctx context.Context, productID uin
 			Updates(map[string]any{
 				"current_highest_bid_id": bid.ID,
 				"bids_count":             gorm.Expr("bids_count + 1"),
-				"expired_at":             time.Now(),
+				"expired_at":             now,
 			}).
 			Error
 	})
@@ -603,4 +604,12 @@ func (r *ProductRepository) CountUserProducts(ctx context.Context, userID uint, 
 		Count(&count).
 		Error
 	return count, err
+}
+
+func (r *ProductRepository) FinalizeProduct(ctx context.Context, id uint) (int64, error) {
+	db := r.DB.WithContext(ctx).
+		Model(&models.Product{}).
+		Where("id = ?", id).
+		Update("finalized_at", time.Now())
+	return db.RowsAffected, db.Error
 }

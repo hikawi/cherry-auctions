@@ -46,6 +46,22 @@ func ToChatSessionDTO(m *models.ChatSession) ChatSessionDTO {
 	}
 }
 
+func ToTransactionDTO(m *models.Transaction) TransactionDTO {
+	if m == nil {
+		return TransactionDTO{}
+	}
+
+	return TransactionDTO{
+		ID:                m.ID,
+		SellerID:          m.SellerID,
+		BuyerID:           m.BuyerID,
+		ProductID:         m.ProductID,
+		FinalPrice:        m.FinalPrice,
+		TransactionStatus: string(m.TransactionStatus),
+		CreatedAt:         m.CreatedAt,
+	}
+}
+
 func ToChatMessageDTO(m *models.ChatMessage) ChatMessageDTO {
 	if m == nil {
 		return ChatMessageDTO{}
@@ -63,6 +79,12 @@ func ToChatMessageDTO(m *models.ChatMessage) ChatMessageDTO {
 func ToProductDTO(m *models.Product) ProductDTO {
 	if m == nil {
 		return ProductDTO{}
+	}
+
+	var transactionDto *TransactionDTO
+	if m.Transaction != nil {
+		transaction := ToTransactionDTO(m.Transaction)
+		transactionDto = &transaction
 	}
 
 	return ProductDTO{
@@ -94,5 +116,6 @@ func ToProductDTO(m *models.Product) ProductDTO {
 		// }),
 		IsFavorite:  m.IsFavorite,
 		FinalizedAt: m.FinalizedAt,
+		Transaction: transactionDto,
 	}
 }

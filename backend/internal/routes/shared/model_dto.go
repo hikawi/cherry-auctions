@@ -19,6 +19,16 @@ type BidDTO struct {
 	UpdatedAt time.Time  `json:"updated_at"`
 }
 
+type TransactionDTO struct {
+	ID                uint      `json:"id"`
+	ProductID         uint      `json:"product_id"`
+	BuyerID           uint      `json:"buyer_id"`
+	SellerID          uint      `json:"seller_id"`
+	FinalPrice        int64     `json:"final_price"`
+	TransactionStatus string    `json:"transaction_status"`
+	CreatedAt         time.Time `json:"created_at"`
+}
+
 type ProductDTO struct {
 	ID                  uint       `json:"id"`
 	Name                string     `json:"name"`
@@ -36,10 +46,11 @@ type ProductDTO struct {
 	// Categories          []CategoryDTO          `json:"categories"`
 	// DescriptionChanges  []DescriptionChangeDTO `json:"description_changes"`
 	// DeniedBidders []ProfileDTO `json:"denied_bidders"`
-	BidsCount    int        `json:"bids_count"`
-	IsFavorite   bool       `json:"is_favorite"`
-	ProductState string     `json:"product_state"`
-	FinalizedAt  *time.Time `json:"finalized_at"`
+	BidsCount    int             `json:"bids_count"`
+	IsFavorite   bool            `json:"is_favorite"`
+	ProductState string          `json:"product_state"`
+	FinalizedAt  *time.Time      `json:"finalized_at"`
+	Transaction  *TransactionDTO `json:"transaction"`
 }
 
 type ChatSessionDTO struct {

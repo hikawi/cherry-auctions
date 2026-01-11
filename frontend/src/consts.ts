@@ -44,6 +44,10 @@ export const endpoints = {
       rated: `${api}/v1/users/me/rated`,
     },
   },
+  transactions: {
+    index: `${api}/v1/transactions`,
+    id: (id: unknown) => `${api}/v1/transactions/${id}`,
+  },
   questions: {
     index: `${api}/v1/questions`,
     id: (id: unknown) => `${api}/v1/questions/${id}`,

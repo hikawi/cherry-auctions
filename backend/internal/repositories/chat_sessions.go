@@ -25,7 +25,7 @@ func (r *ChatSessionRepository) GetUserChatSessions(ctx context.Context, userID 
 		Model(&models.ChatSession{}).
 		Preload("Seller").
 		Preload("Buyer").
-		Preload("Product").
+		Preload("Product.Transaction").
 		Where("buyer_id = ? OR seller_id = ?", userID, userID).
 		Order("updated_at DESC, created_at DESC").
 		Limit(limit).
