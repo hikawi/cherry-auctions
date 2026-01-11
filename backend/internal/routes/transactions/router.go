@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"luny.dev/cherryauctions/internal/models"
 	"luny.dev/cherryauctions/internal/repositories"
+	"luny.dev/cherryauctions/internal/routes/chat"
 	"luny.dev/cherryauctions/internal/services"
 )
 
@@ -11,17 +12,20 @@ type TransactionHandler struct {
 	transactionRepo   *repositories.TransactionRepository
 	productRepo       *repositories.ProductRepository
 	middlewareService *services.MiddlewareService
+	chatHandler       *chat.ChatHandler
 }
 
 func NewTransactionHandler(
 	transactionRepo *repositories.TransactionRepository,
 	productRepo *repositories.ProductRepository,
 	middlewareService *services.MiddlewareService,
+	chatHandler *chat.ChatHandler,
 ) *TransactionHandler {
 	return &TransactionHandler{
 		transactionRepo:   transactionRepo,
 		productRepo:       productRepo,
 		middlewareService: middlewareService,
+		chatHandler:       chatHandler,
 	}
 }
 

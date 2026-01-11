@@ -227,5 +227,7 @@ func (h *TransactionHandler) PutTransaction(g *gin.Context) {
 		return
 	}
 
+	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusOK, "response": shared.IDResponse{ID: uint(id)}})
+	h.chatHandler.SendTransactionChangeNotification(transaction.Product.ChatSession.ID, &transaction)
 	g.JSON(http.StatusOK, shared.IDResponse{ID: uint(id)})
 }

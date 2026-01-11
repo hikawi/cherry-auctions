@@ -10,7 +10,6 @@ import { LucideSend, LucideImage } from "lucide-vue-next";
 import { useProfileStore } from "@/stores/profile";
 import OverlayScreen from "@/components/shared/OverlayScreen.vue";
 import ErrorDialog from "@/components/shared/ErrorDialog.vue";
-import { useInterval } from "@vueuse/core";
 
 const { authFetch, tryRefresh } = useAuthFetch({ json: false });
 const authToken = useTokenStore();
@@ -84,11 +83,33 @@ async function createSSEStream() {
     }, 3000);
   };
 
+  es.value.addEventListener("transaction", (event) => {
+    const json = JSON.parse(event.data);
+    chatSessions.value = chatSessions.value.map((sess) => {
+      if (sess.id != json.chat_session_id) {
+        return sess;
+      }
+      if (!sess.product.transaction) {
+        return sess;
+      }
+
+      return {
+        ...sess,
+        product: {
+          ...sess.product,
+          transaction: {
+            ...sess.product.transaction,
+            transaction_status: json.transaction_status,
+          },
+        },
+      };
+    });
+  });
+
   // 3. Proper Message Handling
   es.value.onmessage = (event) => {
     try {
       const json = JSON.parse(event.data);
-
       if (json.chat_session_id === currentChatSession.value) {
         currentChatMessages.value.push(json);
       }

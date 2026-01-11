@@ -38,7 +38,7 @@ func (r *TransactionRepository) GetTransactionByID(ctx context.Context, id uint)
 	trans := models.Transaction{}
 	err := r.db.WithContext(ctx).
 		Model(&models.Transaction{}).
-		Preload("Product").
+		Preload("Product.ChatSession").
 		Preload("Seller").
 		Preload("Buyer").
 		Where("id = ?", id).
