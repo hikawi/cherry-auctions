@@ -43,6 +43,17 @@ function addOption(val: { value: string; label: string }) {
     select.value.value = "";
   }
 }
+
+function handleSelect(event: Event) {
+  const selectedValue = (event.target as HTMLInputElement).value;
+
+  const optionObj = shownValues.value?.find((v) => v.value === selectedValue);
+  if (optionObj) {
+    addOption(optionObj);
+  }
+
+  (event.target as HTMLInputElement).value = "";
+}
 </script>
 
 <template>
@@ -71,14 +82,10 @@ function addOption(val: { value: string; label: string }) {
       class="mt-1 cursor-pointer rounded-lg border border-zinc-300 bg-white px-4 py-2 hover:bg-zinc-200"
       ref="selectOption"
       :disabled="!shownValues || shownValues.length == 0"
+      @change="handleSelect"
     >
       <option selected value="" disabled>{{ $t("auctions.choose_category") }}</option>
-      <option
-        v-for="val in shownValues"
-        :value="val.value"
-        :key="val.value"
-        @click="() => addOption(val)"
-      >
+      <option v-for="val in shownValues" :value="val.value" :key="val.value">
         {{ val.label }}
       </option>
     </select>
