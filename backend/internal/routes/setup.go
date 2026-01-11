@@ -127,6 +127,7 @@ func SetupRoutes(server *gin.Engine, deps ServerDependency) {
 		deps.Repositories.TransactionRepository,
 		deps.Repositories.ProductRepository,
 		deps.Services.MiddlewareService,
+		chatHandler,
 	)
 	transactionHandler.SetupRouter(versionedGroup)
 

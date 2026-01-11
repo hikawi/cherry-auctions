@@ -359,14 +359,13 @@ func (h *ChatHandler) PostChatMessage(g *gin.Context) {
 //	@Produce		text/event-stream
 //	@Security		ApiKeyAuth
 //	@Param			token	query		string					true	"Authentication token"
-//	@Success		200		{object}	shared.ChatMessageDTO	"The stream will push objects of this type"
 //	@Router			/chat/stream [get]
 func (h *ChatHandler) GetChatStream(g *gin.Context) {
 	claims, _ := g.Get("claims")
 	sub := claims.(*services.JWTSubject)
 
 	// 1. Initialize the user's channel
-	messageChan := make(chan shared.ChatMessageDTO)
+	messageChan := make(chan SSEvent)
 
 	hub.mu.Lock()
 	hub.Clients[sub.UserID] = messageChan
@@ -388,7 +387,7 @@ func (h *ChatHandler) GetChatStream(g *gin.Context) {
 				return false
 			}
 			// Send the JSON message as an SSE event
-			g.SSEvent("message", msg)
+			g.SSEvent(msg.Type, msg.Message)
 			return true
 		case <-g.Request.Context().Done():
 			// User disconnected
