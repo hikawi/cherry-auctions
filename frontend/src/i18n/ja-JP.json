@@ -258,7 +258,19 @@
     "no_ratings": "他人からの評価がありません"
   },
   "messages": {
-    "choose_session": "チャットを選択してください"
+    "choose_session": "チャットを選択してください",
+    "transaction_status": "トランザクションステータス",
+    "transaction_status_none": "未開始",
+    "transaction_status_pending": "振り込み中",
+    "transaction_status_paid": "配達中",
+    "transaction_status_delivered": "チェック中",
+    "transaction_status_completed": "完了",
+    "transaction_start": "開始",
+    "transaction_paid": "振り込んだ",
+    "transaction_deliver": "配達した",
+    "transaction_complete": "完了した",
+    "transaction_cancel": "トランザクションキャンセル",
+    "error": "エラー"
   },
   "general": {
     "categories": "カテゴリー",

@@ -5,9 +5,12 @@ import { endpoints } from "@/consts";
 import { useAuthFetch } from "@/hooks/use-auth-fetch";
 import { useTokenStore } from "@/stores/token";
 import type { ChatMessage, ChatSession } from "@/types";
-import { computed, onMounted, onUnmounted, ref, useTemplateRef, watch } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from "vue";
 import { LucideSend, LucideImage } from "lucide-vue-next";
 import { useProfileStore } from "@/stores/profile";
+import OverlayScreen from "@/components/shared/OverlayScreen.vue";
+import ErrorDialog from "@/components/shared/ErrorDialog.vue";
+import { useInterval } from "@vueuse/core";
 
 const { authFetch, tryRefresh } = useAuthFetch({ json: false });
 const authToken = useTokenStore();
@@ -19,8 +22,10 @@ const currentChatMessages = ref<ChatMessage[]>([]);
 const message = ref("");
 const es = ref<EventSource>();
 const image = ref<Blob>();
+const error = ref("");
 
 const hiddenInput = useTemplateRef<HTMLInputElement>("hiddenInput");
+const messageCon = useTemplateRef<HTMLDivElement>("messageContainer");
 const currentSessionData = computed(() =>
   chatSessions.value.length > 0
     ? chatSessions.value.filter((sess) => currentChatSession.value == sess.id)[0]
@@ -33,6 +38,19 @@ onMounted(async () => {
 });
 
 watch(currentChatSession, (cb) => fetchChatMessages(cb));
+watch(
+  currentChatMessages,
+  async () => {
+    await nextTick();
+    if (messageCon.value) {
+      messageCon.value.scrollTo({
+        top: messageCon.value.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  },
+  { deep: true },
+);
 
 // Courtesy of Gemini. Thank you!
 async function createSSEStream() {
@@ -134,15 +152,40 @@ async function sendMessage() {
 function openImage() {
   hiddenInput.value?.click();
 }
+
+// Proceed the transaction with a status
+async function proceed(status: string) {
+  if (status == "start") {
+    await authFetch(endpoints.transactions.index, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ product_id: currentSessionData.value?.product.id }),
+    });
+  } else {
+    await authFetch(endpoints.transactions.id(currentSessionData.value?.product.transaction?.id), {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status }),
+    });
+  }
+}
 </script>
 
 <template>
-  <WhiteContainer class="justify-start gap-6 overflow-y-auto">
+  <OverlayScreen shown v-if="error">
+    <ErrorDialog :title="$t('messages.error')" :description="error" @close="error = ''" />
+  </OverlayScreen>
+
+  <WhiteContainer class="min-h-0 justify-start gap-6">
     <NavigationBar />
     <input ref="hiddenInput" class="hidden" type="file" accept="image/*" @change="onInputChange" />
 
     <div
-      class="grid h-full max-h-full min-h-0 w-full grid-cols-1 gap-4 lg:grid-cols-3 xl:grid-cols-4"
+      class="grid h-[calc(100vh-200px)] min-h-0 w-full grid-cols-1 gap-4 lg:grid-cols-3 xl:grid-cols-4"
     >
       <!-- Chat Sessions List -->
       <aside class="flex w-full flex-col gap-4">
@@ -156,11 +199,14 @@ function openImage() {
               class="aspect-square h-20 rounded-l-xl object-cover object-center"
             />
 
-            <div class="flex flex-col items-start py-4">
+            <div class="flex flex-col items-start justify-center">
               <span class="text-base font-semibold"
                 >{{ session.seller.name }}, {{ session.buyer.name }}</span
               >
               <span class="text-sm">{{ session.product.name }}</span>
+              <span class="text-sm italic" v-if="session.product.transaction">{{
+                $t(`messages.transaction_status_${session.product.transaction.transaction_status}`)
+              }}</span>
             </div>
           </button>
         </template>
@@ -171,9 +217,84 @@ function openImage() {
         class="flex h-full min-h-0 w-full flex-col gap-4 lg:col-span-2 xl:col-span-3"
         v-if="currentSessionData"
       >
-        <div class="w-full">Lol</div>
+        <!-- Transaction card -->
+        <div class="flex w-full flex-row items-center justify-between">
+          <span>
+            <span class="font-semibold">
+              {{ $t("messages.transaction_status") }}
+            </span>
+            :
+            {{
+              $t(
+                `messages.transaction_status_${currentSessionData.product.transaction?.transaction_status || "none"}`,
+              )
+            }}
+          </span>
 
-        <div class="flex h-full min-h-0 flex-1 flex-col justify-end gap-2 overflow-y-auto">
+          <div class="flex flex-row items-center gap-2">
+            <button
+              v-if="
+                currentSessionData.product.transaction?.transaction_status == 'pending' &&
+                profile.profile?.id == currentSessionData.product.transaction.seller_id
+              "
+              class="flex rounded-full bg-zinc-200 px-2 py-1 font-semibold text-black hover:bg-zinc-300"
+              @click="proceed('cancel')"
+            >
+              {{ $t("messages.transaction_cancel") }}
+            </button>
+
+            <button
+              class="bg-claret-600 hover:bg-claret-700 flex rounded-full px-2 py-1 font-semibold text-white"
+              v-if="
+                currentSessionData.seller.id == profile.profile?.id &&
+                currentSessionData.product.transaction == null
+              "
+              @click="proceed('start')"
+            >
+              {{ $t("messages.transaction_start") }}
+            </button>
+
+            <button
+              class="bg-claret-600 hover:bg-claret-700 flex rounded-full px-2 py-1 font-semibold text-white"
+              v-if="
+                currentSessionData.seller.id == profile.profile?.id &&
+                currentSessionData.product.transaction?.transaction_status == 'pending'
+              "
+              @click="proceed('paid')"
+            >
+              {{ $t("messages.transaction_paid") }}
+            </button>
+
+            <button
+              class="bg-claret-600 hover:bg-claret-700 flex rounded-full px-2 py-1 font-semibold text-white"
+              v-if="
+                currentSessionData.seller.id == profile.profile?.id &&
+                currentSessionData.product.transaction?.transaction_status == 'paid'
+              "
+              @click="proceed('delivered')"
+            >
+              {{ $t("messages.transaction_deliver") }}
+            </button>
+
+            <button
+              class="bg-claret-600 hover:bg-claret-700 flex rounded-full px-2 py-1 font-semibold text-white"
+              v-if="
+                currentSessionData.buyer.id == profile.profile?.id &&
+                currentSessionData.product.transaction?.transaction_status == 'delivered'
+              "
+              @click="proceed('completed')"
+            >
+              {{ $t("messages.transaction_complete") }}
+            </button>
+          </div>
+        </div>
+
+        <hr class="w-full border-zinc-300" />
+
+        <div class="flex min-h-0 flex-col gap-2 overflow-y-auto" ref="messageContainer">
+          <!-- Spacer to allow inner scrolling -->
+          <div class="flex-1"></div>
+
           <div class="flex w-fit flex-col self-center rounded-xl">
             <img :src="currentSessionData.product.thumbnail_url" class="aspect-video w-64" />
           </div>
@@ -181,7 +302,7 @@ function openImage() {
           <template v-for="chatMsg in currentChatMessages" :key="chatMsg.id">
             <div
               :class="[
-                'flex h-fit min-h-10 w-fit max-w-80 flex-col gap-2 rounded-xl',
+                'flex min-h-10 w-fit max-w-80 shrink-0 flex-col gap-2 rounded-xl',
                 chatMsg.sender.id == profile.profile?.id
                   ? 'bg-claret-600 self-end px-4 py-2 text-white'
                   : 'self-start bg-zinc-200 px-4 py-2 text-black',

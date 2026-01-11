@@ -14,7 +14,7 @@ const (
 
 type Transaction struct {
 	gorm.Model
-	ProductID         uint `gorm:"uniqueIndex"`
+	ProductID         uint `gorm:"uniqueIndex;unique"`
 	Product           Product
 	BuyerID           uint `gorm:"index"`
 	Buyer             User

@@ -37,6 +37,7 @@ type Product struct {
 	DeniedBidders      []DeniedBidder
 	DescriptionChanges []DescriptionChange `gorm:"foreignKey:ProductID"`
 	ChatSession        *ChatSession        `gorm:"foreignKey:ProductID"`
+	Transaction        *Transaction        `gorm:"foreignKey:ProductID"`
 
 	SellerID uint `gorm:"not null"`
 	Seller   User

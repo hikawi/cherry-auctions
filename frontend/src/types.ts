@@ -100,11 +100,21 @@ export interface Rating {
   updated_at: string;
 }
 
+export interface Transaction {
+  id: number;
+  seller_id: number;
+  buyer_id: number;
+  product_id: number;
+  final_price: number;
+  transaction_status: string;
+  created_at: string;
+}
+
 export interface ChatSession {
   id: number;
   seller: Profile;
   buyer: Profile;
-  product: Product;
+  product: Product & { transaction?: Transaction };
 }
 
 export interface ChatMessage {

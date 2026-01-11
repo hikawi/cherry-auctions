@@ -1,0 +1,34 @@
+package transactions
+
+import (
+	"github.com/gin-gonic/gin"
+	"luny.dev/cherryauctions/internal/models"
+	"luny.dev/cherryauctions/internal/repositories"
+	"luny.dev/cherryauctions/internal/services"
+)
+
+type TransactionHandler struct {
+	transactionRepo   *repositories.TransactionRepository
+	productRepo       *repositories.ProductRepository
+	middlewareService *services.MiddlewareService
+}
+
+func NewTransactionHandler(
+	transactionRepo *repositories.TransactionRepository,
+	productRepo *repositories.ProductRepository,
+	middlewareService *services.MiddlewareService,
+) *TransactionHandler {
+	return &TransactionHandler{
+		transactionRepo:   transactionRepo,
+		productRepo:       productRepo,
+		middlewareService: middlewareService,
+	}
+}
+
+func (h *TransactionHandler) SetupRouter(g *gin.RouterGroup) {
+	r := g.Group("/transactions")
+
+	r.POST("", h.middlewareService.AuthorizedRoute(models.ROLE_USER), h.PostTransaction)
+	r.GET("/:id", h.middlewareService.AuthorizedRoute(models.ROLE_USER), h.GetTransactionStatus)
+	r.PUT("/:id", h.middlewareService.AuthorizedRoute(models.ROLE_USER), h.PutTransaction)
+}

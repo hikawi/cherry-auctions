@@ -57,8 +57,8 @@ func main() {
 	productRepo := &repositories.ProductRepository{DB: db}
 	questionRepo := repositories.NewQuestionRepository(db)
 	chatSessionRepo := repositories.NewChatSessionRepository(db)
-	transactionRepo := repositories.NewTransactionRepository(db, productRepo)
 	ratingRepo := repositories.NewRatingRepository(db)
+	transactionRepo := repositories.NewTransactionRepository(db, productRepo, ratingRepo)
 
 	// Setup services here
 	jwtService := &services.JWTService{JWTDomain: cfg.Domain, JWTAudience: cfg.JWT.Audience, JWTSecretKey: cfg.JWT.Secret, JWTExpiry: cfg.JWT.Expiry}

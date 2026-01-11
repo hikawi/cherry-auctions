@@ -27,6 +27,7 @@ func (r *RatingRepostory) GetMyRatings(ctx context.Context, userID uint, limit i
 		Model(&models.Rating{}).
 		Preload("Reviewer").
 		Preload("Reviewee").
+		Preload("Product").
 		Where("reviewer_id = ?", userID).
 		Order("created_at DESC").
 		Limit(limit).
@@ -55,6 +56,7 @@ func (r *RatingRepostory) GetMyReviewedRatings(ctx context.Context, userID uint,
 		Model(&models.Rating{}).
 		Preload("Reviewer").
 		Preload("Reviewee").
+		Preload("Product").
 		Where("reviewee_id = ?", userID).
 		Order("created_at DESC").
 		Limit(limit).
