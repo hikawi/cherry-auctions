@@ -22,7 +22,6 @@ const message = ref("");
 const es = ref<EventSource>();
 const image = ref<Blob>();
 const error = ref("");
-const rating = ref<number>();
 
 const hiddenInput = useTemplateRef<HTMLInputElement>("hiddenInput");
 const messageCon = useTemplateRef<HTMLDivElement>("messageContainer");
