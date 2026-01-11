@@ -92,12 +92,15 @@ const nextBidValue = computed(() => {
 });
 
 // Send a request to add a bid.
-async function bid(cents: number) {
+async function bid(cents: number, auto: boolean) {
   loading.value = true;
   error.value = "";
 
   try {
-    const res = await authFetch(endpoints.products.bids(props.data.id), {
+    const url = auto
+      ? endpoints.products.autobids(props.data.id)
+      : endpoints.products.bids(props.data.id);
+    const res = await authFetch(url, {
       method: "POST",
       body: JSON.stringify({ bid: cents }),
     });

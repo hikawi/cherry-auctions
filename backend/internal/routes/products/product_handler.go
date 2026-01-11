@@ -434,7 +434,21 @@ func (h *ProductsHandler) PostProductDescription(g *gin.Context) {
 		return
 	}
 
+	// Preparing for a broadcast to all bidders.
+	// Convert each bid to a user.
+	recipientsSet := make(map[uint]models.User)
+	for _, bid := range product.Bids {
+		if _, ok := recipientsSet[bid.UserID]; !ok {
+			recipientsSet[bid.UserID] = bid.User
+		}
+	}
+	recipients := make([]models.User, 0)
+	for _, value := range recipientsSet {
+		recipients = append(recipients, value)
+	}
+
 	response := shared.MessageResponse{Message: "created a description change"}
 	logging.LogMessage(g, logging.LOG_INFO, gin.H{"status": http.StatusCreated, "body": body, "response": response})
+	h.MailerService.SendDescriptionChangedEmail(&product, recipients)
 	g.JSON(http.StatusCreated, response)
 }

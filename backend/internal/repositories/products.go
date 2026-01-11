@@ -335,6 +335,11 @@ func (r *ProductRepository) CreateBid(
 			return err
 		}
 
+		// If product is already inactive, remove
+		if product.ProductState != models.ProductStateActive || product.ExpiredAt.Before(time.Now()) {
+			return fmt.Errorf("product is already expired")
+		}
+
 		// TODO: Add this to config
 		extensionSeconds := 300
 		extensionDuration := time.Duration(extensionSeconds) * time.Second
@@ -379,10 +384,142 @@ func (r *ProductRepository) CreateBid(
 			Select("current_highest_bid_id", "bids_count", "expired_at").
 			Updates(map[string]any{
 				"current_highest_bid_id": bid.ID,
-				"bids_count":             gorm.Expr("bids_count + 1"),
+				"bids_count":             tx.Model(&models.Bid{}).Select("count(*)").Where("product_id = ?", productID),
 				"expired_at":             expiredAt,
 			}).
 			Error
+	})
+}
+
+// CreateAutomatedBid makes an automated bid.
+func (r *ProductRepository) CreateAutomatedBid(
+	ctx context.Context,
+	productID uint,
+	userID uint,
+	maxAmount int64,
+	lastBid *models.Bid,
+	newBid *models.Bid,
+	currentProduct *models.Product,
+) error {
+	return r.DB.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		// 1. Lock Product and get current "Public" state
+		product := models.Product{}
+		err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
+			Preload("CurrentHighestBid").
+			Preload("Seller").
+			Where("id = ?", productID).
+			First(&product).Error
+		if err != nil {
+			return err
+		}
+
+		// Validation
+		if product.SellerID == userID {
+			return fmt.Errorf("you can't bid on your own auction")
+		}
+		if time.Now().After(product.ExpiredAt) || product.ProductState != models.ProductStateActive {
+			return fmt.Errorf("auction has already ended")
+		}
+
+		// 2. Upsert the User's Intent (Hidden Max)
+		intent := models.BidIntent{
+			ProductID: productID,
+			UserID:    userID,
+			BidAmount: maxAmount,
+		}
+		err = tx.Clauses(clause.OnConflict{
+			Columns:   []clause.Column{{Name: "product_id"}, {Name: "user_id"}},
+			DoUpdates: clause.AssignmentColumns([]string{"bid_amount", "updated_at"}),
+		}).Create(&intent).Error
+		if err != nil {
+			return err
+		}
+
+		// 3. Get Top 2 Intents to see the "Hidden" competition
+		var topIntents []models.BidIntent
+		err = tx.Where("product_id = ?", productID).
+			Order("bid_amount DESC, created_at ASC").
+			Limit(2).
+			Find(&topIntents).Error
+		if err != nil {
+			return err
+		}
+
+		// 4. Determine the Winner and the new Public Price
+		var finalWinnerID uint
+		var finalPublicPrice int64
+
+		highestIntent := topIntents[0]
+
+		// The "Floor" is the current public price (manual or automated)
+		currentPublicPrice := product.StartingBid
+		if product.CurrentHighestBid != nil {
+			currentPublicPrice = product.CurrentHighestBid.Price + product.StepBidValue
+		}
+
+		// Validation: The new intent MUST be at least currentPrice + step to be relevant
+		// (Unless the user is just updating their max bid and is already the winner)
+		isAlreadyWinner := product.CurrentHighestBid != nil && product.CurrentHighestBid.UserID == userID
+		if !isAlreadyWinner && maxAmount < currentPublicPrice+product.StepBidValue {
+			return fmt.Errorf("your max bid is too low to outbid the current price")
+		}
+
+		if len(topIntents) == 1 {
+			// Scenario: Only one person has a proxy.
+			// They win against the starting bid or the current manual bid.
+			finalWinnerID = highestIntent.UserID
+			finalPublicPrice = max(product.StartingBid, currentPublicPrice)
+		} else {
+			// Scenario: Fight between two proxies
+			runnerUp := topIntents[1]
+			finalWinnerID = highestIntent.UserID
+
+			// The price is (Second Best Intent + Step),
+			// but it must also be at least (Current Public Price + Step)
+			calculatedPrice := max(runnerUp.BidAmount, currentPublicPrice+product.StepBidValue)
+
+			// Cap it at the winner's maximum
+			finalPublicPrice = min(highestIntent.BidAmount, calculatedPrice)
+		}
+
+		// 5. Create the History Record
+		// If the winner hasn't changed AND the price hasn't changed (just updated max bid),
+		// you might want to skip creating a new Bid row.
+		if product.CurrentHighestBid != nil &&
+			product.CurrentHighestBid.UserID == finalWinnerID &&
+			product.CurrentHighestBid.Price == finalPublicPrice {
+			// Just updating max bid ceiling, no public change
+			*newBid = *product.CurrentHighestBid
+		} else {
+			bid := models.Bid{
+				Price:     finalPublicPrice,
+				UserID:    finalWinnerID,
+				ProductID: product.ID,
+			}
+			if err := tx.Create(&bid).Error; err != nil {
+				return err
+			}
+			*newBid = bid
+		}
+
+		// 6. Final Updates (Time & Product State)
+		expiredAt := product.ExpiredAt
+		if product.AutoExtendsTime && time.Until(expiredAt) <= 30*time.Minute {
+			expiredAt = expiredAt.Add(300 * time.Second)
+		}
+
+		if product.CurrentHighestBid != nil {
+			*lastBid = *product.CurrentHighestBid
+		}
+		*currentProduct = product
+
+		return tx.Model(&models.Product{Model: gorm.Model{ID: productID}}).
+			Select("current_highest_bid_id", "bids_count", "expired_at").
+			Updates(map[string]any{
+				"current_highest_bid_id": newBid.ID,
+				"bids_count":             tx.Model(&models.Bid{}).Select("count(*)").Where("product_id = ?", productID),
+				"expired_at":             expiredAt,
+			}).Error
 	})
 }
 
@@ -606,6 +743,7 @@ func (r *ProductRepository) CountUserProducts(ctx context.Context, userID uint, 
 	return count, err
 }
 
+// FinalizeProduct marks a product as finalized as of now.
 func (r *ProductRepository) FinalizeProduct(ctx context.Context, id uint) (int64, error) {
 	db := r.DB.WithContext(ctx).
 		Model(&models.Product{}).

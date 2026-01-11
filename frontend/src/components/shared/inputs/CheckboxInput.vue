@@ -13,8 +13,8 @@ const model = defineModel<boolean>({ required: true });
     class="flex cursor-pointer flex-row items-center-safe gap-2 rounded-xl"
     @click="model = !model"
   >
-    <LucideSquare class="size-6 translate-y-0.5 text-black" v-if="model" />
-    <LucideCheckSquare2 class="text-claret-600 size-6 translate-y-0.5" v-else />
+    <LucideCheckSquare2 class="text-claret-600 size-6 translate-y-px" v-if="model" />
+    <LucideSquare class="size-6 translate-y-px text-black" v-else />
 
     {{ label }}
   </label>

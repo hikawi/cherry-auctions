@@ -34,6 +34,7 @@ type Product struct {
 	Categories         []Category     `gorm:"many2many:products_categories"`
 	Questions          []Question
 	Bids               []Bid
+	BidIntents         []BidIntent `gorm:"foreignKey:ProductID"`
 	DeniedBidders      []DeniedBidder
 	DescriptionChanges []DescriptionChange `gorm:"foreignKey:ProductID"`
 	ChatSession        *ChatSession        `gorm:"foreignKey:ProductID"`

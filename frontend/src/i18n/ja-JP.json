@@ -220,6 +220,7 @@
     "ask": "通信",
     "confirm_bid": "入札確認",
     "confirm_bid_description": "「{name}」のオークションに{price}で入札してもいいですか? この入札は撤回することができません。",
+    "automated_bid": "最高入札額として自動入札",
     "cant_bid_logged_out": "入札したい際、ログインしてください",
     "cant_bid_self": "自分のオークションを入札できません",
     "cant_bid_no_rating": "お客様の評価は0.8以下ため、入札できません",

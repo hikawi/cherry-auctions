@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import MoneyInput from "../shared/inputs/MoneyInput.vue";
 import z from "zod";
+import CheckboxInput from "../shared/inputs/CheckboxInput.vue";
 
 const props = defineProps<{
   name: string;
@@ -11,10 +12,11 @@ const props = defineProps<{
 
 const emits = defineEmits<{
   cancel: [];
-  confirm: [cents: number];
+  confirm: [cents: number, auto: boolean];
 }>();
 
 const nextBid = ref<number>(props.nextBidValue);
+const auto = ref<boolean>(false);
 const error = ref("");
 
 function confirm() {
@@ -28,7 +30,7 @@ function confirm() {
     return;
   }
 
-  emits("confirm", cents);
+  emits("confirm", cents, auto.value);
 }
 </script>
 
@@ -42,6 +44,7 @@ function confirm() {
       :default="$n(nextBidValue / 100, 'decimal')"
       @change="(val) => (nextBid = val)"
     />
+    <CheckboxInput :label="$t('products.automated_bid')" v-model="auto" />
 
     <p
       class="border-watermelon-600 text-watermelon-600 bg-watermelon-200/50 rounded-xl border-2 px-4 py-2"

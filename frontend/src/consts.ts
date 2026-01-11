@@ -16,6 +16,7 @@ export const endpoints = {
     favorite: `${api}/v1/products/favorite`,
     top: `${api}/v1/products/top`,
     bids: (id: unknown) => `${api}/v1/products/${id}/bids`,
+    autobids: (id: unknown) => `${api}/v1/products/${id}/autobids`,
     description: (id: unknown) => `${api}/v1/products/${id}/description`,
     denials: (id: unknown) => `${api}/v1/products/${id}/denials`,
   },

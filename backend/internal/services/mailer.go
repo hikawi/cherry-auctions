@@ -240,6 +240,37 @@ Your bid has been denied by the seller. You may no longer participate in this au
 </body>
 </html>
 `
+	descriptionChangeTemplate = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Product Description Updated</title>
+</head>
+<body style="font-family: sans-serif;">
+  <h2>Update: Description changed for an auction you follow</h2>
+
+  <p>
+    The seller has updated the description for the product: <strong>"%s"</strong>.
+  </p>
+
+  <p>
+    Since you have active interest in this auction, we recommend reviewing the changes to ensure the product still meets your expectations.
+  </p>
+
+  <div style="margin: 20px 0;">
+    <a href="%s" style="background-color: #800020; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+      View Updated Product
+    </a>
+  </div>
+
+  <hr />
+
+  <p style="color: #666; font-size: 12px;">
+    You are receiving this because you are a bidder or watcher for this item. This mail is automated, do not reply.
+  </p>
+</body>
+</html>`
 )
 
 func NewMailerService(
@@ -523,6 +554,54 @@ func (s *MailerService) SendDeniedBidEmail(product *models.Product, deniedID uin
 
 		if err := s.mailer.DialAndSend(msg); err != nil {
 			log.Printf("failed to send bid denied email: %v", err)
+		}
+	}()
+}
+
+// Send an email when the description gets updated.
+// Courtesy of Gemini.
+func (s *MailerService) SendDescriptionChangedEmail(product *models.Product, recipients []models.User) {
+	go func() {
+		if len(recipients) == 0 {
+			return
+		}
+
+		url := fmt.Sprintf("%s/products/%d", s.cfg.CORS.Origins, product.ID)
+
+		message := gomail.NewMessage()
+		message.SetHeader("From", fromHeader)
+		message.SetHeader("Subject", "CherryAuctions - Item Description Updated")
+
+		// 1. Set a generic "To" address (usually your own support email)
+		// This prevents the "To" field from being empty or looking like spam
+		message.SetHeader("To", fromHeader)
+
+		// 2. Collect all emails for BCC
+		bccEmails := make([]string, 0, len(recipients))
+		for _, user := range recipients {
+			if user.Email != nil && *user.Email != "" {
+				bccEmails = append(bccEmails, *user.Email)
+			}
+		}
+
+		if len(bccEmails) == 0 {
+			return
+		}
+
+		// 3. Set the BCC header with the slice of emails
+		message.SetHeader("Bcc", bccEmails...)
+
+		body := fmt.Sprintf(
+			descriptionChangeTemplate,
+			product.Name,
+			url,
+		)
+
+		message.SetBody("text/html", body)
+
+		// 4. Send the single broadcast message
+		if err := s.mailer.DialAndSend(message); err != nil {
+			log.Printf("failed to broadcast description update: %v", err)
 		}
 	}()
 }
