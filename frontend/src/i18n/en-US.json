@@ -138,7 +138,9 @@
     "error_step_bid_type": "Step bid type is invalid, must be percentage or fixed",
     "error_bin_price": "BIN price is invalid",
     "error_expired_at": "Expiry time is invalid, must be in the future",
-    "error_cant_fetch_auctions": "Couldn't fetch your auctions"
+    "error_cant_fetch_auctions": "Couldn't fetch your auctions",
+    "error_no_seller_privileges": "No Seller Permission",
+    "error_no_seller_privileges_desc": "You don't have permission to create an auction. You can subscribe to the platform to gain seller privileges."
   },
   "subscriptions": {
     "title": "My Subscriptions",

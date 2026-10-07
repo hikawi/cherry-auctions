@@ -30,7 +30,7 @@ const sortedBids = computed(() => {
   if (!props.data) {
     return undefined;
   }
-  return [...props.data.bids].sort((a, b) => b.price - a.price);
+  return [...(props.data.bids ?? [])].sort((a, b) => b.price - a.price);
 });
 
 // Yes, I know I should truncate on the backend side.

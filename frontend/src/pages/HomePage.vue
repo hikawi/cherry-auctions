@@ -31,13 +31,13 @@ async function fetchTopProducts() {
 function toggleFavoriteStatus(id: number) {
   if (data.value) {
     data.value = {
-      ending_soon: data.value.ending_soon.map((val) =>
+      ending_soon: data.value.ending_soon?.map((val) =>
         val.id != id ? val : { ...val, is_favorite: !val.is_favorite },
       ),
-      highest_bids: data.value.highest_bids.map((val) =>
+      highest_bids: data.value.highest_bids?.map((val) =>
         val.id != id ? val : { ...val, is_favorite: !val.is_favorite },
       ),
-      top_bids: data.value.top_bids.map((val) =>
+      top_bids: data.value.top_bids?.map((val) =>
         val.id != id ? val : { ...val, is_favorite: !val.is_favorite },
       ),
     };

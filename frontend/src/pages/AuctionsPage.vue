@@ -9,10 +9,12 @@ import { useAuthFetch } from "@/hooks/use-auth-fetch";
 import type { Category, Product } from "@/types";
 import { LucideChevronLeft, LucideChevronRight, LucidePackage } from "lucide-vue-next";
 import { onMounted, ref, watch } from "vue";
+import ErrorDialog from "@/components/shared/ErrorDialog.vue";
 
 const { authFetch } = useAuthFetch();
 
 const createDialogShown = ref(false);
+const errorDialogShown = ref(false);
 const data = ref<Product[]>();
 const categories = ref<Category[]>();
 const page = ref(1);
@@ -31,10 +33,10 @@ watch(auctionsType, () => {
 function onCreate(status: number) {
   createDialogShown.value = false;
   if (status != 201) {
-    console.log("uh oh");
-  } else {
-    fetchMyAuctions();
+    errorDialogShown.value = true;
   }
+
+  fetchMyAuctions();
 }
 
 async function fetchCategories() {
@@ -78,6 +80,14 @@ onMounted(async () => {
 
     <OverlayScreen :shown="createDialogShown">
       <CreateAuctionDialog @close="createDialogShown = false" @status="onCreate" :categories />
+    </OverlayScreen>
+
+    <OverlayScreen :shown="errorDialogShown && !createDialogShown">
+      <ErrorDialog
+        :title="$t('auctions.error_no_seller_privileges')"
+        :description="$t('auctions.error_no_seller_privileges_desc')"
+        @close="errorDialogShown = false"
+      />
     </OverlayScreen>
 
     <section class="flex w-full max-w-4xl flex-col gap-4">

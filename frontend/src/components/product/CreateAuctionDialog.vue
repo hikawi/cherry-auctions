@@ -60,7 +60,7 @@ async function confirm() {
   const schema = z.object({
     name: z.string(),
     description: z.string().min(50),
-    product_images: z.array(z.file().refine((file) => allowedFileTypes.includes(file.type))).min(3),
+    product_images: z.array(z.file().refine((file) => allowedFileTypes.includes(file.type))).min(1),
     categories: z.array(z.coerce.number()).min(1),
     starting_bid: z.coerce.number().min(0),
     step_bid_value: z.coerce.number().min(0),
@@ -155,7 +155,6 @@ async function confirm() {
         <MoneyInput
           :label="$t('auctions.bin_price')"
           placeholder="100.0"
-          required
           @change="(n) => (binPrice = n)"
         />
 

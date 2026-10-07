@@ -101,7 +101,7 @@ async function createDescriptionChange() {
       </button>
     </div>
 
-    <div class="prose w-full text-justify" v-html="data.description"></div>
+    <div class="prose w-full text-justify wrap-break-word" v-html="data.description"></div>
 
     <div v-if="data.description_changes" class="flex w-full flex-col gap-4">
       <div
