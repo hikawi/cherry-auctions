@@ -41,6 +41,8 @@ func (s *MiddlewareService) SoftAuthorizedRoute(g *gin.Context) {
 	claims, err := s.parseAuthHeaders(g)
 	if err == nil {
 		g.Set("claims", claims)
+		roles := strings.Split(claims.Roles, " ")
+		g.Set("roles", roles)
 	}
 
 	g.Next()
@@ -68,6 +70,7 @@ func (s *MiddlewareService) AuthorizedRoute(role string) func(*gin.Context) {
 		// Doesn't support wildcard permissions, but I don't care.
 		g.Set("claims", claims)
 		roles := strings.Split(claims.Roles, " ")
+		g.Set("roles", roles)
 		if role != "" {
 			for _, hasRole := range roles {
 				if strings.EqualFold(hasRole, role) {

@@ -139,6 +139,12 @@
     "error_bin_price": "BIN price is invalid",
     "error_expired_at": "Expiry time is invalid, must be in the future",
     "error_cant_fetch_auctions": "Couldn't fetch your auctions",
+    "error_bad_request": "Bad Request",
+    "error_bad_request_desc": "Some input values were invalid that we didn't see when you typed.",
+    "error_images_too_large": "Large Images",
+    "error_images_too_large_desc": "The images inputted were too large.",
+    "error_internal_server": "Internal Server Error",
+    "error_internal_server_desc": "Something went wrong with processing this posting. This was not your fault.",
     "error_no_seller_privileges": "No Seller Permission",
     "error_no_seller_privileges_desc": "You don't have permission to create an auction. You can subscribe to the platform to gain seller privileges."
   },

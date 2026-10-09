@@ -64,7 +64,7 @@ async function confirm() {
     categories: z.array(z.coerce.number()).min(1),
     starting_bid: z.coerce.number().min(0),
     step_bid_value: z.coerce.number().min(0),
-    bin_price: z.coerce.number().min(0),
+    bin_price: z.optional(z.coerce.number().min(0)),
     allows_unrated: z.coerce.boolean().default(true),
     auto_extends: z.coerce.boolean().default(true),
     expired_at: z.coerce.date().min(new Date()),
@@ -97,7 +97,8 @@ async function confirm() {
   data.data.categories.forEach((cat) => formData.append("categories", cat.toString()));
   formData.append("starting_bid", data.data.starting_bid.toString());
   formData.append("step_bid_value", data.data.step_bid_value.toString());
-  formData.append("bin_price", data.data.bin_price.toString());
+  if (data.data.bin_price && data.data.bin_price != 0)
+    formData.append("bin_price", data.data.bin_price.toString());
   formData.append("allows_unrated", data.data.allows_unrated.toString());
   formData.append("auto_extends", data.data.auto_extends.toString());
   formData.append("expired_at", data.data.expired_at.toISOString());

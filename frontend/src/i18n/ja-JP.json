@@ -139,6 +139,12 @@
     "error_bin_price": "即決価格を入力してください",
     "error_expired_at": "終了日時を未来の時間に設定してください",
     "error_cant_fetch_auctions": "オークションリストを読み込むことできませんでした",
+    "error_bad_request": "無効",
+    "error_bad_request_desc": "入力した情報は無効です。",
+    "error_images_too_large": "サイズ大きすぎる",
+    "error_images_too_large_desc": "プロダクトの画像が10MBファイルサイズ制限以上です。",
+    "error_internal_server": "サーバーエラー",
+    "error_internal_server_desc": "サーバー側にエラー発生してしまいました。",
     "error_no_seller_privileges": "出品権利無し",
     "error_no_seller_privileges_desc": "許可されていないため出品はできません。プロファイルのメニュからサブスクリプションをご確認ください。"
   },

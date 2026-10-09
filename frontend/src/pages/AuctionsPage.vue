@@ -22,6 +22,8 @@ const maxPages = ref(1);
 const auctionsType = ref<"active" | "expired" | "ended">("active");
 const loading = ref(false);
 const error = ref("");
+const createAuctionError = ref("");
+const createAuctionErrorDesc = ref("");
 
 watch(maxPages, (val) => (page.value = Math.min(page.value, val)));
 watch(page, fetchMyAuctions);
@@ -32,8 +34,30 @@ watch(auctionsType, () => {
 
 function onCreate(status: number) {
   createDialogShown.value = false;
-  if (status != 201) {
-    errorDialogShown.value = true;
+  switch (status) {
+    case 400:
+      errorDialogShown.value = true;
+      createAuctionError.value = "auctions.error_bad_request";
+      createAuctionErrorDesc.value = "auctions.error_bad_request_desc";
+      break;
+    case 403:
+      errorDialogShown.value = true;
+      createAuctionError.value = "auctions.error_no_seller_privileges";
+      createAuctionErrorDesc.value = "auctions.error_no_seller_privileges";
+      break;
+    case 422:
+      errorDialogShown.value = true;
+      createAuctionError.value = "auctions.error_images_too_large";
+      createAuctionErrorDesc.value = "auctions.error_images_too_large";
+      break;
+    case 500:
+      errorDialogShown.value = true;
+      createAuctionError.value = "auctions.error_internal_server";
+      createAuctionErrorDesc.value = "auctions.error_internal_server";
+      break;
+    case 201:
+      errorDialogShown.value = false;
+      break;
   }
 
   fetchMyAuctions();
@@ -86,7 +110,11 @@ onMounted(async () => {
       <ErrorDialog
         :title="$t('auctions.error_no_seller_privileges')"
         :description="$t('auctions.error_no_seller_privileges_desc')"
-        @close="errorDialogShown = false"
+        @close="
+          () => {
+            errorDialogShown = false;
+          }
+        "
       />
     </OverlayScreen>
 

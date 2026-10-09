@@ -9,6 +9,7 @@ import (
 	"math"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/davidbyttow/govips/v2/vips"
@@ -317,9 +318,20 @@ func (h *ProductsHandler) PostProduct(g *gin.Context) {
 	ctx := g.Request.Context()
 	claimsAny, _ := g.Get("claims")
 	claims := claimsAny.(*services.JWTSubject)
+	rolesAny, _ := g.Get("roles")
+	roles := rolesAny.([]string)
+
+	// If no moderator or admin roles, then check for permission.
+	haveRole := false
+	for _, role := range roles {
+		if strings.EqualFold(role, "admin") || strings.EqualFold(role, "moderator") {
+			haveRole = true
+			break
+		}
+	}
 
 	// Make sure the user has the permission.
-	if claims.SubscriptionExpiredAt == nil || claims.SubscriptionExpiredAt.Before(time.Now()) {
+	if !haveRole && (claims.SubscriptionExpiredAt == nil || claims.SubscriptionExpiredAt.Before(time.Now())) {
 		logging.LogMessage(g, logging.LOG_ERROR, gin.H{"status": http.StatusForbidden, "error": "user can't post"})
 		g.AbortWithStatusJSON(http.StatusForbidden, shared.ErrorResponse{Error: "you can't post"})
 		return
